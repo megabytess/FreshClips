@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatefulWidget {
@@ -29,18 +30,24 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Welcome back!\nStay Fresh, Stay Confident',
-            style: GoogleFonts.poppins(
-              fontSize: screenWidth * 0.06,
-              fontWeight: FontWeight.w700,
-              color: const Color.fromARGB(255, 23, 23, 23),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.05,
+            ),
+            child: Text(
+              'Welcome back!\nStay Fresh, Stay Confident',
+              style: GoogleFonts.poppins(
+                fontSize: screenWidth * 0.06,
+                fontWeight: FontWeight.w600,
+                color: const Color.fromARGB(255, 23, 23, 23),
+              ),
             ),
           ),
           Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: screenWidth * 0.07,
+              horizontal: screenWidth * 0.04,
               vertical: screenHeight * 0.03,
             ),
             child: TextFormField(
@@ -77,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: screenWidth * 0.07,
+              horizontal: screenWidth * 0.04,
             ),
             child: TextFormField(
               obscureText: true,
@@ -122,7 +129,51 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-          )
+          ),
+          Gap(screenHeight * 0.02),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () {},
+              child: Text(
+                'Forgot Password?',
+                style: GoogleFonts.poppins(
+                  fontSize: screenWidth * 0.04,
+                  fontWeight: FontWeight.w500,
+                  color: const Color.fromARGB(255, 23, 23, 23),
+                ),
+              ),
+            ),
+          ),
+          Gap(screenHeight * 0.03),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.04,
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              height: screenHeight * 0.07,
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 189, 49, 70),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      screenWidth * 0.03,
+                    ),
+                  ),
+                ),
+                child: Text(
+                  'Login',
+                  style: GoogleFonts.poppins(
+                    fontSize: screenWidth * 0.04,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/login_page.dart';
-import 'package:freshclips_capstone/features/auth/views/screens/login/signup_page.dart';
+import 'package:freshclips_capstone/features/auth/views/screens/signup/signup_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -57,7 +57,6 @@ class LandingPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        // Login Button
                         Expanded(
                           child: SizedBox(
                             height: screenHeight * 0.07,
@@ -92,11 +91,9 @@ class LandingPage extends StatelessWidget {
                             ),
                           ),
                         ),
-
                         SizedBox(
                           width: screenWidth * 0.05,
                         ),
-
                         Expanded(
                           child: SizedBox(
                             height: screenHeight * 0.07,
