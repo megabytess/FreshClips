@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/bottomnav_bar_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -58,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
               decoration: InputDecoration(
                 labelText: 'Email',
                 labelStyle: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.04,
+                  fontSize: screenWidth * 0.035,
                   color: const Color.fromARGB(255, 186, 199, 206),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -95,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
               decoration: InputDecoration(
                 labelText: 'Password',
                 labelStyle: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.04,
+                  fontSize: screenWidth * 0.035,
                   color: const Color.fromARGB(255, 186, 199, 206),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -154,7 +155,14 @@ class _LoginPageState extends State<LoginPage> {
               width: double.infinity,
               height: screenHeight * 0.07,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BottomNavBarPage(),
+                    ),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 189, 49, 70),
                   shape: RoundedRectangleBorder(
@@ -166,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Text(
                   'Login',
                   style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.04,
+                    fontSize: screenWidth * 0.035,
                     fontWeight: FontWeight.w500,
                     color: Colors.white,
                   ),

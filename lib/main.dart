@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:freshclips_capstone/features/auth/views/screens/signup/signup_page.dart';
+import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
 import 'package:freshclips_capstone/firebase_options.dart';
 
 Future<void> main() async {
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
-      home: const SignupPage(),
+      home: const LandingPage(),
     );
   }
 }

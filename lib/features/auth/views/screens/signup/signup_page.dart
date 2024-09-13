@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:freshclips_capstone/features/auth/views/screens/signup/barber_signup_page.dart';
+import 'package:freshclips_capstone/features/auth/views/screens/signup/barbershop_salon_signup_page.dart';
+import 'package:freshclips_capstone/features/auth/views/screens/signup/client_signup_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -45,12 +48,17 @@ class _SignupPageState extends State<SignupPage> {
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: () {
-                  // Handle Client signup selection
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ClientSignupPage(),
+                    ),
+                  );
                 },
                 style: OutlinedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: screenHeight * 0.03),
                   side: const BorderSide(
-                    color: Color.fromARGB(255, 23, 23, 23),
+                    color: Color.fromARGB(255, 186, 199, 206),
                     width: 2,
                   ),
                   shape: RoundedRectangleBorder(
@@ -72,12 +80,17 @@ class _SignupPageState extends State<SignupPage> {
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: () {
-                  // Handle Hairstylist signup selection
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BarberSignupPage(),
+                    ),
+                  );
                 },
                 style: OutlinedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: screenHeight * 0.03),
                   side: const BorderSide(
-                    color: Color.fromARGB(255, 23, 23, 23),
+                    color: Color.fromARGB(255, 186, 199, 206),
                     width: 2,
                   ),
                   shape: RoundedRectangleBorder(
@@ -99,7 +112,12 @@ class _SignupPageState extends State<SignupPage> {
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: () {
-                  // Handle Barbershop/Salon signup selection
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BarbershopSalonPage(),
+                    ),
+                  );
                 },
                 style: OutlinedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: screenHeight * 0.03),
