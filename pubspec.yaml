@@ -41,6 +41,8 @@ dependencies:
   firebase_core: ^3.4.0
   flutter_launcher_icons: ^0.13.1
   flutter_lints: ^4.0.0
+  tabbar_gradient_indicator: ^1.0.1
+  flutter_tabbar_page: ^0.0.3
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +81,11 @@ flutter:
     - assets/images/bottomnav_bar_page/calendar_fill.svg
     - assets/images/bottomnav_bar_page/message_fill.svg
     - assets/images/bottomnav_bar_page/user_fill.svg
+    - assets/images/profile_page/star.svg
+    - assets/images/profile_page/heart.svg
+    - assets/images/profile_page/comment.svg
+    - assets/images/profile_page/sample_pic.jpg
+    - assets/images/profile_page/cover_pic.jpg
    
     
 
@@ -93,19 +100,19 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Poppins
-  #     fonts:
-  #       - asset: assets/fonts/Poppins-Regular.ttf
-  #       - asset: assets/fonts/Poppins-ExtraBold.ttf
+  fonts:
+    - family: Wetzilla-eZap6
+      fonts:
+        - asset: assets/fonts/Wetzilla-eZap6.otf
+        # - asset: assets/fonts/Poppins-ExtraBold.ttf
   #       - asset: assets/fonts/Poppins-Bold.ttf
   #       - asset: assets/fonts/Poppins-Medium.ttf
   #       - asset: assets/fonts/Poppins-Light.ttf
   #       - asset: assets/fonts/Poppins-SemiBold.ttf
           # style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
+    - family: Asterone DEMO
+      fonts:
+        - asset: assets/fonts/Asterone DEMO.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #

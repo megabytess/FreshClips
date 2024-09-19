@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class MessagePage extends StatelessWidget {
-  const MessagePage({super.key});
+class AppointmentPage extends StatelessWidget {
+  const AppointmentPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class MessagePage extends StatelessWidget {
       body: Container(
         child: Center(
           child: Text(
-            'Message Page',
+            'Appointment Page',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,

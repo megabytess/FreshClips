@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class MessagePage extends StatelessWidget {
-  const MessagePage({super.key});
+class BSHomePage extends StatelessWidget {
+  const BSHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class MessagePage extends StatelessWidget {
       body: Container(
         child: Center(
           child: Text(
-            'Message Page',
+            'Home Page',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,

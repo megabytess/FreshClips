@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
-import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appointment_page/screens/bs_appointment_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/home_page/screens/home_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/message_page/screen/message_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/profile_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/settings_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/bs_settings_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/home_page/screens/bs_home_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/message_page/screens/bs_message_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_profile_page.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/views/appointment_page/screens/appointment_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class BottomNavBarPage extends StatefulWidget {
-  const BottomNavBarPage({super.key});
+class BSBottomNavBarPage extends StatefulWidget {
+  const BSBottomNavBarPage({super.key});
 
   @override
-  State<BottomNavBarPage> createState() => _BottomNavBarPageState();
+  State<BSBottomNavBarPage> createState() => _BottomNavBarPageState();
 }
 
-class _BottomNavBarPageState extends State<BottomNavBarPage> {
+class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
   int _selectedIndex = 0;
 
   // List of screens for each tab
   final List<Widget> _pages = [
-    const HomePage(),
-    const AppointmentPage(),
-    const MessagePage(),
-    const ProfilePage(),
+    const BSHomePage(),
+    const BSAppointmentPage(),
+    const BSMessagePage(),
+    const BSProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -246,7 +246,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
+                    builder: (context) => const BSSettingsPage(),
                   ),
                 );
               },
