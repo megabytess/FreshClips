@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class BSHomePage extends StatelessWidget {
-  const BSHomePage({super.key});
+class BSRescheduledPage extends StatelessWidget {
+  const BSRescheduledPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     // final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 248, 248, 248),
       body: Center(
         child: Text(
-          'Home Page',
+          'No Rescheduled Appointments',
           style: GoogleFonts.poppins(
-            fontSize:
-                screenWidth * 0.06, // Text size responsive to screen width
-            fontWeight: FontWeight.bold,
+            fontSize: screenWidth * 0.04,
+            fontWeight: FontWeight.w600,
+            color: const Color.fromARGB(255, 18, 18, 18),
           ),
         ),
       ),

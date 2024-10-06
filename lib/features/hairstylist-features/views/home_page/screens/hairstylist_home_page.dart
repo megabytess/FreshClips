@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HairstylistHomePage extends StatefulWidget {
+  const HairstylistHomePage({super.key});
 
+  @override
+  State<HairstylistHomePage> createState() => _HairstylistHomePageState();
+}
+
+class _HairstylistHomePageState extends State<HairstylistHomePage> {
   @override
   Widget build(BuildContext context) {
     // final screenWidth = MediaQuery.of(context).size.width;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appointment_page/screens/bs_appointment_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/bs_settings_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/home_page/screens/bs_home_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/message_page/screens/bs_message_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_profile_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/appointment_page/screens/appointment_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -292,6 +292,7 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromARGB(255, 248, 248, 248),
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: SvgPicture.asset(

@@ -1,174 +1,110 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class InfoPage extends StatefulWidget {
-  const InfoPage({super.key});
+class BSInfoPage extends StatelessWidget {
+  const BSInfoPage({super.key});
 
-  @override
-  State<InfoPage> createState() => _InfoPageState();
-}
-
-class _InfoPageState extends State<InfoPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.02,
-                top: screenHeight * 0.01,
-              ),
-              child: Text(
-                'Username:',
-                style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.032,
-                    fontWeight: FontWeight.w500,
-                    color: const Color.fromARGB(100, 18, 18, 18)),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.02,
-                top: screenHeight * 0.01,
-              ),
-              child: Text(
-                '@snyder',
-                style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.03,
-                    fontWeight: FontWeight.w600,
-                    color: const Color.fromARGB(255, 18, 18, 18)),
-              ),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.02,
-                top: screenHeight * 0.001,
-              ),
-              child: Text(
-                'Email:',
-                style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.032,
-                    fontWeight: FontWeight.w500,
-                    color: const Color.fromARGB(100, 18, 18, 18)),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.02,
-              ),
-              child: Text(
-                'sample@gmail.com',
-                style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.03,
-                    fontWeight: FontWeight.w600,
-                    color: const Color.fromARGB(255, 18, 18, 18)),
-              ),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.02,
-                top: screenHeight * 0.001,
-              ),
-              child: Text(
-                'Location:',
-                style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.032,
-                    fontWeight: FontWeight.w500,
-                    color: const Color.fromARGB(100, 18, 18, 18)),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.02,
-              ),
-              child: Text(
-                'Cebu City, Philippines',
-                style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.03,
-                    fontWeight: FontWeight.w600,
-                    color: const Color.fromARGB(255, 18, 18, 18)),
-              ),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.02,
-                top: screenHeight * 0.001,
-              ),
-              child: Text(
-                'Skills:',
-                style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.032,
-                    fontWeight: FontWeight.w500,
-                    color: const Color.fromARGB(100, 18, 18, 18)),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.02,
-              ),
-              child: Text(
-                'Sample Skills, Sample Skills, Sample Skills',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.03,
-                  fontWeight: FontWeight.w600,
-                  color: const Color.fromARGB(255, 18, 18, 18),
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 248, 248, 248),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                  left: screenWidth * 0.02,
+                  top: screenHeight * 0.01,
+                ),
+                child: Text(
+                  'Username:',
+                  style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.032,
+                      fontWeight: FontWeight.w500,
+                      color: const Color.fromARGB(100, 18, 18, 18)),
                 ),
               ),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.02,
-                top: screenHeight * 0.001,
+              Padding(
+                padding: EdgeInsets.only(
+                  left: screenWidth * 0.02,
+                  top: screenHeight * 0.01,
+                ),
+                child: Text(
+                  '@snyder',
+                  style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.03,
+                      fontWeight: FontWeight.w600,
+                      color: const Color.fromARGB(255, 18, 18, 18)),
+                ),
               ),
-              child: Text(
-                'Years of Experience:',
-                style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.032,
-                    fontWeight: FontWeight.w500,
-                    color: const Color.fromARGB(100, 18, 18, 18)),
+            ],
+          ),
+          Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                  left: screenWidth * 0.02,
+                  top: screenHeight * 0.001,
+                ),
+                child: Text(
+                  'Email:',
+                  style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.032,
+                      fontWeight: FontWeight.w500,
+                      color: const Color.fromARGB(100, 18, 18, 18)),
+                ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.02,
+              Padding(
+                padding: EdgeInsets.only(
+                  left: screenWidth * 0.02,
+                ),
+                child: Text(
+                  'sample@gmail.com',
+                  style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.03,
+                      fontWeight: FontWeight.w600,
+                      color: const Color.fromARGB(255, 18, 18, 18)),
+                ),
               ),
-              child: Text(
-                '5 years',
-                style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.03,
-                    fontWeight: FontWeight.w600,
-                    color: const Color.fromARGB(255, 18, 18, 18)),
+            ],
+          ),
+          Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                  left: screenWidth * 0.02,
+                  top: screenHeight * 0.001,
+                ),
+                child: Text(
+                  'Location:',
+                  style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.032,
+                      fontWeight: FontWeight.w500,
+                      color: const Color.fromARGB(100, 18, 18, 18)),
+                ),
               ),
-            ),
-          ],
-        ),
-        Card(
-          color: const Color.fromARGB(255, 255, 255, 255),
-          elevation: 3,
-          margin: EdgeInsets.all(screenWidth * 0.02),
-          child: Padding(
+              Padding(
+                padding: EdgeInsets.only(
+                  left: screenWidth * 0.02,
+                ),
+                child: Text(
+                  'Cebu City, Philippines',
+                  style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.03,
+                      fontWeight: FontWeight.w600,
+                      color: const Color.fromARGB(255, 18, 18, 18)),
+                ),
+              ),
+            ],
+          ),
+          Gap(screenHeight * 0.01),
+          Padding(
             padding: EdgeInsets.all(screenWidth * 0.03),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,7 +113,7 @@ class _InfoPageState extends State<InfoPage> {
                   'Services',
                   style: GoogleFonts.poppins(
                     color: const Color.fromARGB(255, 18, 18, 18),
-                    fontSize: screenWidth * 0.035,
+                    fontSize: screenWidth * 0.040,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -273,8 +209,8 @@ class _InfoPageState extends State<InfoPage> {
               ],
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

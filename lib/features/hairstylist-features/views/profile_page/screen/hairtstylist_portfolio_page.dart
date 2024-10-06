@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class PortfolioPage extends StatefulWidget {
-  const PortfolioPage({super.key});
+class HairstylistPortfolioPage extends StatefulWidget {
+  const HairstylistPortfolioPage({super.key});
 
   @override
-  State<PortfolioPage> createState() => _PortfolioPageState();
+  State<HairstylistPortfolioPage> createState() => _PortfolioPageState();
 }
 
-class _PortfolioPageState extends State<PortfolioPage> {
+class _PortfolioPageState extends State<HairstylistPortfolioPage> {
   final List<String> images = [
     'assets/images/profile_page/sample_pic.jpg',
     'assets/images/profile_page/sample_pic.jpg',

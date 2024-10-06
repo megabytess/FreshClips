@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/bs_botomnav_bar.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/bs_bottomnav_bar.dart';
+import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/client_bottomnav_bar.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/bottomnav_bar_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -13,6 +17,104 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true;
+
+  // Firebase Auth instance
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  // text editing controllers
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    emailController.text = '@gmail.com';
+    passwordController.text = '123456789';
+    super.initState();
+  }
+
+  // Method to sign in the user
+  void loginUser() async {
+    try {
+      // Authenticate the user with email and password
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+
+      // Get the current user's UID
+      String userId = userCredential.user!.uid;
+
+      // Retrieve the user's document from Firestore
+      DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance.collection('user').doc(userId).get();
+
+      // Check if the document exists
+      if (userDoc.exists) {
+        // Get the userType from the Firestore document
+        String userType = userDoc.get('userType');
+        print("User Type: $userType"); // Debugging line to check userType
+
+        // Navigate to different pages based on userType
+        if (userType == 'Hairstylist') {
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(builder: (context) => const BottomNavBarPage()),
+          );
+        } else if (userType == 'Barbershop_Salon') {
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(builder: (context) => const BSBottomNavBarPage()),
+          );
+        } else if (userType == 'Client') {
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(
+                builder: (context) => const ClientBottomNavBarPage()),
+          );
+        }
+      } else {
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Error'),
+            content: const Text('User data not found.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle login errors
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Login Error'),
+          content: Text(e.toString()),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +154,7 @@ class _LoginPageState extends State<LoginPage> {
               vertical: screenHeight * 0.03,
             ),
             child: TextFormField(
+              controller: emailController, // Email text field
               style: GoogleFonts.poppins(
                 fontSize: screenWidth * 0.04,
                 color: const Color.fromARGB(255, 23, 23, 23),
@@ -88,7 +191,8 @@ class _LoginPageState extends State<LoginPage> {
               horizontal: screenWidth * 0.04,
             ),
             child: TextFormField(
-              obscureText: true,
+              controller: passwordController, // Password text field
+              obscureText: _obscureText,
               style: GoogleFonts.poppins(
                 fontSize: screenWidth * 0.04,
                 color: const Color.fromARGB(255, 23, 23, 23),
@@ -156,12 +260,7 @@ class _LoginPageState extends State<LoginPage> {
               height: screenHeight * 0.07,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const BSBottomNavBarPage(),
-                    ),
-                  );
+                  loginUser();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 189, 49, 70),

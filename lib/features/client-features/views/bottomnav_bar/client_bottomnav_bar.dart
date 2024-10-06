@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/appointment_page/screens/hairstylist_appointment_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/settings_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/home_page/screens/hairstylist_home_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/message_page/screen/hairstylist_message_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/hairstylist_profile_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/bs_settings_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/home_page/screens/client_home_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/message_page/screens/client_message_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/nearby_page/screens/client_nearby_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/profile_page/screens/client_home_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class BottomNavBarPage extends StatefulWidget {
-  const BottomNavBarPage({super.key});
+class ClientBottomNavBarPage extends StatefulWidget {
+  const ClientBottomNavBarPage({super.key});
 
   @override
-  State<BottomNavBarPage> createState() => _BottomNavBarPageState();
+  State<ClientBottomNavBarPage> createState() => _BottomNavBarPageState();
 }
 
-class _BottomNavBarPageState extends State<BottomNavBarPage> {
+class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
   int _selectedIndex = 0;
 
   // List of screens for each tab
   final List<Widget> _pages = [
-    HairstylistHomePage(),
-    const HairstylistAppointmentPage(),
-    const HairstylistMessagePage(),
-    const HairstylistProfilePage(),
+    const ClientHomePage(),
+    const ClientNearbyPage(),
+    const ClientMessagePage(),
+    const ClientProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -246,7 +246,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
+                    builder: (context) => const BSSettingsPage(),
                   ),
                 );
               },
@@ -292,6 +292,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color.fromARGB(255, 248, 248, 248),
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: SvgPicture.asset(

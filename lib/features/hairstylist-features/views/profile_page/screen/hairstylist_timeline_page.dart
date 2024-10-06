@@ -3,14 +3,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class TimelinePage extends StatefulWidget {
-  const TimelinePage({super.key});
+class HairstylistTimelinePage extends StatefulWidget {
+  const HairstylistTimelinePage({super.key});
 
   @override
-  State<TimelinePage> createState() => _TimelinePageState();
+  State<HairstylistTimelinePage> createState() => _TimelinePageState();
 }
 
-class _TimelinePageState extends State<TimelinePage> {
+class _TimelinePageState extends State<HairstylistTimelinePage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;

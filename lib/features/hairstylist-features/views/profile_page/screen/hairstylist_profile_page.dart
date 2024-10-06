@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tabbar_page/flutter_tabbar_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/info_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/portfolio_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/review_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/timeline_page.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/hairstylist_info_page.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/hairstylist_review_page.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/hairstylist_timeline_page.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/hairtstylist_portfolio_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class HairstylistProfilePage extends StatefulWidget {
+  const HairstylistProfilePage({super.key});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<HairstylistProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends State<HairstylistProfilePage> {
   List<PageTabItemModel> listPages = <PageTabItemModel>[];
   final TabPageController _controller = TabPageController();
 
@@ -25,25 +25,25 @@ class _ProfilePageState extends State<ProfilePage> {
     listPages.add(
       PageTabItemModel(
         title: "Info",
-        page: const InfoPage(),
+        page: const HairstylistInfoPage(),
       ),
     );
     listPages.add(
       PageTabItemModel(
         title: "Timeline",
-        page: const TimelinePage(),
+        page: const HairstylistTimelinePage(),
       ),
     );
     listPages.add(
       PageTabItemModel(
         title: "Review",
-        page: const ReviewPage(),
+        page: const HairstylistReviewPage(),
       ),
     );
     listPages.add(
       PageTabItemModel(
         title: "Portfolio",
-        page: const PortfolioPage(),
+        page: const HairstylistPortfolioPage(),
       ),
     );
   }
@@ -131,40 +131,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   Gap(screenHeight * 0.01),
-                  // SizedBox(
-                  //   height: screenHeight * 0.03,
-                  //   width: screenWidth * 0.20,
-                  //   child: OutlinedButton(
-                  //     onPressed: () {
-                  //       // Navigator.push(
-                  //       //   context,
-                  //       //   MaterialPageRoute(
-                  //       // builder: (context) => const SignupPage(),
-                  //       // ),
-                  //       // );
-                  //     },
-                  //     style: OutlinedButton.styleFrom(
-                  //       side: const BorderSide(
-                  //         color: Color.fromARGB(255, 45, 65, 69),
-                  //         width: 1,
-                  //       ),
-                  //       padding: EdgeInsets.symmetric(
-                  //         vertical: screenHeight * 0.001,
-                  //       ),
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(15),
-                  //       ),
-                  //     ),
-                  //     child: Text(
-                  //       'Edit profile',
-                  //       style: GoogleFonts.poppins(
-                  //         color: const Color.fromARGB(255, 45, 65, 69),
-                  //         fontSize: screenWidth * 0.02,
-                  //         fontWeight: FontWeight.w500,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
             ],
@@ -193,7 +159,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: GoogleFonts.poppins(
                               fontWeight: _controller.currentIndex == index
                                   ? FontWeight.w700
-                                  : FontWeight.w400,
+                                  : FontWeight.w500,
                               color: _controller.currentIndex == index
                                   ? const Color.fromARGB(255, 18, 18, 18)
                                   : const Color.fromARGB(30, 18, 18, 18),

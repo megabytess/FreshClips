@@ -39,10 +39,17 @@ dependencies:
   google_fonts: ^6.2.1
   gap: ^3.0.1
   firebase_core: ^3.4.0
+  firebase_auth:
+  firebase_database: 
+  firebase_storage: 
+  cloud_firestore: 
   flutter_launcher_icons: ^0.13.1
   flutter_lints: ^4.0.0
   tabbar_gradient_indicator: ^1.0.1
   flutter_tabbar_page: ^0.0.3
+  table_calendar: ^3.1.2
+  image_picker: ^1.1.2
+  
 
 dev_dependencies:
   flutter_test:
@@ -86,6 +93,8 @@ flutter:
     - assets/images/profile_page/comment.svg
     - assets/images/profile_page/sample_pic.jpg
     - assets/images/profile_page/cover_pic.jpg
+    - assets/images/profile_page/coverphoto.jpg
+    - assets/images/profile_page/profile_sample.jpg
    
     
 

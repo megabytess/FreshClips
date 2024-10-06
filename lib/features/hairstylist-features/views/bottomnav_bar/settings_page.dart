@@ -22,42 +22,67 @@ class SettingsPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
-        child: Column(
-          children: [
-            _buildSettingButton(
-              context,
-              screenWidth,
-              screenHeight,
-              'Services',
-              Icons.arrow_forward_ios,
-              onPressed: () {
-                // Navigate to the Services page
-              },
-            ),
-            _buildSettingButton(
-              context,
-              screenWidth,
-              screenHeight,
-              'Profile details',
-              Icons.arrow_forward_ios,
-              onPressed: () {
-                // Navigate to the Profile details page
-              },
-            ),
-            _buildSettingButton(
-              context,
-              screenWidth,
-              screenHeight,
-              'Manage availability',
-              Icons.arrow_forward_ios,
-              onPressed: () {
-                // Navigate to the Working hours page
-              },
-            ),
-          ],
-        ),
+      body: Column(
+        children: [
+          _buildSettingButton(
+            context,
+            screenWidth,
+            screenHeight,
+            'Services',
+            Icons.arrow_forward_ios,
+            onPressed: () {
+              // Navigate to the Services page
+            },
+          ),
+          const Divider(
+            color: Color.fromARGB(255, 189, 189, 189), // Custom line color
+            thickness: 1.0,
+            indent: 20.0,
+            endIndent: 20.0,
+          ),
+          _buildSettingButton(
+            context,
+            screenWidth,
+            screenHeight,
+            'Profile details',
+            Icons.arrow_forward_ios,
+            onPressed: () {
+              // Navigate to the Profile details page
+            },
+          ),
+          const Divider(
+            color: Color.fromARGB(255, 189, 189, 189), // Custom line color
+            thickness: 1.0,
+            indent: 20.0,
+            endIndent: 20.0,
+          ),
+          _buildSettingButton(
+            context,
+            screenWidth,
+            screenHeight,
+            'Manage availability',
+            Icons.arrow_forward_ios,
+            onPressed: () {
+              // Navigate to the Working hours page
+            },
+          ),
+          const Divider(
+            color: Color.fromARGB(255, 189, 189, 189), // Custom line color
+            thickness: 1.0,
+            indent: 20.0,
+            endIndent: 20.0,
+          ),
+          _buildSettingButton(
+            context,
+            screenWidth,
+            screenHeight,
+            'Booking system',
+            Icons.arrow_forward_ios,
+            onPressed: () {
+              // Navigate to the Working hours page
+            },
+          ),
+        ],
       ),
     );
   }

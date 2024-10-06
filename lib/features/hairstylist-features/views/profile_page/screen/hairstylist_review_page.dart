@@ -3,14 +3,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ReviewPage extends StatefulWidget {
-  const ReviewPage({super.key});
+class HairstylistReviewPage extends StatefulWidget {
+  const HairstylistReviewPage({super.key});
 
   @override
-  State<ReviewPage> createState() => _ReviewPageState();
+  State<HairstylistReviewPage> createState() => _ReviewPageState();
 }
 
-class _ReviewPageState extends State<ReviewPage> {
+class _ReviewPageState extends State<HairstylistReviewPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;

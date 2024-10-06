@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class BSHomePage extends StatelessWidget {
-  const BSHomePage({super.key});
+class ClientProfilePage extends StatelessWidget {
+  const ClientProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class BSHomePage extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 248, 248, 248),
       body: Center(
         child: Text(
-          'Home Page',
+          'Client Profile Page',
           style: GoogleFonts.poppins(
             fontSize:
                 screenWidth * 0.06, // Text size responsive to screen width

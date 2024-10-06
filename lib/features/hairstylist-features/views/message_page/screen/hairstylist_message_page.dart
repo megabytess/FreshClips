@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class BSAppointmentPage extends StatelessWidget {
-  const BSAppointmentPage({super.key});
+class HairstylistMessagePage extends StatelessWidget {
+  const HairstylistMessagePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class BSAppointmentPage extends StatelessWidget {
       body: Container(
         child: Center(
           child: Text(
-            'Appointment Page',
+            'Message Page',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
