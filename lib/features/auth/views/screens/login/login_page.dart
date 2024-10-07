@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:freshclips_capstone/features/admin-features/screens/admin_home_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/bs_bottomnav_bar.dart';
 import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/client_bottomnav_bar.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/bottomnav_bar_page.dart';
@@ -42,6 +43,21 @@ class _LoginPageState extends State<LoginPage> {
         email: emailController.text,
         password: passwordController.text,
       );
+
+      // Check if it's the Super Admin login
+      if (emailController.text.trim() == 'superadmin@freshclips.com' &&
+          passwordController.text.trim() == '123456789') {
+        // Navigate to AdminHomePage
+        Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(
+              builder: (context) => AdminHomePage(
+                    email: emailController.text,
+                  )),
+        );
+        return; // Exit here since it's the admin login
+      }
 
       // Get the current user's UID
       String userId = userCredential.user!.uid;
