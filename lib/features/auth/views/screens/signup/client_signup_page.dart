@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
 import 'package:freshclips_capstone/features/auth/views/widgets/image_picker.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -151,7 +152,11 @@ class _ClientSignupPageState extends State<ClientSignupPage> {
                 TextButton(
                   onPressed: () {
                     Navigator.pop(ctx); // Close the dialog
-                    Navigator.pushReplacementNamed(context, '/LandingPage');
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LandingPage()),
+                    );
                   },
                   child: Text(
                     'OK',
