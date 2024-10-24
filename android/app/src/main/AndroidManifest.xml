@@ -3,6 +3,8 @@
         android:label="FreshClips"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyDdXaMN5htLGHo8BkCfefPpuTauwHGXItU"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -29,6 +31,7 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+      
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility?hl=en and

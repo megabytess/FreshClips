@@ -49,6 +49,11 @@ dependencies:
   flutter_tabbar_page: ^0.0.3
   table_calendar: ^3.1.2
   image_picker: ^1.1.2
+  shared_preferences: ^2.2.3
+  google_maps_flutter: ^2.6.1
+  location: ^6.0.2
+  transparent_image: ^2.0.1
+  intl: ^0.19.0
   
 
 dev_dependencies:
@@ -91,6 +96,7 @@ flutter:
     - assets/images/profile_page/star.svg
     - assets/images/profile_page/heart.svg
     - assets/images/profile_page/comment.svg
+    - assets/images/bottomnav_bar_page/nearby.svg
     - assets/images/profile_page/sample_pic.jpg
     - assets/images/profile_page/cover_pic.jpg
     - assets/images/profile_page/coverphoto.jpg

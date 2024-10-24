@@ -31,7 +31,7 @@ class BSBarbersPage extends StatelessWidget {
               leading: CircleAvatar(
                 radius: screenWidth * 0.07,
                 backgroundImage: const AssetImage(
-                    'assets/images/profile_page/profile_sample.jpg'), // Placeholder for barber's image
+                    'assets/images/profile_page/profile_sample.jpg'),
               ),
               title: Text(
                 barbers[index]['name']!,

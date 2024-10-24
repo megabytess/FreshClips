@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/appointment_page/screens/hairstylist_appointment_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/settings_page.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/settings_drawer/settings_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/home_page/screens/hairstylist_home_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/message_page/screen/hairstylist_message_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/hairstylist_profile_page.dart';
@@ -10,7 +10,8 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BottomNavBarPage extends StatefulWidget {
-  const BottomNavBarPage({super.key});
+  const BottomNavBarPage({super.key, required this.email});
+  final String email;
 
   @override
   State<BottomNavBarPage> createState() => _BottomNavBarPageState();
@@ -20,12 +21,18 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
   int _selectedIndex = 0;
 
   // List of screens for each tab
-  final List<Widget> _pages = [
-    HairstylistHomePage(),
-    const HairstylistAppointmentPage(),
-    const HairstylistMessagePage(),
-    const HairstylistProfilePage(),
-  ];
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      HairstylistHomePage(),
+      HairstylistAppointmentPage(),
+      HairstylistMessagePage(),
+      HairstylistProfilePage(email: widget.email),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -191,11 +198,10 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
               },
             ),
             ListTile(
-              leading: SvgPicture.asset(
-                'assets/images/bottomnav_bar_page/user_fill.svg',
-                width: screenWidth * 0.06,
-                colorFilter: const ColorFilter.mode(
-                    Color.fromARGB(255, 48, 65, 69), BlendMode.srcIn),
+              leading: Icon(
+                Icons.person_rounded,
+                size: screenWidth * 0.076,
+                color: const Color.fromARGB(255, 48, 65, 69),
               ),
               title: Text(
                 'Profile',
@@ -246,7 +252,9 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
+                    builder: (context) => SettingsPage(
+                      email: widget.email,
+                    ),
                   ),
                 );
               },
@@ -301,7 +309,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
               colorFilter: ColorFilter.mode(
                 _selectedIndex == 0
                     ? const Color.fromARGB(255, 189, 49, 71)
-                    : const Color.fromARGB(180, 23, 23, 23),
+                    : const Color.fromARGB(50, 23, 23, 23),
                 BlendMode.srcIn,
               ),
             ),
@@ -315,7 +323,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
               colorFilter: ColorFilter.mode(
                 _selectedIndex == 1
                     ? const Color.fromARGB(255, 189, 49, 71)
-                    : const Color.fromARGB(180, 23, 23, 23),
+                    : const Color.fromARGB(50, 23, 23, 23),
                 BlendMode.srcIn,
               ),
             ),
@@ -329,7 +337,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
               colorFilter: ColorFilter.mode(
                 _selectedIndex == 2
                     ? const Color.fromARGB(255, 189, 49, 71)
-                    : const Color.fromARGB(180, 23, 23, 23),
+                    : const Color.fromARGB(50, 23, 23, 23),
                 BlendMode.srcIn,
               ),
             ),
@@ -343,7 +351,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
               colorFilter: ColorFilter.mode(
                 _selectedIndex == 3
                     ? const Color.fromARGB(255, 189, 49, 71)
-                    : const Color.fromARGB(180, 23, 23, 23),
+                    : const Color.fromARGB(50, 23, 23, 23),
                 BlendMode.srcIn,
               ),
             ),
@@ -352,7 +360,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: const Color.fromARGB(255, 189, 49, 71),
-        unselectedItemColor: const Color.fromARGB(180, 23, 23, 23),
+        unselectedItemColor: const Color.fromARGB(50, 23, 23, 23),
         selectedLabelStyle: GoogleFonts.poppins(
           fontSize: screenWidth * 0.03,
           fontWeight: FontWeight.w400,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
-import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/bs_settings_page.dart';
 import 'package:freshclips_capstone/features/client-features/views/home_page/screens/client_home_page.dart';
 import 'package:freshclips_capstone/features/client-features/views/message_page/screens/client_message_page.dart';
 import 'package:freshclips_capstone/features/client-features/views/nearby_page/screens/client_nearby_page.dart';
@@ -138,13 +137,13 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
             ),
             ListTile(
               leading: SvgPicture.asset(
-                'assets/images/bottomnav_bar_page/calendar_fill.svg',
+                'assets/images/bottomnav_bar_page/nearby.svg',
                 width: screenWidth * 0.06,
                 colorFilter: const ColorFilter.mode(
                     Color.fromARGB(255, 48, 65, 69), BlendMode.srcIn),
               ),
               title: Text(
-                'Calendar',
+                'Nearby',
                 style: GoogleFonts.poppins(
                   fontSize: screenWidth * 0.035,
                   fontWeight: FontWeight.w500,
@@ -243,12 +242,12 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
                 color: const Color.fromARGB(255, 18, 18, 18),
               ),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const BSSettingsPage(),
-                  ),
-                );
+                //   Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => const BSSettingsPage(),
+                //     ),
+                //   );
               },
             ),
             Gap(screenHeight * 0.45),
@@ -302,7 +301,7 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
               colorFilter: ColorFilter.mode(
                 _selectedIndex == 0
                     ? const Color.fromARGB(255, 189, 49, 71)
-                    : const Color.fromARGB(180, 23, 23, 23),
+                    : const Color.fromARGB(50, 23, 23, 23),
                 BlendMode.srcIn,
               ),
             ),
@@ -310,17 +309,17 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
-              'assets/images/bottomnav_bar_page/calendar_fill.svg',
+              'assets/images/bottomnav_bar_page/nearby.svg',
               height: screenHeight * 0.03,
               width: screenWidth * 0.03,
               colorFilter: ColorFilter.mode(
                 _selectedIndex == 1
                     ? const Color.fromARGB(255, 189, 49, 71)
-                    : const Color.fromARGB(180, 23, 23, 23),
+                    : const Color.fromARGB(50, 23, 23, 23),
                 BlendMode.srcIn,
               ),
             ),
-            label: 'Appointment',
+            label: 'Nearby',
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
@@ -330,7 +329,7 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
               colorFilter: ColorFilter.mode(
                 _selectedIndex == 2
                     ? const Color.fromARGB(255, 189, 49, 71)
-                    : const Color.fromARGB(180, 23, 23, 23),
+                    : const Color.fromARGB(50, 23, 23, 23),
                 BlendMode.srcIn,
               ),
             ),
@@ -344,7 +343,7 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
               colorFilter: ColorFilter.mode(
                 _selectedIndex == 3
                     ? const Color.fromARGB(255, 189, 49, 71)
-                    : const Color.fromARGB(180, 23, 23, 23),
+                    : const Color.fromARGB(50, 23, 23, 23),
                 BlendMode.srcIn,
               ),
             ),
@@ -353,7 +352,7 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: const Color.fromARGB(255, 189, 49, 71),
-        unselectedItemColor: const Color.fromARGB(180, 23, 23, 23),
+        unselectedItemColor: const Color.fromARGB(50, 23, 23, 23),
         selectedLabelStyle: GoogleFonts.poppins(
           fontSize: screenWidth * 0.03,
           fontWeight: FontWeight.w400,

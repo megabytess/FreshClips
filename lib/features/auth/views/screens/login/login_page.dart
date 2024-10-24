@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     // TODO: implement initState
-    emailController.text = '@gmail.com';
+    emailController.text = 'barber@gmail.com';
     passwordController.text = '123456789';
     super.initState();
   }
@@ -77,7 +77,10 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushReplacement(
             // ignore: use_build_context_synchronously
             context,
-            MaterialPageRoute(builder: (context) => const BottomNavBarPage()),
+            MaterialPageRoute(
+                builder: (context) => BottomNavBarPage(
+                      email: emailController.text,
+                    )),
           );
         } else if (userType == 'Barbershop_Salon') {
           Navigator.pushReplacement(

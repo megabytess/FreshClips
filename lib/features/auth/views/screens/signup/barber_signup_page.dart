@@ -23,6 +23,7 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
   // text editing controllers
   final lastNameController = TextEditingController();
   final firstNameController = TextEditingController();
+  final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final phoneNumberController = TextEditingController();
@@ -34,6 +35,7 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
   void signupHairstylist() async {
     if (lastNameController.text.trim().isEmpty ||
         firstNameController.text.trim().isEmpty ||
+        usernameController.text.trim().isEmpty ||
         emailController.text.trim().isEmpty ||
         phoneNumberController.text.trim().isEmpty ||
         locationController.text.trim().isEmpty ||
@@ -99,12 +101,13 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
         await FirebaseFirestore.instance.collection('user').doc(userId).set({
           'lastName': lastNameController.text,
           'firstName': firstNameController.text,
+          'username': usernameController.text,
           'email': emailController.text,
           'phoneNumber': phoneNumberController.text,
           'location': locationController.text,
           'password': passwordController.text,
           'skills': skillsController.text,
-          'experience': yearsOfExperienceController.text,
+          'yearsOfExperience': yearsOfExperienceController.text,
           'imageUrl': imageUrl,
           'userType': "Hairstylist",
         });
@@ -248,7 +251,7 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Text(
-                'Sign Up to Showcase Your Skills as a Barber!',
+                'Sign Up to Showcase Your Skills as a Hairstylist!',
                 style: GoogleFonts.poppins(
                   fontSize: screenWidth * 0.05,
                   fontWeight: FontWeight.w600,
@@ -350,6 +353,43 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
                   ),
                 ],
               ),
+              TextFormField(
+                controller: usernameController,
+                style: GoogleFonts.poppins(
+                  fontSize: screenWidth * 0.04,
+                  color: const Color.fromARGB(255, 23, 23, 23),
+                ),
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  labelStyle: GoogleFonts.poppins(
+                    fontSize: screenWidth * 0.035,
+                    color: const Color.fromARGB(255, 186, 199, 206),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.02,
+                    horizontal: screenWidth * 0.03,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(255, 23, 23, 23),
+                    ),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(
+                        screenWidth * 0.03,
+                      ),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(255, 23, 23, 23),
+                    ),
+                    borderRadius: BorderRadius.circular(
+                      screenWidth * 0.03,
+                    ),
+                  ),
+                ),
+              ),
+              Gap(screenHeight * 0.01),
               TextFormField(
                 controller: emailController,
                 style: GoogleFonts.poppins(

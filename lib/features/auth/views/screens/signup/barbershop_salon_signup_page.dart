@@ -22,6 +22,7 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
 
   // text editing controllers
   final shopNameController = TextEditingController();
+  final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final phoneNumberController = TextEditingController();
@@ -31,6 +32,7 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
 
   void signupBarbershopSalon() async {
     if (shopNameController.text.trim().isEmpty ||
+        usernameController.text.trim().isEmpty ||
         emailController.text.trim().isEmpty ||
         phoneNumberController.text.trim().isEmpty ||
         locationController.text.trim().isEmpty ||
@@ -92,6 +94,7 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
         // Set the user data in Firestore
         await FirebaseFirestore.instance.collection('user').doc(userId).set({
           'shopName': shopNameController.text,
+          'username': usernameController.text,
           'email': emailController.text,
           'phoneNumber': phoneNumberController.text,
           'location': locationController.text,
@@ -294,6 +297,43 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
                   ),
                 ),
               ),
+              TextFormField(
+                controller: usernameController,
+                style: GoogleFonts.poppins(
+                  fontSize: screenWidth * 0.04,
+                  color: const Color.fromARGB(255, 23, 23, 23),
+                ),
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  labelStyle: GoogleFonts.poppins(
+                    fontSize: screenWidth * 0.035,
+                    color: const Color.fromARGB(255, 186, 199, 206),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.02,
+                    horizontal: screenWidth * 0.03,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(255, 23, 23, 23),
+                    ),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(
+                        screenWidth * 0.03,
+                      ),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(255, 23, 23, 23),
+                    ),
+                    borderRadius: BorderRadius.circular(
+                      screenWidth * 0.03,
+                    ),
+                  ),
+                ),
+              ),
+              Gap(screenHeight * 0.01),
               TextFormField(
                 controller: emailController,
                 style: GoogleFonts.poppins(
