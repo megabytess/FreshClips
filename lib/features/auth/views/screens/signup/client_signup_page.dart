@@ -208,7 +208,6 @@ class _ClientSignupPageState extends State<ClientSignupPage> {
             ),
           );
         } catch (e) {
-          // Handle general errors
           showDialog(
             // ignore: use_build_context_synchronously
             context: context,

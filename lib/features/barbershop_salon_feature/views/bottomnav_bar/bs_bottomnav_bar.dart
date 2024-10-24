@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appointment_page/screens/bs_appointment_page.dart';
-import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/bs_settings_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/settings_drawer/bs_settings_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/home_page/screens/bs_home_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/message_page/screens/bs_message_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_profile_page.dart';
@@ -24,7 +24,9 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
     const BSHomePage(),
     const BSAppointmentPage(),
     const BSMessagePage(),
-    const BSProfilePage(),
+    BSProfilePage(
+      isClient: true,
+    ),
   ];
 
   void _onItemTapped(int index) {
@@ -302,7 +304,7 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
               colorFilter: ColorFilter.mode(
                 _selectedIndex == 0
                     ? const Color.fromARGB(255, 189, 49, 71)
-                    : const Color.fromARGB(180, 23, 23, 23),
+                    : const Color.fromARGB(50, 23, 23, 23),
                 BlendMode.srcIn,
               ),
             ),
@@ -316,7 +318,7 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
               colorFilter: ColorFilter.mode(
                 _selectedIndex == 1
                     ? const Color.fromARGB(255, 189, 49, 71)
-                    : const Color.fromARGB(180, 23, 23, 23),
+                    : const Color.fromARGB(50, 23, 23, 23),
                 BlendMode.srcIn,
               ),
             ),
@@ -330,7 +332,7 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
               colorFilter: ColorFilter.mode(
                 _selectedIndex == 2
                     ? const Color.fromARGB(255, 189, 49, 71)
-                    : const Color.fromARGB(180, 23, 23, 23),
+                    : const Color.fromARGB(50, 23, 23, 23),
                 BlendMode.srcIn,
               ),
             ),
@@ -344,7 +346,7 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
               colorFilter: ColorFilter.mode(
                 _selectedIndex == 3
                     ? const Color.fromARGB(255, 189, 49, 71)
-                    : const Color.fromARGB(180, 23, 23, 23),
+                    : const Color.fromARGB(50, 23, 23, 23),
                 BlendMode.srcIn,
               ),
             ),
@@ -353,7 +355,7 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: const Color.fromARGB(255, 189, 49, 71),
-        unselectedItemColor: const Color.fromARGB(180, 23, 23, 23),
+        unselectedItemColor: const Color.fromARGB(50, 23, 23, 23),
         selectedLabelStyle: GoogleFonts.poppins(
           fontSize: screenWidth * 0.03,
           fontWeight: FontWeight.w400,

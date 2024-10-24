@@ -9,7 +9,9 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BSProfilePage extends StatefulWidget {
-  const BSProfilePage({super.key});
+  const BSProfilePage({super.key, required this.isClient});
+
+  final bool isClient;
 
   @override
   State<BSProfilePage> createState() => _BSProfilePageState();
@@ -131,6 +133,26 @@ class _BSProfilePageState extends State<BSProfilePage> {
                     ),
                   ),
                   Gap(screenHeight * 0.01),
+                  if (widget.isClient) // Client POV if true
+                    ElevatedButton(
+                      onPressed: () {
+                        // Add your button action here
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 189, 49, 71),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                      ),
+                      child: Text(
+                        'Book Now',
+                        style: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.035,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ],

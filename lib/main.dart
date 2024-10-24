@@ -21,7 +21,9 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       title: 'FreshClips',
       debugShowCheckedModeBanner: false,
-      home: LandingPage(),
+      home:
+          // BookingTemplatePage(),
+          LandingPage(),
     );
   }
 }

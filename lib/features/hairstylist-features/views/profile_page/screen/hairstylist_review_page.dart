@@ -50,7 +50,7 @@ class _ReviewPageState extends State<HairstylistReviewPage> {
                   width: screenWidth * 0.12,
                   height: screenWidth * 0.12,
                   decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 186, 199, 206),
+                    color: Colors.transparent,
                   ),
                   child: Image.asset(
                     'assets/images/icons/launcher_icon.png',
