@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/settings_drawer/manage_availability/bs_manage_availability_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/settings_drawer/profile_details/bs_profile_details_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/widgets/bs_build_settings_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BSSettingsPage extends StatelessWidget {
-  const BSSettingsPage({super.key});
+  const BSSettingsPage({super.key, required this.email});
+  final String email;
 
   @override
   Widget build(BuildContext context) {
@@ -30,17 +33,16 @@ class BSSettingsPage extends StatelessWidget {
             screenWidth,
             screenHeight,
             'Profile details',
-            Icons.person_rounded,
             Icons.arrow_forward_ios,
             onPressed: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => ProfileDetailsPage(
-              //       email: email,
-              //     ),
-              //   ),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BSProfileDetailsPage(
+                    email: email,
+                  ),
+                ),
+              );
             },
           ),
           const Divider(
@@ -54,37 +56,14 @@ class BSSettingsPage extends StatelessWidget {
             screenWidth,
             screenHeight,
             'Manage availability',
-            Icons.calendar_month_rounded,
             Icons.arrow_forward_ios,
             onPressed: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => ManageAvailabilityPage(email: email),
-              //   ),
-              // );
-            },
-          ),
-          const Divider(
-            color: Color.fromARGB(50, 189, 189, 189),
-            thickness: 1.0,
-            indent: 20.0,
-            endIndent: 20.0,
-          ),
-          buildSettingButtonBS(
-            context,
-            screenWidth,
-            screenHeight,
-            'Booking system',
-            Icons.book_online_rounded,
-            Icons.arrow_forward_ios,
-            onPressed: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => HairstylistBookingPage(),
-              //   ),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BSManageAvailabilityPage(email: email),
+                ),
+              );
             },
           ),
         ],

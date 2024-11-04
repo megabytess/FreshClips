@@ -26,7 +26,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
   final HairstylistController hairstylistController = HairstylistController();
   late final WorkingHoursController workingHoursController =
       WorkingHoursController(email: widget.email, context: context);
-  List<Map<String, String>> availabilityData = [];
+  List<Map<String, String?>> availabilityData = [];
   bool isLoading = true;
   String? selectedStoreHours;
 
@@ -75,12 +75,13 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
               .map((workingHour) => {
                     'day': workingHour.day,
                     'status': workingHour.status,
+                    'openingTime': workingHour.openingTime,
+                    'closingTime': workingHour.closingTime,
                   })
               .toList();
 
           if (availabilityData.isNotEmpty) {
-            selectedStoreHours =
-                availabilityData[0]['status']; // Default to the first option
+            selectedStoreHours = availabilityData[0]['status'];
           }
 
           isLoading = false;
@@ -290,10 +291,33 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                                       child: ListView.builder(
                                         itemCount: availabilityData.length,
                                         itemBuilder: (context, index) {
-                                          final hours = availabilityData[index];
+                                          // Retrieve the WorkingHours object for the current day
+                                          Map<String, String> dayData =
+                                              availabilityData[index]
+                                                  .cast<String, String>();
+
+                                          // Get the day, status, opening time, and closing time values
+                                          final String day = dayData['day'] ??
+                                              'No day specified';
+                                          final String status =
+                                              dayData['status'] ??
+                                                  'Status not available';
+                                          final String openingTime =
+                                              dayData['openingTime']
+                                                          ?.isNotEmpty ==
+                                                      true
+                                                  ? dayData['openingTime']!
+                                                  : 'No opening time specified';
+                                          final String closingTime =
+                                              dayData['closingTime']
+                                                          ?.isNotEmpty ==
+                                                      true
+                                                  ? dayData['closingTime']!
+                                                  : 'No closing time specified';
+
                                           return ListTile(
                                             title: Text(
-                                              hours['day']!,
+                                              day,
                                               style: GoogleFonts.poppins(
                                                 fontSize: screenWidth * 0.035,
                                                 fontWeight: FontWeight.w400,
@@ -302,7 +326,8 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                                               ),
                                             ),
                                             subtitle: Text(
-                                              hours['status']!,
+                                              // Display status and times, with a user-friendly message if times are empty
+                                              '$status - $openingTime | $closingTime',
                                               style: GoogleFonts.poppins(
                                                 fontSize: screenWidth * 0.035,
                                                 fontWeight: FontWeight.w600,
@@ -310,8 +335,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                                                     255, 18, 18, 18),
                                               ),
                                             ),
-                                            // Remove the onTap to make it non-clickable
-                                            enabled: false,
+                                            enabled: false, // Non-clickable
                                           );
                                         },
                                       ),

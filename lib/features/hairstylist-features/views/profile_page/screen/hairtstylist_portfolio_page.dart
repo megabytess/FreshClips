@@ -144,7 +144,7 @@ class _HairstylistPortfolioPageState extends State<HairstylistPortfolioPage> {
                 width: screenWidth * 0.3,
                 height: screenWidth * 0.12,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 189, 49, 71),
+                  color: const Color.fromARGB(255, 45, 65, 69),
                   borderRadius: BorderRadius.circular(screenWidth * 0.04),
                   boxShadow: [
                     BoxShadow(

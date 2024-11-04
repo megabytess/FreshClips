@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Service {
   final String id;
-  final String hairstylistEmail;
+  final String userEmail;
   final String serviceName;
   final String serviceDescription;
   final double price;
@@ -10,7 +10,7 @@ class Service {
 
   Service({
     required this.id,
-    required this.hairstylistEmail,
+    required this.userEmail,
     required this.serviceName,
     required this.serviceDescription,
     required this.price,
@@ -20,7 +20,7 @@ class Service {
   factory Service.fromDocument(DocumentSnapshot doc) {
     return Service(
       id: doc.id,
-      hairstylistEmail: doc['hairstylistEmail'],
+      userEmail: doc['userEmail'],
       serviceName: doc['serviceName'],
       serviceDescription: doc['serviceDescription'],
       price: doc['price'],

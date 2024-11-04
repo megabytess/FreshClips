@@ -10,7 +10,9 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BSBottomNavBarPage extends StatefulWidget {
-  const BSBottomNavBarPage({super.key});
+  const BSBottomNavBarPage({super.key, required this.email});
+
+  final String email;
 
   @override
   State<BSBottomNavBarPage> createState() => _BottomNavBarPageState();
@@ -20,14 +22,21 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
   int _selectedIndex = 0;
 
   // List of screens for each tab
-  final List<Widget> _pages = [
-    const BSHomePage(),
-    const BSAppointmentPage(),
-    const BSMessagePage(),
-    BSProfilePage(
-      isClient: true,
-    ),
-  ];
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      const BSHomePage(),
+      const BSAppointmentPage(),
+      const BSMessagePage(),
+      BSProfilePage(
+        isClient: true,
+        email: widget.email,
+      ),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -248,7 +257,9 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const BSSettingsPage(),
+                    builder: (context) => BSSettingsPage(
+                      email: widget.email,
+                    ),
                   ),
                 );
               },

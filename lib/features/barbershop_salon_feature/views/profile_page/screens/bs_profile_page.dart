@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tabbar_page/flutter_tabbar_page.dart';
+import 'package:freshclips_capstone/core/booking_system/01_booking_template_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_barbers_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_info_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_reviews_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_timeline_page.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/controllers/working_hours_controller.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/models/working_hours_model.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BSProfilePage extends StatefulWidget {
-  const BSProfilePage({super.key, required this.isClient});
+  const BSProfilePage({super.key, required this.isClient, required this.email});
 
   final bool isClient;
+  final String email;
 
   @override
   State<BSProfilePage> createState() => _BSProfilePageState();
@@ -19,7 +24,14 @@ class BSProfilePage extends StatefulWidget {
 
 class _BSProfilePageState extends State<BSProfilePage> {
   List<PageTabItemModel> listPages = <PageTabItemModel>[];
-  final TabPageController _controller = TabPageController();
+  final TabPageController tabPageController = TabPageController();
+  final BarbershopSalonController barbershopsalonController =
+      BarbershopSalonController();
+  late final WorkingHoursController workingHoursController =
+      WorkingHoursController(email: widget.email, context: context);
+  List<Map<String, String?>> availabilityData = [];
+  bool isLoading = true;
+  String? selectedStoreHours;
 
   @override
   void initState() {
@@ -27,7 +39,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
     listPages.add(
       PageTabItemModel(
         title: "Info",
-        page: const BSInfoPage(),
+        page: BSInfoPage(email: widget.email),
       ),
     );
     listPages.add(
@@ -45,9 +57,53 @@ class _BSProfilePageState extends State<BSProfilePage> {
     listPages.add(
       PageTabItemModel(
         title: "Barbers",
-        page: const BSBarbersPage(),
+        page: BSBarbersPage(
+          userEmail: widget.email,
+        ),
       ),
     );
+    barbershopsalonController.getBarbershopSalon(widget.email);
+    barbershopsalonController.loadStatus();
+
+    // Fetch the working hours data
+    workingHoursController;
+    fetchWorkingHours();
+  }
+
+  void fetchWorkingHours() async {
+    try {
+      // Call the fetchWorkingHours method from your controller
+      List<WorkingHours> workingHoursList =
+          await workingHoursController.fetchWorkingHours(widget.email);
+
+      if (workingHoursList.isNotEmpty) {
+        setState(() {
+          availabilityData = workingHoursList
+              .map((workingHour) => {
+                    'day': workingHour.day,
+                    'status': workingHour.status,
+                    'openingTime': workingHour.openingTime,
+                    'closingTime': workingHour.closingTime,
+                  })
+              .toList();
+
+          if (availabilityData.isNotEmpty) {
+            selectedStoreHours = availabilityData[0]['status'];
+          }
+
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false; // No data available
+        });
+      }
+    } catch (e) {
+      print('Error fetching working hours: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -55,171 +111,402 @@ class _BSProfilePageState extends State<BSProfilePage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 248, 248, 248),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth * 0.03,
-                  vertical: screenHeight * 0.01,
-                ),
-                child: ClipOval(
-                  // Profile Picture
-                  child: Container(
-                    width: screenWidth * 0.25,
-                    height: screenWidth * 0.25,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 186, 199, 206),
-                    ),
-                    child: Image.asset(
-                      'assets/images/icons/launcher_icon.png',
-                      width: screenWidth * 0.2,
-                      height: screenWidth * 0.2,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
+    return AnimatedBuilder(
+      animation: barbershopsalonController,
+      builder: (context, snapshot) {
+        if (barbershopsalonController.isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Color.fromARGB(255, 189, 49, 71),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+          );
+        }
+
+        // Null check for barbershop salon data
+        final barbershopsalon = barbershopsalonController.barbershopsalon;
+        if (barbershopsalon == null) {
+          return const Center(
+            child: Text('No barbershop salon data available'),
+          );
+        }
+
+        return Scaffold(
+          backgroundColor: const Color.fromARGB(255, 248, 248, 248),
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Text(
-                    // Profile Name
-                    'Sample Barbershop',
-                    style: GoogleFonts.poppins(
-                      color: const Color.fromARGB(255, 18, 18, 18),
-                      fontSize: screenWidth * 0.05,
-                      fontWeight: FontWeight.w600,
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.03,
+                      vertical: screenHeight * 0.01,
+                    ),
+                    child: ClipOval(
+                      child: Container(
+                        width: screenWidth * 0.25,
+                        height: screenWidth * 0.25,
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 186, 199, 206),
+                        ),
+                        child: (barbershopsalonController
+                                        .barbershopsalon?.imageUrl !=
+                                    null &&
+                                barbershopsalonController
+                                    .barbershopsalon!.imageUrl.isNotEmpty)
+                            ? Image.network(
+                                barbershopsalonController
+                                    .barbershopsalon!.imageUrl,
+                                fit: BoxFit.cover,
+                              )
+                            : const Icon(Icons.person, size: 50),
+                      ),
                     ),
                   ),
-                  Row(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        // Profile Rating
-                        '4.8',
+                        barbershopsalonController.barbershopsalon!.shopName,
                         style: GoogleFonts.poppins(
                           color: const Color.fromARGB(255, 18, 18, 18),
-                          fontSize: screenWidth * 0.035,
+                          fontSize: screenWidth * 0.045,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Gap(screenHeight * 0.002),
-                      SvgPicture.asset(
-                        'assets/images/profile_page/star.svg',
-                        width: screenWidth * 0.045,
-                        height: screenWidth * 0.045,
+                      Row(
+                        children: [
+                          Text(
+                            // Profile Rating
+                            '4.8',
+                            style: GoogleFonts.poppins(
+                              color: const Color.fromARGB(255, 18, 18, 18),
+                              fontSize: screenWidth * 0.035,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Gap(screenHeight * 0.002),
+                          SvgPicture.asset(
+                            'assets/images/profile_page/star.svg',
+                            width: screenWidth * 0.045,
+                            height: screenWidth * 0.045,
+                          ),
+                        ],
                       ),
+                      Gap(screenHeight * 0.001),
+                      GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: screenHeight * 0.02,
+                                  horizontal: screenWidth * 0.03,
+                                ),
+                                height: screenHeight * 0.3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Select Status',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: screenWidth * 0.04,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const Divider(),
+                                    ListTile(
+                                      title: Text(
+                                        'SHOP OPEN',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: screenWidth * 0.035,
+                                          fontWeight: FontWeight.w600,
+                                          color: const Color.fromARGB(
+                                              255, 18, 18, 18),
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        barbershopsalonController
+                                            .updateStatus('SHOP OPEN');
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    ListTile(
+                                      title: Text(
+                                        'SHOP CLOSED',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: screenWidth * 0.035,
+                                          fontWeight: FontWeight.w600,
+                                          color: const Color.fromARGB(
+                                              255, 18, 18, 18),
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        barbershopsalonController
+                                            .updateStatus('SHOP CLOSED');
+                                        Navigator.pop(
+                                            context); // Close the modal
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              barbershopsalonController.selectedStatus,
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.032,
+                                fontWeight: FontWeight.w700,
+                                color:
+                                    barbershopsalonController.selectedStatus ==
+                                            'SHOP OPEN'
+                                        ? Colors.green
+                                        : Colors.red,
+                              ),
+                            ),
+                            // const Icon(Icons.arrow_drop_down),
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: screenHeight * 0.02,
+                                  horizontal: screenWidth * 0.05,
+                                ),
+                                height: screenHeight * 0.4,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Shop Hours",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: screenWidth * 0.04,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const Divider(),
+                                    Expanded(
+                                      child: ListView.builder(
+                                        itemCount: availabilityData.length,
+                                        itemBuilder: (context, index) {
+                                          // Retrieve the WorkingHours object for the current day
+                                          Map<String, String> dayData =
+                                              availabilityData[index]
+                                                  .cast<String, String>();
+
+                                          // Get the day, status, opening time, and closing time values
+                                          final String day = dayData['day'] ??
+                                              'No day specified';
+                                          final String status =
+                                              dayData['status'] ??
+                                                  'Status not available';
+                                          final String openingTime =
+                                              dayData['openingTime']
+                                                          ?.isNotEmpty ==
+                                                      true
+                                                  ? dayData['openingTime']!
+                                                  : 'No opening time specified';
+                                          final String closingTime =
+                                              dayData['closingTime']
+                                                          ?.isNotEmpty ==
+                                                      true
+                                                  ? dayData['closingTime']!
+                                                  : 'No closing time specified';
+
+                                          return ListTile(
+                                            title: Text(
+                                              day,
+                                              style: GoogleFonts.poppins(
+                                                fontSize: screenWidth * 0.035,
+                                                fontWeight: FontWeight.w400,
+                                                color: const Color.fromARGB(
+                                                    255, 18, 18, 18),
+                                              ),
+                                            ),
+                                            subtitle: Text(
+                                              // Display status and times, with a user-friendly message if times are empty
+                                              '$status | $openingTime - $closingTime',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: screenWidth * 0.035,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color.fromARGB(
+                                                    255, 18, 18, 18),
+                                              ),
+                                            ),
+                                            enabled: false, // Non-clickable
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Shop availability',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.035,
+                                fontWeight: FontWeight.w400,
+                                color: const Color.fromARGB(255, 18, 18, 18),
+                              ),
+                            ),
+                            const Icon(Icons.arrow_drop_down),
+                          ],
+                        ),
+                      ),
+                      Gap(screenHeight * 0.01),
+                      if (widget.isClient) // Client POV if true
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: screenHeight * 0.05,
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  // Add your button action here
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(
+                                    color: Color.fromARGB(255, 48, 65, 59),
+                                    width: 1.0,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Message',
+                                  style: GoogleFonts.poppins(
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            0.035,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        const Color.fromARGB(255, 48, 65, 59),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Gap(screenWidth * 0.03),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BookingTemplatePage(),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 189, 49, 71),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0, vertical: 12.0),
+                              ),
+                              child: Text(
+                                'Book now',
+                                style: GoogleFonts.poppins(
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.035,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                     ],
                   ),
-                  Text(
-                    'OPEN NOW', // Status (Maybe change to open/close.. or add a switch)
-                    style: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.03,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.green,
-                    ),
-                  ),
-                  Text(
-                    'Mon-Fri  9:00 AM - 6:00 PM', // Working Hours
-                    style: GoogleFonts.poppins(
-                      color: const Color.fromARGB(255, 18, 18, 18),
-                      fontSize: screenWidth * 0.03,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Gap(screenHeight * 0.01),
-                  if (widget.isClient) // Client POV if true
-                    ElevatedButton(
-                      onPressed: () {
-                        // Add your button action here
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 189, 49, 71),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                      ),
-                      child: Text(
-                        'Book Now',
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.035,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
                 ],
+              ),
+              Gap(
+                screenHeight * 0.01,
+              ),
+              TabBarPage(
+                controller: tabPageController,
+                pages: listPages,
+                isSwipable: true,
+                tabBackgroundColor: Colors.transparent,
+                tabitemBuilder: (context, index) {
+                  return InkWell(
+                    onTap: () {
+                      tabPageController.onTabTap(index);
+                    },
+                    child: SizedBox(
+                      width:
+                          MediaQuery.of(context).size.width / listPages.length,
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          Center(
+                            child: Text(
+                              listPages[index].title ?? "",
+                              style: GoogleFonts.poppins(
+                                  fontWeight:
+                                      tabPageController.currentIndex == index
+                                          ? FontWeight.w700
+                                          : FontWeight.w500,
+                                  color: tabPageController.currentIndex == index
+                                      ? const Color.fromARGB(255, 18, 18, 18)
+                                      : const Color.fromARGB(30, 18, 18, 18),
+                                  fontSize: screenWidth * 0.035),
+                            ),
+                          ),
+                          Container(
+                            // Tab Indicator
+                            height: 4,
+                            width: screenWidth * 0.18,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(screenWidth * 0.10),
+                              gradient: tabPageController.currentIndex == index
+                                  ? const LinearGradient(
+                                      colors: [
+                                        Color.fromARGB(255, 189, 49, 71),
+                                        Color.fromARGB(255, 255, 106, 0),
+                                      ],
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight,
+                                    )
+                                  : const LinearGradient(
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.transparent
+                                      ],
+                                    ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),
-          Gap(
-            screenHeight * 0.01,
-          ),
-          TabBarPage(
-            controller: _controller,
-            pages: listPages,
-            isSwipable: true,
-            tabBackgroundColor: Colors.transparent,
-            tabitemBuilder: (context, index) {
-              return InkWell(
-                onTap: () {
-                  _controller.onTabTap(index);
-                },
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width / listPages.length,
-                  child: Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      Center(
-                        child: Text(
-                          listPages[index].title ?? "",
-                          style: GoogleFonts.poppins(
-                              fontWeight: _controller.currentIndex == index
-                                  ? FontWeight.w700
-                                  : FontWeight.w500,
-                              color: _controller.currentIndex == index
-                                  ? const Color.fromARGB(255, 18, 18, 18)
-                                  : const Color.fromARGB(30, 18, 18, 18),
-                              fontSize: screenWidth * 0.035),
-                        ),
-                      ),
-                      Container(
-                        // Tab Indicator
-                        height: 4,
-                        width: screenWidth * 0.18,
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(screenWidth * 0.10),
-                          gradient: _controller.currentIndex == index
-                              ? const LinearGradient(
-                                  colors: [
-                                    Color.fromARGB(255, 189, 49, 71),
-                                    Color.fromARGB(255, 255, 106, 0),
-                                  ],
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                )
-                              : const LinearGradient(
-                                  colors: [
-                                    Colors.transparent,
-                                    Colors.transparent
-                                  ],
-                                ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

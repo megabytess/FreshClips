@@ -6,15 +6,16 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-class ManageAvailabilityPage extends StatefulWidget {
-  const ManageAvailabilityPage({super.key, required this.email});
+class BSManageAvailabilityPage extends StatefulWidget {
+  const BSManageAvailabilityPage({super.key, required this.email});
   final String email;
 
   @override
-  State<ManageAvailabilityPage> createState() => _ManageAvailabilityPageState();
+  State<BSManageAvailabilityPage> createState() =>
+      _ManageAvailabilityPageState();
 }
 
-class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
+class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
   List<Map<String, dynamic>> availabilityData = [];
   bool isLoading = true;
 

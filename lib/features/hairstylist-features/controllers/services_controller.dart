@@ -12,13 +12,12 @@ class ServiceController with ChangeNotifier {
   }
 
   // Fetch services for a specific hairstylist from Firestore
-  Future<List<Service>> fetchServicesForHairstylist(
-      String hairstylistEmail) async {
+  Future<List<Service>> fetchServicesForUsers(String userEmail) async {
     _setLoading(true);
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('services')
-          .where('hairstylistEmail', isEqualTo: hairstylistEmail)
+          .where('userEmail', isEqualTo: userEmail)
           .get();
 
       services =
@@ -34,7 +33,7 @@ class ServiceController with ChangeNotifier {
 
   // Add a new service to Firestore
   Future<void> addService({
-    required String hairstylistEmail,
+    required String userEmail,
     required String serviceName,
     required String serviceDescription,
     required double price,
@@ -47,9 +46,9 @@ class ServiceController with ChangeNotifier {
         'serviceDescription': serviceDescription,
         'price': price,
         'duration': duration,
-        'hairstylistEmail': hairstylistEmail,
+        'userEmail': userEmail,
       });
-      await fetchServicesForHairstylist(hairstylistEmail);
+      await fetchServicesForUsers(userEmail);
     } catch (e) {
       print('Error adding service: $e');
     } finally {
@@ -62,7 +61,7 @@ class ServiceController with ChangeNotifier {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('services')
-          .where('hairstylistEmail', isEqualTo: updatedService.hairstylistEmail)
+          .where('userEmail', isEqualTo: updatedService.userEmail)
           .get();
       if (querySnapshot.docs.isEmpty) {
         print('no services found');
@@ -76,7 +75,7 @@ class ServiceController with ChangeNotifier {
           'duration': updatedService.duration,
         });
       }
-      await fetchServicesForHairstylist(updatedService.hairstylistEmail);
+      await fetchServicesForUsers(updatedService.userEmail);
     } catch (e) {
       print('Error updating service: $e');
     }
@@ -90,7 +89,7 @@ class ServiceController with ChangeNotifier {
           .collection('services')
           .doc(serviceId)
           .delete();
-      await fetchServicesForHairstylist(hairstylistId);
+      await fetchServicesForUsers(hairstylistId);
     } catch (e) {
       print('Error deleting service: $e');
     } finally {

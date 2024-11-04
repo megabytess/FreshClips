@@ -33,7 +33,6 @@ class SettingsPage extends StatelessWidget {
             screenWidth,
             screenHeight,
             'Profile details',
-            Icons.person_rounded,
             Icons.arrow_forward_ios,
             onPressed: () {
               Navigator.push(
@@ -57,7 +56,6 @@ class SettingsPage extends StatelessWidget {
             screenWidth,
             screenHeight,
             'Manage availability',
-            Icons.calendar_month_rounded,
             Icons.arrow_forward_ios,
             onPressed: () {
               Navigator.push(
