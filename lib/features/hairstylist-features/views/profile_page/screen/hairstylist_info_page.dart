@@ -18,15 +18,14 @@ class HairstylistInfoPage extends StatefulWidget {
 }
 
 HairstylistController hairstylistController = HairstylistController();
+ServiceController serviceController = ServiceController();
 
 class _InfoPageState extends State<HairstylistInfoPage> {
-  ServiceController serviceController = ServiceController();
-
   @override
   void initState() {
     super.initState();
     hairstylistController.getHairstylist(widget.email);
-    serviceController.fetchServicesForHairstylist(widget.email);
+    serviceController.fetchServicesForUsers(widget.email);
   }
 
   @override
@@ -78,7 +77,7 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                       child: Text(
                         '@${hairstylistController.hairstylist!.username}',
                         style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.03,
+                          fontSize: screenWidth * 0.035,
                           fontWeight: FontWeight.w600,
                           color: const Color.fromARGB(255, 18, 18, 18),
                         ),
@@ -86,7 +85,7 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                     ),
                   ],
                 ),
-                Gap(screenHeight * 0.002),
+                Gap(screenHeight * 0.01),
                 Row(
                   children: [
                     Padding(
@@ -110,7 +109,7 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                       child: Text(
                         hairstylistController.hairstylist!.email,
                         style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.03,
+                          fontSize: screenWidth * 0.035,
                           fontWeight: FontWeight.w600,
                           color: const Color.fromARGB(255, 18, 18, 18),
                         ),
@@ -118,7 +117,7 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                     ),
                   ],
                 ),
-                Gap(screenHeight * 0.002),
+                Gap(screenHeight * 0.01),
                 Row(
                   children: [
                     Padding(
@@ -142,7 +141,7 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                       child: Text(
                         hairstylistController.hairstylist!.location,
                         style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.03,
+                          fontSize: screenWidth * 0.035,
                           fontWeight: FontWeight.w600,
                           color: const Color.fromARGB(255, 18, 18, 18),
                         ),
@@ -150,7 +149,7 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                     ),
                   ],
                 ),
-                Gap(screenHeight * 0.002),
+                Gap(screenHeight * 0.01),
                 Row(
                   children: [
                     Padding(
@@ -174,7 +173,7 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                       child: Text(
                         hairstylistController.hairstylist!.skills,
                         style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.03,
+                          fontSize: screenWidth * 0.035,
                           fontWeight: FontWeight.w600,
                           color: const Color.fromARGB(255, 18, 18, 18),
                         ),
@@ -182,7 +181,7 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                     ),
                   ],
                 ),
-                Gap(screenHeight * 0.002),
+                Gap(screenHeight * 0.01),
                 Row(
                   children: [
                     Padding(
@@ -206,7 +205,7 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                       child: Text(
                         '${hairstylistController.hairstylist!.yearsOfExperience} years',
                         style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.03,
+                          fontSize: screenWidth * 0.034,
                           fontWeight: FontWeight.w600,
                           color: const Color.fromARGB(255, 18, 18, 18),
                         ),
@@ -246,8 +245,7 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                                   // Refresh the services after adding a new service
                                   setState(() {
                                     serviceController
-                                        .fetchServicesForHairstylist(
-                                            widget.email);
+                                        .fetchServicesForUsers(widget.email);
                                   });
                                 });
                               },
@@ -379,7 +377,7 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   EditServicePage(
-                                                hairstylistEmail: widget.email,
+                                                userEmail: widget.email,
                                                 service: service,
                                               ),
                                             ),
@@ -387,7 +385,7 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                                             // Refresh the services after editing a service
                                             setState(() {
                                               serviceController
-                                                  .fetchServicesForHairstylist(
+                                                  .fetchServicesForUsers(
                                                       widget.email);
                                             });
                                           });
@@ -397,13 +395,13 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                                         icon: const Icon(Icons.delete),
                                         onPressed: () {
                                           serviceController
-                                              .deleteService(service.id,
-                                                  service.hairstylistEmail)
+                                              .deleteService(
+                                                  service.id, service.userEmail)
                                               .then((_) {
                                             // Refresh the services after deletion
                                             setState(() {
                                               serviceController
-                                                  .fetchServicesForHairstylist(
+                                                  .fetchServicesForUsers(
                                                       widget.email);
                                             });
                                           });

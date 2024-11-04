@@ -118,7 +118,7 @@ class _AddServicePageState extends State<AddServicePage> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         serviceController.addService(
-                          hairstylistEmail: widget.hairstylistEmail,
+                          userEmail: widget.hairstylistEmail,
                           serviceName: serviceName,
                           serviceDescription: serviceDescription,
                           price: price,

@@ -6,8 +6,8 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ServicesPage extends StatefulWidget {
-  const ServicesPage({super.key, required this.hairstylistEmail});
-  final String hairstylistEmail;
+  const ServicesPage({super.key, required this.userEmail});
+  final String userEmail;
 
   @override
   State<ServicesPage> createState() => _ServicesPageState();
@@ -20,7 +20,7 @@ class _ServicesPageState extends State<ServicesPage> {
   void initState() {
     super.initState();
 
-    serviceController.fetchServicesForHairstylist(widget.hairstylistEmail);
+    serviceController.fetchServicesForUsers(widget.userEmail);
   }
 
   @override
@@ -146,7 +146,7 @@ class _ServicesPageState extends State<ServicesPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => EditServicePage(
-                                    hairstylistEmail: widget.hairstylistEmail,
+                                    userEmail: widget.userEmail,
                                     service: service,
                                   ),
                                 ),
@@ -157,13 +157,12 @@ class _ServicesPageState extends State<ServicesPage> {
                             icon: const Icon(Icons.delete),
                             onPressed: () {
                               serviceController
-                                  .deleteService(
-                                      service.id, service.hairstylistEmail)
+                                  .deleteService(service.id, service.userEmail)
                                   .then((_) {
                                 // Refresh the services after deletion
                                 setState(() {
-                                  serviceController.fetchServicesForHairstylist(
-                                      widget.hairstylistEmail);
+                                  serviceController
+                                      .fetchServicesForUsers(widget.userEmail);
                                 });
                               });
                             },
@@ -185,7 +184,7 @@ class _ServicesPageState extends State<ServicesPage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => AddServicePage(
-                      hairstylistEmail: widget.hairstylistEmail,
+                      hairstylistEmail: widget.userEmail,
                     ),
                   ),
                 );

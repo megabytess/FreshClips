@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/services_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/models/services_model.dart';
+import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EditServicePage extends StatefulWidget {
   const EditServicePage({
     super.key,
     required this.service,
-    required this.hairstylistEmail,
+    required this.userEmail,
   });
   final Service service;
-  final String hairstylistEmail;
+  final String userEmail;
 
   @override
   State<EditServicePage> createState() => _EditServicePageState();
@@ -72,7 +73,7 @@ class _EditServicePageState extends State<EditServicePage> {
                   serviceName = value;
                 },
               ),
-              SizedBox(height: screenHeight * 0.02),
+              Gap(screenHeight * 0.02),
               TextFormField(
                 initialValue: serviceDescription,
                 decoration: InputDecoration(
@@ -88,7 +89,7 @@ class _EditServicePageState extends State<EditServicePage> {
                   serviceDescription = value;
                 },
               ),
-              SizedBox(height: screenHeight * 0.02),
+              Gap(screenHeight * 0.02),
               TextFormField(
                 initialValue: price.toString(),
                 decoration: InputDecoration(
@@ -105,7 +106,7 @@ class _EditServicePageState extends State<EditServicePage> {
                   price = double.parse(value);
                 },
               ),
-              SizedBox(height: screenHeight * 0.02),
+              Gap(screenHeight * 0.02),
               TextFormField(
                 initialValue: duration.toString(),
                 decoration: InputDecoration(
@@ -122,7 +123,7 @@ class _EditServicePageState extends State<EditServicePage> {
                   duration = int.parse(value);
                 },
               ),
-              SizedBox(height: screenHeight * 0.04),
+              Gap(screenHeight * 0.04),
               SizedBox(
                 height: screenHeight * 0.07,
                 width: double.infinity,
@@ -135,7 +136,7 @@ class _EditServicePageState extends State<EditServicePage> {
                         serviceDescription: serviceDescription,
                         price: price,
                         duration: duration,
-                        hairstylistEmail: widget.hairstylistEmail,
+                        userEmail: widget.userEmail,
                       );
                       serviceController.updateService(updatedService);
                       Navigator.pop(context);

@@ -1,23 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/models/working_hours_model.dart';
-import 'package:intl/intl.dart';
 
-class WorkingHoursController extends ChangeNotifier {
+class BSAvailabilityController extends ChangeNotifier {
   // Method to set loading state
   void setLoading(bool value) {
     isLoading = value;
     notifyListeners();
   }
 
-  // Placeholder for availability status
-  Map<DateTime, Map<String, String>> availabilityStatus = {};
-
   bool isLoading = false;
   final String email;
   final BuildContext context;
 
-  WorkingHoursController({required this.email, required this.context});
+  BSAvailabilityController({required this.email, required this.context});
 
   // Fetch existing working hours from Firestore
   Future<List<WorkingHours>> fetchWorkingHours(String email) async {
@@ -104,7 +100,6 @@ class WorkingHoursController extends ChangeNotifier {
     }
   }
 
-  // Method to update working hours in Firestore
   Future<void> updateWorkingHours(String email, String day, String status,
       String openingTime, String closingTime) async {
     try {
@@ -147,7 +142,7 @@ class WorkingHoursController extends ChangeNotifier {
 
       // Find the document where the email matches
       final docSnapshot = await firestore
-          .collection('availability')
+          .collection('bs_availability')
           .where('email', isEqualTo: email)
           .get();
 
@@ -192,55 +187,4 @@ class WorkingHoursController extends ChangeNotifier {
       initialTime: initialTime,
     );
   }
-
-  WorkingHours dateTimeToWorkingHours(DateTime date) {
-    String formattedDay = DateFormat('EEEE, MMMM d, yyyy').format(date);
-    return WorkingHours(
-      day: formattedDay,
-      status: availabilityStatus[date]?['status'] ?? 'Shop Open',
-      openingTime: availabilityStatus[date]?['openingTime'] ?? 'Not Set',
-      closingTime: availabilityStatus[date]?['closingTime'] ?? 'Not Set',
-    );
-  }
 }
-
-
-
-
-// // Edit working hours in Firestore
-//   Future<void> editUserAvailability({
-//     required String email,
-//     required String day,
-//     required String status,
-//     required String openingTime,
-//     required String closingTime,
-//   }) async {
-//     try {
-//       // Fetch the document for the specific user based on email
-//       final querySnapshot = await FirebaseFirestore.instance
-//           .collection('availability')
-//           .where('email', isEqualTo: email)
-//           .limit(1) // Only fetch one document
-//           .get();
-
-//       // Check if the document exists
-//       if (querySnapshot.docs.isNotEmpty) {
-//         final docRef = querySnapshot.docs.first.reference;
-
-//         // Update working hours for the specified day
-//         await docRef.update({
-//           'workingHours.$day': {
-//             'status': status,
-//             'openingTime': openingTime,
-//             'closingTime': closingTime,
-//           },
-//         });
-
-//         print('Working hours updated successfully');
-//       } else {
-//         print('Error: No availability document found for email $email');
-//       }
-//     } catch (e) {
-//       print('Error updating working hours in Firestore: $e');
-//     }
-//   }

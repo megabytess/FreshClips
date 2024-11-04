@@ -7,7 +7,6 @@ Widget buildSettingButton(
   double screenWidth,
   double screenHeight,
   String title,
-  IconData leadingIcon,
   IconData trailingIcon, {
   required VoidCallback onPressed,
 }) {
@@ -18,12 +17,6 @@ Widget buildSettingButton(
     ),
     title: Row(
       children: [
-        Icon(
-          leadingIcon,
-          size: screenWidth * 0.075,
-          color: const Color.fromARGB(255, 48, 65, 69),
-        ),
-        SizedBox(width: screenWidth * 0.03),
         Text(
           title,
           style: GoogleFonts.poppins(
