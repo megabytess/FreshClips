@@ -23,6 +23,7 @@ class _ClientSignupPageState extends State<ClientSignupPage> {
   // text editing controllers
   final lastNameController = TextEditingController();
   final firstNameController = TextEditingController();
+  final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final phoneNumberController = TextEditingController();
@@ -37,15 +38,14 @@ class _ClientSignupPageState extends State<ClientSignupPage> {
     void signupClient() async {
       if (lastNameController.text.trim().isEmpty ||
           firstNameController.text.trim().isEmpty ||
+          usernameController.text.trim().isEmpty ||
           emailController.text.trim().isEmpty ||
           phoneNumberController.text.trim().isEmpty ||
           locationController.text.trim().isEmpty ||
           passwordController.text.trim().isEmpty ||
           selectUserImage == null ||
           !emailController.text.contains('@') ||
-          !emailController.text.contains('.com') ||
-          !RegExp(r'^[a-zA-Z]+$').hasMatch(firstNameController.text) ||
-          !RegExp(r'^[a-zA-Z]+$').hasMatch(lastNameController.text)) {
+          !emailController.text.contains('.com')) {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
@@ -123,6 +123,7 @@ class _ClientSignupPageState extends State<ClientSignupPage> {
           await FirebaseFirestore.instance.collection('user').doc(userId).set({
             'lastName': lastNameController.text.trim(),
             'firstName': firstNameController.text.trim(),
+            'username': usernameController.text.trim(),
             'email': emailController.text.trim(),
             'phoneNumber': phoneNumberController.text.trim(),
             'location': locationController.text.trim(),
@@ -368,6 +369,43 @@ class _ClientSignupPageState extends State<ClientSignupPage> {
                 ),
                 decoration: InputDecoration(
                   labelText: 'Email',
+                  labelStyle: GoogleFonts.poppins(
+                    fontSize: screenWidth * 0.035,
+                    color: const Color.fromARGB(255, 186, 199, 206),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.02,
+                    horizontal: screenWidth * 0.03,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(255, 23, 23, 23),
+                    ),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(
+                        screenWidth * 0.03,
+                      ),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(255, 23, 23, 23),
+                    ),
+                    borderRadius: BorderRadius.circular(
+                      screenWidth * 0.03,
+                    ),
+                  ),
+                ),
+              ),
+              Gap(screenHeight * 0.01),
+              TextFormField(
+                controller: usernameController,
+                style: GoogleFonts.poppins(
+                  fontSize: screenWidth * 0.04,
+                  color: const Color.fromARGB(255, 23, 23, 23),
+                ),
+                decoration: InputDecoration(
+                  labelText: 'Username',
                   labelStyle: GoogleFonts.poppins(
                     fontSize: screenWidth * 0.035,
                     color: const Color.fromARGB(255, 186, 199, 206),

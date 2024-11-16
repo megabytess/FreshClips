@@ -18,23 +18,66 @@ class _ReviewPageState extends State<HairstylistReviewPage> {
 
     return Column(
       children: [
-        Padding(
-          padding: EdgeInsets.only(
-            left: screenWidth * 0.05,
-            right: screenWidth * 0.05,
-          ),
-          child: Row(
-            children: [
-              Text(
-                'User reviews',
-                style: GoogleFonts.poppins(
-                  color: const Color.fromARGB(255, 45, 65, 69),
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w600,
+        Row(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                left: screenWidth * 0.05,
+                right: screenWidth * 0.05,
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    'User reviews',
+                    style: GoogleFonts.poppins(
+                      color: const Color.fromARGB(255, 45, 65, 69),
+                      fontSize: screenWidth * 0.035,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            //  if (currentUserEmail == widget.email)
+            SizedBox(
+              height: screenHeight * 0.03,
+              child: OutlinedButton(
+                onPressed: () {
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => AddServicePage(
+                  //       hairstylistEmail: widget.email,
+                  //     ),
+                  //   ),
+                  // ).then((_) {
+                  //   // Refresh the services after adding a new service
+                  //   setState(() {
+                  //     serviceController
+                  //         .fetchServicesForUsers(widget.email);
+                  //   });
+                  // });
+                },
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(
+                    color: Color.fromARGB(255, 18, 18, 18),
+                    width: 1,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Text(
+                  'Leave a review',
+                  style: GoogleFonts.poppins(
+                    color: const Color.fromARGB(255, 18, 18, 18),
+                    fontSize: screenWidth * 0.025,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,

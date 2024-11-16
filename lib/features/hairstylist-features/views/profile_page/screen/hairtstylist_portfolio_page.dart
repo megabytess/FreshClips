@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/add_multiple_images_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/widget/add_image_hairstylist_page.dart';
@@ -5,8 +6,10 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HairstylistPortfolioPage extends StatefulWidget {
-  const HairstylistPortfolioPage({super.key, required this.email});
+  const HairstylistPortfolioPage(
+      {super.key, required this.email, required this.isClient});
   final String email;
+  final bool isClient;
 
   @override
   State<HairstylistPortfolioPage> createState() =>
@@ -18,12 +21,14 @@ class _HairstylistPortfolioPageState extends State<HairstylistPortfolioPage> {
   bool isLoading = true;
 
   late final AddMultipleImagesController controller;
+  String? currentUserEmail;
 
   @override
   void initState() {
     super.initState();
     controller = AddMultipleImagesController(widget.email, context);
     fetchImages();
+    currentUserEmail = FirebaseAuth.instance.currentUser?.email;
   }
 
   Future<void> fetchImages() async {
@@ -137,58 +142,60 @@ class _HairstylistPortfolioPageState extends State<HairstylistPortfolioPage> {
             //     )),
 
             // Positioned Add Image Button
-            Positioned(
-              bottom: screenWidth * 0.04,
-              right: screenWidth * 0.04,
-              child: Container(
-                width: screenWidth * 0.3,
-                height: screenWidth * 0.12,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 45, 65, 69),
-                  borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddImagePage(email: widget.email),
-                      ),
-                    ).then((_) {
-                      fetchImages();
-                    });
-                  },
-                  borderRadius: BorderRadius.circular(screenWidth * 0.05),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add,
-                        color: const Color.fromARGB(255, 248, 248, 249),
-                        size: screenWidth * 0.05,
-                      ),
-                      Gap(screenWidth * 0.01),
-                      Text(
-                        'Add image',
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.03,
-                          fontWeight: FontWeight.w400,
-                          color: const Color.fromARGB(255, 248, 248, 249),
-                        ),
+            if (currentUserEmail == widget.email)
+              Positioned(
+                bottom: screenWidth * 0.04,
+                right: screenWidth * 0.04,
+                child: Container(
+                  width: screenWidth * 0.3,
+                  height: screenWidth * 0.12,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 45, 65, 69),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AddImagePage(email: widget.email),
+                        ),
+                      ).then((_) {
+                        fetchImages();
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: const Color.fromARGB(255, 248, 248, 249),
+                          size: screenWidth * 0.05,
+                        ),
+                        Gap(screenWidth * 0.01),
+                        Text(
+                          'Add image',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.03,
+                            fontWeight: FontWeight.w400,
+                            color: const Color.fromARGB(255, 248, 248, 249),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),

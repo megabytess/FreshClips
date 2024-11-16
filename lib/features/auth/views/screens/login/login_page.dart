@@ -96,7 +96,9 @@ class _LoginPageState extends State<LoginPage> {
             // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(
-                builder: (context) => const ClientBottomNavBarPage()),
+                builder: (context) => ClientBottomNavBarPage(
+                      email: emailController.text,
+                    )),
           );
         }
       } else {

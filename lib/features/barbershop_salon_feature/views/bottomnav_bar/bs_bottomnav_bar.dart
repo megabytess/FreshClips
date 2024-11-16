@@ -32,8 +32,9 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
       const BSAppointmentPage(),
       const BSMessagePage(),
       BSProfilePage(
-        isClient: true,
+        isClient: false,
         email: widget.email,
+        clientEmail: widget.email,
       ),
     ];
   }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_add_barbers_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/models/bs_add_barbers_model.dart';
@@ -7,8 +8,10 @@ import 'package:freshclips_capstone/features/barbershop_salon_feature/views/prof
 import 'package:google_fonts/google_fonts.dart';
 
 class BSBarbersPage extends StatefulWidget {
-  const BSBarbersPage({super.key, required this.userEmail});
+  const BSBarbersPage(
+      {super.key, required this.userEmail, required this.isClient});
   final String userEmail;
+  final bool isClient;
 
   @override
   State<BSBarbersPage> createState() => _BSBarbersPageState();
@@ -16,6 +19,7 @@ class BSBarbersPage extends StatefulWidget {
 
 class _BSBarbersPageState extends State<BSBarbersPage> {
   List<Map<String, dynamic>> barbers = [];
+  String? currentUserEmail;
 
   BSAddBarberController bsAddBarberController = BSAddBarberController();
 
@@ -23,6 +27,7 @@ class _BSBarbersPageState extends State<BSBarbersPage> {
   void initState() {
     super.initState();
     fetchBarbers();
+    currentUserEmail = FirebaseAuth.instance.currentUser?.email;
   }
 
   Future<void> fetchBarbers() async {
@@ -54,6 +59,7 @@ class _BSBarbersPageState extends State<BSBarbersPage> {
       backgroundColor: const Color.fromARGB(255, 248, 248, 248),
       body: Stack(
         children: [
+          // Main content - either "No available barbers" message or the list of barbers
           barbers.isEmpty
               ? Center(
                   child: Text(
@@ -78,9 +84,9 @@ class _BSBarbersPageState extends State<BSBarbersPage> {
                         ),
                         leading: CircleAvatar(
                           backgroundColor: Colors.transparent,
-                          radius: screenWidth * 0.07,
+                          radius: screenWidth * 0.075,
                           backgroundImage: const AssetImage(
-                            'assets/images/icons/launcher_icon.png',
+                            'assets/images/icons/for_servicess.jpg',
                           ),
                         ),
                         title: Text(
@@ -122,93 +128,97 @@ class _BSBarbersPageState extends State<BSBarbersPage> {
                             ),
                           ],
                         ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.edit, size: screenWidth * 0.06),
-                              onPressed: () {
-                                // Navigate to edit page or open edit dialog
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => BSEditBarberPage(
-                                      userEmail: widget.userEmail,
-                                      bsAddBarbers:
-                                          BSAddBarbers.fromMap(barber),
-                                    ),
+                        trailing: currentUserEmail == widget.userEmail
+                            ? Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.edit,
+                                        size: screenWidth * 0.06),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              BSEditBarberPage(
+                                            userEmail: widget.userEmail,
+                                            bsAddBarbers:
+                                                BSAddBarbers.fromMap(barber),
+                                          ),
+                                        ),
+                                      ).then((value) {
+                                        if (value == true) {
+                                          fetchBarbers();
+                                        }
+                                      });
+                                    },
                                   ),
-                                ).then((value) {
-                                  if (value == true) {
-                                    fetchBarbers();
-                                  }
-                                });
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                BSAddBarberController()
-                                    .deleteBarbers(
-                                        widget.userEmail, barber['id'])
-                                    .then(
-                                  (_) {
-                                    fetchBarbers();
-                                  },
-                                );
-                              },
-                            ),
-                          ],
-                        ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () {
+                                      BSAddBarberController()
+                                          .deleteBarbers(
+                                              widget.userEmail, barber['id'])
+                                          .then((_) {
+                                        fetchBarbers();
+                                      });
+                                    },
+                                  ),
+                                ],
+                              )
+                            : null,
                       );
                     },
                   ),
                 ),
-          Positioned(
-            bottom: screenWidth * 0.04,
-            right: screenWidth * 0.04,
-            child: Container(
-              width: screenWidth * 0.3,
-              height: screenWidth * 0.12,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 45, 65, 69),
-                borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: InkWell(
-                onTap: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          BSAddBarbersPage(email: widget.userEmail),
+
+          // Conditional Positioned "Add Barber" button
+          if (currentUserEmail == widget.userEmail)
+            Positioned(
+              bottom: screenWidth * 0.04,
+              right: screenWidth * 0.04,
+              child: Container(
+                width: screenWidth * 0.3,
+                height: screenWidth * 0.12,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 45, 65, 69),
+                  borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
                     ),
-                  );
-                  if (result == true) {
-                    fetchBarbers(); // Refresh list on return
-                  }
-                },
-                borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                child: Center(
-                  child: Text(
-                    'Add Barber',
-                    style: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.033,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white,
+                  ],
+                ),
+                child: InkWell(
+                  onTap: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            BSAddBarbersPage(email: widget.userEmail),
+                      ),
+                    );
+                    if (result == true) {
+                      fetchBarbers(); // Refresh list on return
+                    }
+                  },
+                  borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                  child: Center(
+                    child: Text(
+                      'Add Barber',
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.033,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

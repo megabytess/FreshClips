@@ -9,8 +9,8 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ClientBottomNavBarPage extends StatefulWidget {
-  const ClientBottomNavBarPage({super.key});
-
+  const ClientBottomNavBarPage({super.key, required this.email});
+  final String email;
   @override
   State<ClientBottomNavBarPage> createState() => _BottomNavBarPageState();
 }
@@ -19,12 +19,19 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
   int _selectedIndex = 0;
 
   // List of screens for each tab
-  final List<Widget> _pages = [
-    const ClientHomePage(),
-    const ClientNearbyPage(),
-    const ClientMessagePage(),
-    const ClientProfilePage(),
-  ];
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _pages = [
+      const ClientHomePage(),
+      const ClientNearbyPage(),
+      ClientMessagePage(email: widget.email),
+      const ClientProfilePage(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -217,7 +224,7 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
               },
             ),
             const Divider(
-              color: Color.fromARGB(255, 189, 189, 189), // Custom line color
+              color: Color.fromARGB(255, 189, 189, 189),
               thickness: 1.0,
               indent: 20.0,
               endIndent: 20.0,

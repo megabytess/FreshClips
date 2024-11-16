@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tabbar_page/flutter_tabbar_page.dart';
@@ -12,9 +13,11 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HairstylistProfilePage extends StatefulWidget {
-  const HairstylistProfilePage({super.key, required this.email});
+  const HairstylistProfilePage(
+      {super.key, required this.email, required this.isClient});
 
   final String email;
+  final bool isClient;
 
   @override
   State<HairstylistProfilePage> createState() => _ProfilePageState();
@@ -29,6 +32,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
   List<Map<String, String?>> availabilityData = [];
   bool isLoading = true;
   String? selectedStoreHours;
+  String? currentUserEmail;
 
   @override
   void initState() {
@@ -36,6 +40,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
       title: "Info",
       page: HairstylistInfoPage(
         email: widget.email,
+        isClient: true,
       ),
     ));
     listPages.add(PageTabItemModel(
@@ -51,10 +56,12 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
           title: "Portfolio",
           page: HairstylistPortfolioPage(
             email: widget.email,
+            isClient: true,
           )),
     );
 
     hairstylistController.getHairstylist(widget.email);
+    currentUserEmail = FirebaseAuth.instance.currentUser?.email;
     hairstylistController.loadStatus();
 
     // Fetch the working hours data
@@ -127,6 +134,18 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
 
         return Scaffold(
           backgroundColor: const Color.fromARGB(255, 248, 248, 248),
+          appBar: !widget.isClient && currentUserEmail != widget.email
+              ? AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                )
+              : null,
           body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,85 +204,104 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                         ],
                       ),
                       Gap(screenHeight * 0.001),
-                      GestureDetector(
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Container(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: screenHeight * 0.02,
-                                  horizontal: screenWidth * 0.03,
+                      (!widget.isClient && currentUserEmail != widget.email)
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  hairstylistController.selectedStatus,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: screenWidth * 0.032,
+                                    fontWeight: FontWeight.w700,
+                                    color:
+                                        hairstylistController.selectedStatus ==
+                                                'SHOP OPEN'
+                                            ? Colors.green
+                                            : Colors.red,
+                                  ),
                                 ),
-                                height: screenHeight * 0.3,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Select Status',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.04,
-                                        fontWeight: FontWeight.w600,
+                              ],
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Container(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: screenHeight * 0.02,
+                                        horizontal: screenWidth * 0.03,
                                       ),
-                                    ),
-                                    const Divider(),
-                                    ListTile(
-                                      title: Text(
-                                        'SHOP OPEN',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: screenWidth * 0.035,
-                                          fontWeight: FontWeight.w600,
-                                          color: const Color.fromARGB(
-                                              255, 18, 18, 18),
-                                        ),
+                                      height: screenHeight * 0.3,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Select Status',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: screenWidth * 0.04,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          const Divider(),
+                                          ListTile(
+                                            title: Text(
+                                              'SHOP OPEN',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: screenWidth * 0.035,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color.fromARGB(
+                                                    255, 18, 18, 18),
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              hairstylistController
+                                                  .updateStatus('SHOP OPEN');
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                          ListTile(
+                                            title: Text(
+                                              'SHOP CLOSED',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: screenWidth * 0.035,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color.fromARGB(
+                                                    255, 18, 18, 18),
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              hairstylistController
+                                                  .updateStatus('SHOP CLOSED');
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ],
                                       ),
-                                      onTap: () {
-                                        hairstylistController
-                                            .updateStatus('SHOP OPEN');
-                                        Navigator.pop(context);
-                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    hairstylistController.selectedStatus,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: screenWidth * 0.032,
+                                      fontWeight: FontWeight.w700,
+                                      color: hairstylistController
+                                                  .selectedStatus ==
+                                              'SHOP OPEN'
+                                          ? Colors.green
+                                          : Colors.red,
                                     ),
-                                    ListTile(
-                                      title: Text(
-                                        'SHOP CLOSED',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: screenWidth * 0.035,
-                                          fontWeight: FontWeight.w600,
-                                          color: const Color.fromARGB(
-                                              255, 18, 18, 18),
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        hairstylistController
-                                            .updateStatus('SHOP CLOSED');
-                                        Navigator.pop(
-                                            context); // Close the modal
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              hairstylistController.selectedStatus,
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.032,
-                                fontWeight: FontWeight.w700,
-                                color: hairstylistController.selectedStatus ==
-                                        'SHOP OPEN'
-                                    ? Colors.green
-                                    : Colors.red,
+                                  ),
+                                ],
                               ),
                             ),
-                            // const Icon(Icons.arrow_drop_down),
-                          ],
-                        ),
-                      ),
                       Gap(screenHeight * 0.001),
                       GestureDetector(
                         onTap: () {

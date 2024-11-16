@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tabbar_page/flutter_tabbar_page.dart';
 import 'package:freshclips_capstone/core/booking_system/01_booking_template_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_controller.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_ratings_review_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_barbers_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_info_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_reviews_page.dart';
@@ -13,10 +15,16 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BSProfilePage extends StatefulWidget {
-  const BSProfilePage({super.key, required this.isClient, required this.email});
+  const BSProfilePage({
+    super.key,
+    required this.isClient,
+    required this.email,
+    required this.clientEmail,
+  });
 
   final bool isClient;
   final String email;
+  final String clientEmail;
 
   @override
   State<BSProfilePage> createState() => _BSProfilePageState();
@@ -29,17 +37,28 @@ class _BSProfilePageState extends State<BSProfilePage> {
       BarbershopSalonController();
   late final WorkingHoursController workingHoursController =
       WorkingHoursController(email: widget.email, context: context);
+  late final TextEditingController reviewController;
   List<Map<String, String?>> availabilityData = [];
-  bool isLoading = true;
+  bool isLoading = false;
   String? selectedStoreHours;
+  String? currentUserEmail;
+
+  double averageRating = 0.0;
+  late RatingsReviewController ratingsReviewController;
 
   @override
   void initState() {
     super.initState();
+    reviewController = TextEditingController();
+    ratingsReviewController = RatingsReviewController(
+      clientEmail: widget.clientEmail,
+      reviewController: reviewController,
+    );
+
     listPages.add(
       PageTabItemModel(
         title: "Info",
-        page: BSInfoPage(email: widget.email),
+        page: BSInfoPage(email: widget.email, isClient: true),
       ),
     );
     listPages.add(
@@ -51,7 +70,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
     listPages.add(
       PageTabItemModel(
         title: "Review",
-        page: const BSReviewPage(),
+        page: BSReviewPage(clientEmail: widget.email, isClient: true),
       ),
     );
     listPages.add(
@@ -59,15 +78,17 @@ class _BSProfilePageState extends State<BSProfilePage> {
         title: "Barbers",
         page: BSBarbersPage(
           userEmail: widget.email,
+          isClient: true,
         ),
       ),
     );
     barbershopsalonController.getBarbershopSalon(widget.email);
     barbershopsalonController.loadStatus();
 
-    // Fetch the working hours data
     workingHoursController;
     fetchWorkingHours();
+    currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+    getAverageRating();
   }
 
   void fetchWorkingHours() async {
@@ -106,6 +127,17 @@ class _BSProfilePageState extends State<BSProfilePage> {
     }
   }
 
+  // Fetch and display the average rating
+  void getAverageRating() async {
+    final ratingsReviewController = RatingsReviewController(
+        clientEmail: widget.email, reviewController: TextEditingController());
+    double avgRating =
+        await ratingsReviewController.computeAverageRating(widget.clientEmail);
+    setState(() {
+      averageRating = avgRating;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -124,16 +156,20 @@ class _BSProfilePageState extends State<BSProfilePage> {
           );
         }
 
-        // Null check for barbershop salon data
-        final barbershopsalon = barbershopsalonController.barbershopsalon;
-        if (barbershopsalon == null) {
-          return const Center(
-            child: Text('No barbershop salon data available'),
-          );
-        }
-
         return Scaffold(
           backgroundColor: const Color.fromARGB(255, 248, 248, 248),
+          appBar: (!widget.isClient && currentUserEmail != widget.email)
+              ? AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                )
+              : null,
           body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,104 +215,147 @@ class _BSProfilePageState extends State<BSProfilePage> {
                       ),
                       Row(
                         children: [
-                          Text(
-                            // Profile Rating
-                            '4.8',
-                            style: GoogleFonts.poppins(
-                              color: const Color.fromARGB(255, 18, 18, 18),
-                              fontSize: screenWidth * 0.035,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Gap(screenHeight * 0.002),
                           SvgPicture.asset(
                             'assets/images/profile_page/star.svg',
                             width: screenWidth * 0.045,
                             height: screenWidth * 0.045,
                           ),
+                          Gap(screenHeight * 0.004),
+                          FutureBuilder<double>(
+                            future: ratingsReviewController
+                                .computeAverageRating(widget.email),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color.fromARGB(255, 189, 49, 71),
+                                  ),
+                                );
+                              } else if (snapshot.hasError) {
+                                return Text(
+                                  'Error loading rating',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.black,
+                                    fontSize: screenWidth * 0.035,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              } else {
+                                double rating = snapshot.data ?? 0.0;
+                                return Text(
+                                  rating.toStringAsFixed(1),
+                                  style: GoogleFonts.poppins(
+                                    color:
+                                        const Color.fromARGB(255, 18, 18, 18),
+                                    fontSize: screenWidth * 0.035,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              }
+                            },
+                          ),
                         ],
                       ),
                       Gap(screenHeight * 0.001),
-                      GestureDetector(
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Container(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: screenHeight * 0.02,
-                                  horizontal: screenWidth * 0.03,
-                                ),
-                                height: screenHeight * 0.3,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Select Status',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.04,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const Divider(),
-                                    ListTile(
-                                      title: Text(
-                                        'SHOP OPEN',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: screenWidth * 0.035,
-                                          fontWeight: FontWeight.w600,
-                                          color: const Color.fromARGB(
-                                              255, 18, 18, 18),
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        barbershopsalonController
-                                            .updateStatus('SHOP OPEN');
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                    ListTile(
-                                      title: Text(
-                                        'SHOP CLOSED',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: screenWidth * 0.035,
-                                          fontWeight: FontWeight.w600,
-                                          color: const Color.fromARGB(
-                                              255, 18, 18, 18),
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        barbershopsalonController
-                                            .updateStatus('SHOP CLOSED');
-                                        Navigator.pop(
-                                            context); // Close the modal
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              barbershopsalonController.selectedStatus,
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.032,
-                                fontWeight: FontWeight.w700,
-                                color:
-                                    barbershopsalonController.selectedStatus ==
+                      !widget.isClient && currentUserEmail != widget.email
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  barbershopsalonController.selectedStatus,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: screenWidth * 0.032,
+                                    fontWeight: FontWeight.w700,
+                                    color: barbershopsalonController
+                                                .selectedStatus ==
                                             'SHOP OPEN'
                                         ? Colors.green
                                         : Colors.red,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Container(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: screenHeight * 0.02,
+                                        horizontal: screenWidth * 0.03,
+                                      ),
+                                      height: screenHeight * 0.3,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Select Status',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: screenWidth * 0.04,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          const Divider(),
+                                          ListTile(
+                                            title: Text(
+                                              'SHOP OPEN',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: screenWidth * 0.035,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color.fromARGB(
+                                                    255, 18, 18, 18),
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              barbershopsalonController
+                                                  .updateStatus('SHOP OPEN');
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                          ListTile(
+                                            title: Text(
+                                              'SHOP CLOSED',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: screenWidth * 0.035,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color.fromARGB(
+                                                    255, 18, 18, 18),
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              barbershopsalonController
+                                                  .updateStatus('SHOP CLOSED');
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    barbershopsalonController.selectedStatus,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: screenWidth * 0.032,
+                                      fontWeight: FontWeight.w700,
+                                      color: barbershopsalonController
+                                                  .selectedStatus ==
+                                              'SHOP OPEN'
+                                          ? Colors.green
+                                          : Colors.red,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            // const Icon(Icons.arrow_drop_down),
-                          ],
-                        ),
-                      ),
                       GestureDetector(
                         onTap: () {
                           showModalBottomSheet(
@@ -299,7 +378,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                       ),
                                     ),
                                     const Divider(),
-                                    Expanded(
+                                    Flexible(
                                       child: ListView.builder(
                                         itemCount: availabilityData.length,
                                         itemBuilder: (context, index) {
@@ -374,7 +453,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                         ),
                       ),
                       Gap(screenHeight * 0.01),
-                      if (widget.isClient) // Client POV if true
+                      if (currentUserEmail != widget.email)
                         Row(
                           children: [
                             SizedBox(
@@ -411,7 +490,13 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => BookingTemplatePage(),
+                                    builder: (context) => BookingTemplatePage(
+                                      accountName: barbershopsalonController
+                                          .barbershopsalon!.shopName,
+                                      userId: widget.email,
+                                      userType:
+                                          widget.isClient ? 'Client' : 'Owner',
+                                    ),
                                   ),
                                 );
                               },
@@ -440,29 +525,28 @@ class _BSProfilePageState extends State<BSProfilePage> {
                   ),
                 ],
               ),
-              Gap(
-                screenHeight * 0.01,
-              ),
-              TabBarPage(
-                controller: tabPageController,
-                pages: listPages,
-                isSwipable: true,
-                tabBackgroundColor: Colors.transparent,
-                tabitemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () {
-                      tabPageController.onTabTap(index);
-                    },
-                    child: SizedBox(
-                      width:
-                          MediaQuery.of(context).size.width / listPages.length,
-                      child: Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          Center(
-                            child: Text(
-                              listPages[index].title ?? "",
-                              style: GoogleFonts.poppins(
+              Gap(screenHeight * 0.01),
+              Flexible(
+                child: TabBarPage(
+                  controller: tabPageController,
+                  pages: listPages,
+                  isSwipable: true,
+                  tabBackgroundColor: Colors.transparent,
+                  tabitemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () {
+                        tabPageController.onTabTap(index);
+                      },
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width /
+                            listPages.length,
+                        child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            Center(
+                              child: Text(
+                                listPages[index].title ?? "",
+                                style: GoogleFonts.poppins(
                                   fontWeight:
                                       tabPageController.currentIndex == index
                                           ? FontWeight.w700
@@ -470,38 +554,41 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                   color: tabPageController.currentIndex == index
                                       ? const Color.fromARGB(255, 18, 18, 18)
                                       : const Color.fromARGB(30, 18, 18, 18),
-                                  fontSize: screenWidth * 0.035),
+                                  fontSize: screenWidth * 0.035,
+                                ),
+                              ),
                             ),
-                          ),
-                          Container(
-                            // Tab Indicator
-                            height: 4,
-                            width: screenWidth * 0.18,
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(screenWidth * 0.10),
-                              gradient: tabPageController.currentIndex == index
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color.fromARGB(255, 189, 49, 71),
-                                        Color.fromARGB(255, 255, 106, 0),
-                                      ],
-                                      begin: Alignment.centerLeft,
-                                      end: Alignment.centerRight,
-                                    )
-                                  : const LinearGradient(
-                                      colors: [
-                                        Colors.transparent,
-                                        Colors.transparent
-                                      ],
-                                    ),
+                            Container(
+                              // Tab Indicator
+                              height: 4,
+                              width: screenWidth * 0.18,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(screenWidth * 0.10),
+                                gradient:
+                                    tabPageController.currentIndex == index
+                                        ? const LinearGradient(
+                                            colors: [
+                                              Color.fromARGB(255, 189, 49, 71),
+                                              Color.fromARGB(255, 255, 106, 0),
+                                            ],
+                                            begin: Alignment.centerLeft,
+                                            end: Alignment.centerRight,
+                                          )
+                                        : const LinearGradient(
+                                            colors: [
+                                              Colors.transparent,
+                                              Colors.transparent
+                                            ],
+                                          ),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ],
           ),
