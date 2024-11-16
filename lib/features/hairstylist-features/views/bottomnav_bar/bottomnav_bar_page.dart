@@ -30,7 +30,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
       HairstylistHomePage(),
       HairstylistAppointmentPage(),
       HairstylistMessagePage(),
-      HairstylistProfilePage(email: widget.email),
+      HairstylistProfilePage(email: widget.email, isClient: false),
     ];
   }
 

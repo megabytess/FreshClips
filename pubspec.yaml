@@ -54,6 +54,8 @@ dependencies:
   location: ^6.0.2
   transparent_image: ^2.0.1
   intl: ^0.19.0
+  in_app_review: ^2.0.9
+  flutter_rating_bar: ^4.0.1
   
 
 dev_dependencies:
@@ -89,6 +91,7 @@ flutter:
     - assets/images/landing_page/background_pic.jpg
     - assets/images/icons/logo_icon.png
     - assets/images/icons/launcher_icon.png
+    - assets/images/icons/for_servicess.jpg
     - assets/images/bottomnav_bar_page/home_fill.svg
     - assets/images/bottomnav_bar_page/calendar_fill.svg
     - assets/images/bottomnav_bar_page/message_fill.svg
@@ -101,6 +104,7 @@ flutter:
     - assets/images/profile_page/cover_pic.jpg
     - assets/images/profile_page/coverphoto.jpg
     - assets/images/profile_page/profile_sample.jpg
+    
    
     
 

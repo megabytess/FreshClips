@@ -20,6 +20,12 @@ class ServiceController with ChangeNotifier {
           .where('userEmail', isEqualTo: userEmail)
           .get();
 
+      if (querySnapshot.docs.isEmpty) {
+        print('No documents found for user: $userEmail');
+      } else {
+        print('Documents fetched: ${querySnapshot.docs.length}');
+      }
+
       services =
           querySnapshot.docs.map((doc) => Service.fromDocument(doc)).toList();
       return services;
