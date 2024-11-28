@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tabbar_page/flutter_tabbar_page.dart';
+import 'package:freshclips_capstone/core/booking_system/01_booking_template_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_ratings_review_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/hairstylist_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/working_hours_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/models/working_hours_model.dart';
@@ -13,11 +15,16 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HairstylistProfilePage extends StatefulWidget {
-  const HairstylistProfilePage(
-      {super.key, required this.email, required this.isClient});
+  const HairstylistProfilePage({
+    super.key,
+    required this.email,
+    required this.isClient,
+    required this.clientEmail,
+  });
 
   final String email;
   final bool isClient;
+  final String clientEmail;
 
   @override
   State<HairstylistProfilePage> createState() => _ProfilePageState();
@@ -25,6 +32,7 @@ class HairstylistProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<HairstylistProfilePage> {
   List<PageTabItemModel> listPages = <PageTabItemModel>[];
+
   final TabPageController _controller = TabPageController();
   final HairstylistController hairstylistController = HairstylistController();
   late final WorkingHoursController workingHoursController =
@@ -33,6 +41,10 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
   bool isLoading = true;
   String? selectedStoreHours;
   String? currentUserEmail;
+  late final TextEditingController reviewController;
+
+  double averageRating = 0.0;
+  late RatingsReviewController ratingsReviewController;
 
   @override
   void initState() {
@@ -49,7 +61,11 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
     ));
     listPages.add(PageTabItemModel(
       title: "Review",
-      page: const HairstylistReviewPage(),
+      page: HairstylistReviewPage(
+        clientEmail: widget.clientEmail,
+        isClient: widget.isClient,
+        email: widget.email,
+      ),
     ));
     listPages.add(
       PageTabItemModel(
@@ -67,6 +83,12 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
     // Fetch the working hours data
     workingHoursController;
     fetchWorkingHours();
+    reviewController = TextEditingController();
+    ratingsReviewController = RatingsReviewController(
+      clientEmail: widget.clientEmail,
+      reviewController: reviewController,
+    );
+    getAverageRating();
     super.initState();
   }
 
@@ -106,6 +128,17 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
     }
   }
 
+  // Fetch and display the average rating
+  void getAverageRating() async {
+    final ratingsReviewController = RatingsReviewController(
+        clientEmail: widget.email, reviewController: TextEditingController());
+    double avgRating =
+        await ratingsReviewController.computeAverageRating(widget.clientEmail);
+    setState(() {
+      averageRating = avgRating;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -134,7 +167,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
 
         return Scaffold(
           backgroundColor: const Color.fromARGB(255, 248, 248, 248),
-          appBar: !widget.isClient && currentUserEmail != widget.email
+          appBar: widget.isClient && currentUserEmail != widget.email
               ? AppBar(
                   backgroundColor: Colors.transparent,
                   elevation: 0,
@@ -187,24 +220,50 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                       ),
                       Row(
                         children: [
-                          Text(
-                            '4.8', // Example rating
-                            style: GoogleFonts.poppins(
-                              color: const Color.fromARGB(255, 18, 18, 18),
-                              fontSize: screenWidth * 0.035,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Gap(screenHeight * 0.002),
                           SvgPicture.asset(
                             'assets/images/profile_page/star.svg',
                             width: screenWidth * 0.045,
                             height: screenWidth * 0.045,
                           ),
+                          Gap(screenHeight * 0.004),
+                          FutureBuilder<double>(
+                            future: ratingsReviewController
+                                .computeAverageRating(widget.email),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color.fromARGB(255, 189, 49, 71),
+                                  ),
+                                );
+                              } else if (snapshot.hasError) {
+                                return Text(
+                                  'Error loading rating',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.black,
+                                    fontSize: screenWidth * 0.035,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              } else {
+                                double rating = snapshot.data ?? 0.0;
+                                return Text(
+                                  rating.toStringAsFixed(1),
+                                  style: GoogleFonts.poppins(
+                                    color:
+                                        const Color.fromARGB(255, 18, 18, 18),
+                                    fontSize: screenWidth * 0.035,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              }
+                            },
+                          ),
                         ],
                       ),
                       Gap(screenHeight * 0.001),
-                      (!widget.isClient && currentUserEmail != widget.email)
+                      (widget.isClient && currentUserEmail != widget.email)
                           ? Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -399,11 +458,81 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                           ],
                         ),
                       ),
+                      Gap(screenHeight * 0.01),
+                      if (currentUserEmail != widget.email)
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: screenHeight * 0.05,
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  // Add your button action here
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(
+                                    color: Color.fromARGB(255, 48, 65, 59),
+                                    width: 1.0,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Message',
+                                  style: GoogleFonts.poppins(
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            0.035,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        const Color.fromARGB(255, 48, 65, 59),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Gap(screenWidth * 0.03),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BookingTemplatePage(
+                                      clientEmail: widget.email,
+                                      // accountName: barbershopsalonController
+                                      //     .barbershopsalon!.shopName,
+                                      userEmail: widget.email,
+                                      // userType:
+                                      //     widget.isClient ? 'Client' : 'Owner',
+                                    ),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 189, 49, 71),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0, vertical: 12.0),
+                              ),
+                              child: Text(
+                                'Book now',
+                                style: GoogleFonts.poppins(
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.035,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                     ],
                   ),
                 ],
               ),
-              Gap(screenHeight * 0.01),
+              Gap(screenHeight * 0.02),
               TabBarPage(
                 controller: _controller,
                 pages: listPages,

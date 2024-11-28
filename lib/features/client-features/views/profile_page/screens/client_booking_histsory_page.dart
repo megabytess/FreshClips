@@ -1,36 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_appointment_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appointment_page/screens/bs_booking_details_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class BSDeclinedPage extends StatelessWidget {
-  BSDeclinedPage({
-    super.key,
-    required this.userEmail,
-    required this.clientEmail,
-    // required this.userType,
-  });
-  final String userEmail;
+class ClientBookingHistoryPage extends StatelessWidget {
+  const ClientBookingHistoryPage(
+      {super.key, required this.clientEmail, required this.isClient});
   final String clientEmail;
-  // final String userType;
-  final bool isClient = true;
-
-  final AppointmentsController appointmentsController =
-      AppointmentsController();
+  final bool isClient;
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'Booking history',
+          style: GoogleFonts.poppins(
+            fontSize: screenWidth * 0.04,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+      ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('appointments')
-            .where('bookedUser', isEqualTo: userEmail)
-            .where('status', isEqualTo: 'Declined')
+            .where('clientEmail', isEqualTo: clientEmail)
+            .where('status', isEqualTo: 'Completed')
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -44,23 +43,23 @@ class BSDeclinedPage extends StatelessWidget {
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(
-              child: Text(
-                'No Declined Appointments',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.04,
-                  fontWeight: FontWeight.w600,
-                  color: const Color.fromARGB(255, 18, 18, 18),
+              child: Center(
+                child: Text(
+                  'No Declined appointments for today.',
+                  style: GoogleFonts.poppins(
+                    fontSize: screenWidth * 0.035,
+                    color: const Color.fromARGB(255, 120, 120, 120),
+                  ),
                 ),
               ),
             );
           }
 
-          var appointments = snapshot.data!.docs;
-
+          final appointments = snapshot.data!.docs;
           return ListView.builder(
             itemCount: appointments.length,
             itemBuilder: (context, index) {
-              var appointment = appointments[index];
+              final appointment = appointments[index];
               final clientName = appointment['clientName'];
               // final selectedDate = appointment['selectedDate'];
               final selectedTime = appointment['selectedTime'];
@@ -118,13 +117,14 @@ class BSDeclinedPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              '${appointment['selectedDate']} ',
+                              ' ${appointment['selectedDate']} ',
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.028,
                                 fontWeight: FontWeight.w500,
                                 color: const Color.fromARGB(255, 18, 18, 18),
                               ),
                             ),
+                            Gap(screenWidth * 0.01),
                             Icon(
                               Icons.circle,
                               size: screenWidth * 0.01,
@@ -139,9 +139,9 @@ class BSDeclinedPage extends StatelessWidget {
                                 color: const Color.fromARGB(255, 18, 18, 18),
                               ),
                             ),
-                            Gap(screenWidth * 0.18),
+                            Gap(screenWidth * 0.11),
                             Text(
-                              'Declined',
+                              'Completed',
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.04,
                                 fontWeight: FontWeight.w700,

@@ -1,50 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabbar_page/flutter_tabbar_page.dart';
-import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appointment_page/screens/bs_approved_page.dart';
-import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appointment_page/screens/bs_complete_page.dart';
-import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appointment_page/screens/bs_declined_page.dart';
-import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appointment_page/screens/bs_pending_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/tab_bar_page.dart/client_approved_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/tab_bar_page.dart/client_declined_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class BSTabBarPage extends StatefulWidget {
-  const BSTabBarPage({
+class ClientTabBarPage extends StatefulWidget {
+  const ClientTabBarPage({
     super.key,
-    required this.userEmail,
     required this.clientEmail,
-    // required this.userType,
   });
-
-  final String userEmail;
   final String clientEmail;
-  // final String userType;
+
   @override
-  State<BSTabBarPage> createState() => _BSTabBarPageState();
+  State<ClientTabBarPage> createState() => _ClientTabBarPageState();
 }
 
-class _BSTabBarPageState extends State<BSTabBarPage> {
+class _ClientTabBarPageState extends State<ClientTabBarPage> {
   List<PageTabItemModel> listPages = <PageTabItemModel>[];
   final TabPageController _controller = TabPageController();
 
   @override
   void initState() {
     super.initState();
-    listPages.add(
-      PageTabItemModel(
-        title: "Pending",
-        page: BSPendingPage(
-          userEmail: widget.userEmail,
-          clientEmail: widget.clientEmail,
-          // userType: widget.userType,
-        ),
-      ),
-    );
+
     listPages.add(
       PageTabItemModel(
         title: "Approved",
-        page: BSApprovedPage(
-          userEmail: widget.userEmail,
+        page: ClientApprovedPage(
           clientEmail: widget.clientEmail,
-          // userType: widget.userType,
         ),
       ),
     );
@@ -52,21 +35,8 @@ class _BSTabBarPageState extends State<BSTabBarPage> {
     listPages.add(
       PageTabItemModel(
         title: "Declined",
-        page: BSDeclinedPage(
-          userEmail: widget.userEmail,
+        page: ClientDeclinedPage(
           clientEmail: widget.clientEmail,
-          // userType: widget.userType,
-        ),
-      ),
-    );
-
-    listPages.add(
-      PageTabItemModel(
-        title: "Completed",
-        page: BSCompletedAppointmentPage(
-          clientEmail: widget.clientEmail,
-          isClient: true,
-          userEmail: widget.userEmail,
         ),
       ),
     );

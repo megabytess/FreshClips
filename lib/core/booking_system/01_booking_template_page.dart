@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/core/booking_system/02_date_time_schedule_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_controller.dart';
@@ -10,13 +11,15 @@ import 'package:google_fonts/google_fonts.dart';
 class BookingTemplatePage extends StatefulWidget {
   const BookingTemplatePage({
     super.key,
-    required this.userType,
-    required this.accountName,
-    required this.userId,
+    // required this.userType,
+    // required this.accountName,
+    required this.userEmail,
+    required this.clientEmail,
   });
-  final String userType;
-  final String accountName;
-  final String userId;
+  // final String userType;
+  // final String accountName;
+  final String userEmail;
+  final String clientEmail;
 
   @override
   State<BookingTemplatePage> createState() => _BookingTemplatePageState();
@@ -27,8 +30,8 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
   late HairstylistController hairstylistController;
   late Future<List<Service>> servicesFuture;
   late final ServiceController serviceController = ServiceController();
-
-  bool isAnyServiceSelected = false; // Track if any service is selected
+  bool isAnyServiceSelected = false;
+  String? currentUserEmail;
 
   @override
   void initState() {
@@ -36,10 +39,11 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
     barbershopSalonController = BarbershopSalonController();
     hairstylistController = HairstylistController();
     servicesFuture = fetchServices();
+    currentUserEmail = FirebaseAuth.instance.currentUser?.email;
   }
 
   Future<List<Service>> fetchServices() {
-    return serviceController.fetchServicesForUsers(widget.userId);
+    return serviceController.fetchServicesForUsers(widget.userEmail);
   }
 
   // Function to check if any service is selected and update the state
@@ -58,7 +62,7 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          widget.accountName,
+          'Select Services',
           style: GoogleFonts.poppins(
             fontSize: screenWidth * 0.04,
             fontWeight: FontWeight.w600,
@@ -85,7 +89,12 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
               future: servicesFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                      child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Color.fromARGB(255, 189, 49, 71),
+                    ),
+                  ));
                 } else if (snapshot.hasError) {
                   print('Error: ${snapshot.error}');
                   return const Center(child: Text('Error loading services.'));
@@ -188,7 +197,7 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
                                           service.selected = value ?? false;
                                           updateSelectionStatus(
                                             services,
-                                          ); // Update the button state
+                                          );
                                         });
                                       },
                                     ),
@@ -213,24 +222,33 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
                                 // Print the selected services to the console
                                 print(
                                     'Selected Services to pass to next screen:');
-                                selectedServices.forEach((service) {
+                                for (var service in selectedServices) {
                                   print(
                                       'Service: ${service.serviceName}, Price: ${service.price}');
-                                });
+                                }
 
+                                // Check for null values and print them
+                                if (currentUserEmail == null) {
+                                  print(
+                                      'Error: One or more required values are null');
+                                  return; // Exit early if any required value is null
+                                }
+
+                                // Proceed with navigation if all values are valid
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DateTimeSchedulePage(
                                       selectedServices: selectedServices,
-                                      userType: widget.userType,
-                                      accountName: widget.accountName,
-                                      userId: widget.userId,
+                                      userEmail: widget.userEmail,
+                                      clientEmail: currentUserEmail ?? '',
                                     ),
                                   ),
                                 );
                               }
-                            : null, // Disable button if no service is selected
+                            : null,
+
+                        // Disable button if no service is selected
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
                               const Color.fromARGB(255, 48, 65, 69),

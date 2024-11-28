@@ -70,7 +70,11 @@ class _BSProfilePageState extends State<BSProfilePage> {
     listPages.add(
       PageTabItemModel(
         title: "Review",
-        page: BSReviewPage(clientEmail: widget.email, isClient: true),
+        page: BSReviewPage(
+          clientEmail: widget.email,
+          isClient: true,
+          email: widget.email,
+        ),
       ),
     );
     listPages.add(
@@ -93,7 +97,6 @@ class _BSProfilePageState extends State<BSProfilePage> {
 
   void fetchWorkingHours() async {
     try {
-      // Call the fetchWorkingHours method from your controller
       List<WorkingHours> workingHoursList =
           await workingHoursController.fetchWorkingHours(widget.email);
 
@@ -127,7 +130,6 @@ class _BSProfilePageState extends State<BSProfilePage> {
     }
   }
 
-  // Fetch and display the average rating
   void getAverageRating() async {
     final ratingsReviewController = RatingsReviewController(
         clientEmail: widget.email, reviewController: TextEditingController());
@@ -158,7 +160,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
 
         return Scaffold(
           backgroundColor: const Color.fromARGB(255, 248, 248, 248),
-          appBar: (!widget.isClient && currentUserEmail != widget.email)
+          appBar: (widget.isClient && currentUserEmail != widget.email)
               ? AppBar(
                   backgroundColor: Colors.transparent,
                   elevation: 0,
@@ -258,7 +260,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                         ],
                       ),
                       Gap(screenHeight * 0.001),
-                      !widget.isClient && currentUserEmail != widget.email
+                      widget.isClient && currentUserEmail != widget.email
                           ? Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -426,7 +428,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                                     255, 18, 18, 18),
                                               ),
                                             ),
-                                            enabled: false, // Non-clickable
+                                            enabled: false,
                                           );
                                         },
                                       ),
@@ -491,11 +493,12 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => BookingTemplatePage(
-                                      accountName: barbershopsalonController
-                                          .barbershopsalon!.shopName,
-                                      userId: widget.email,
-                                      userType:
-                                          widget.isClient ? 'Client' : 'Owner',
+                                      clientEmail: widget.email,
+                                      // accountName: barbershopsalonController
+                                      //     .barbershopsalon!.shopName,
+                                      userEmail: widget.email,
+                                      // userType:
+                                      //     widget.isClient ? 'Client' : 'Owner',
                                     ),
                                   ),
                                 );
@@ -559,7 +562,6 @@ class _BSProfilePageState extends State<BSProfilePage> {
                               ),
                             ),
                             Container(
-                              // Tab Indicator
                               height: 4,
                               width: screenWidth * 0.18,
                               decoration: BoxDecoration(

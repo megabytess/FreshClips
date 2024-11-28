@@ -188,7 +188,6 @@ class _BSInfoPageState extends State<BSInfoPage> {
                                       ),
                                     ),
                                   ).then((_) {
-                                    // Refresh the services after adding a new service
                                     setState(() {
                                       serviceController
                                           .fetchServicesForUsers(widget.email);
@@ -233,115 +232,110 @@ class _BSInfoPageState extends State<BSInfoPage> {
                               );
                             }
 
-                            // Display the list of services
                             return ListView.builder(
                               itemCount: serviceController.services.length,
                               itemBuilder: (context, index) {
                                 final service =
                                     serviceController.services[index];
-                                return Expanded(
-                                  child: ListTile(
-                                    leading: Container(
-                                      width: screenWidth * 0.12,
-                                      height: screenWidth * 0.12,
-                                      decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        borderRadius: BorderRadius.circular(8),
-                                        image: const DecorationImage(
-                                          image: AssetImage(
-                                            'assets/images/icons/for_servicess.jpg',
-                                          ),
-                                          fit: BoxFit.cover,
+                                return ListTile(
+                                  leading: Container(
+                                    width: screenWidth * 0.12,
+                                    height: screenWidth * 0.12,
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.circular(8),
+                                      image: const DecorationImage(
+                                        image: AssetImage(
+                                          'assets/images/icons/for_servicess.jpg',
                                         ),
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
-                                    title: Text(
-                                      service.serviceName,
-                                      style: GoogleFonts.poppins(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: screenWidth * 0.030,
-                                      ),
+                                  ),
+                                  title: Text(
+                                    service.serviceName,
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: screenWidth * 0.030,
                                     ),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          service.serviceDescription,
-                                          style: GoogleFonts.poppins(
-                                            fontSize: screenWidth * 0.023,
-                                            fontWeight: FontWeight.w400,
-                                          ),
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        service.serviceDescription,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: screenWidth * 0.023,
+                                          fontWeight: FontWeight.w400,
                                         ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              'P ${service.price.toString()}',
-                                              style: GoogleFonts.poppins(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: screenWidth * 0.030,
-                                              ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'P ${service.price.toString()}',
+                                            style: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: screenWidth * 0.030,
                                             ),
-                                            Gap(screenWidth * 0.02),
-                                            Text(
-                                              '${service.duration} mins',
-                                              style: GoogleFonts.poppins(
-                                                fontSize: screenWidth * 0.030,
-                                                fontWeight: FontWeight.w500,
-                                                color: const Color.fromARGB(
-                                                    50, 18, 18, 18),
-                                              ),
+                                          ),
+                                          Gap(screenWidth * 0.02),
+                                          Text(
+                                            '${service.duration} mins',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: screenWidth * 0.030,
+                                              fontWeight: FontWeight.w500,
+                                              color: const Color.fromARGB(
+                                                  50, 18, 18, 18),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: currentUserEmail == widget.email
+                                      ? Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.edit),
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        EditServicePage(
+                                                      userEmail: widget.email,
+                                                      service: service,
+                                                    ),
+                                                  ),
+                                                ).then((_) {
+                                                  setState(() {
+                                                    serviceController
+                                                        .fetchServicesForUsers(
+                                                            widget.email);
+                                                  });
+                                                });
+                                              },
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.delete),
+                                              onPressed: () {
+                                                serviceController
+                                                    .deleteService(service.id,
+                                                        service.userEmail)
+                                                    .then((_) {
+                                                  setState(() {
+                                                    serviceController
+                                                        .fetchServicesForUsers(
+                                                            widget.email);
+                                                  });
+                                                });
+                                              },
                                             ),
                                           ],
-                                        ),
-                                      ],
-                                    ),
-                                    trailing: currentUserEmail == widget.email
-                                        ? Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              IconButton(
-                                                icon: const Icon(Icons.edit),
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          EditServicePage(
-                                                        userEmail: widget.email,
-                                                        service: service,
-                                                      ),
-                                                    ),
-                                                  ).then((_) {
-                                                    // Refresh the services after editing a service
-                                                    setState(() {
-                                                      serviceController
-                                                          .fetchServicesForUsers(
-                                                              widget.email);
-                                                    });
-                                                  });
-                                                },
-                                              ),
-                                              IconButton(
-                                                icon: const Icon(Icons.delete),
-                                                onPressed: () {
-                                                  serviceController
-                                                      .deleteService(service.id,
-                                                          service.userEmail)
-                                                      .then((_) {
-                                                    // Refresh the services after deletion
-                                                    setState(() {
-                                                      serviceController
-                                                          .fetchServicesForUsers(
-                                                              widget.email);
-                                                    });
-                                                  });
-                                                },
-                                              ),
-                                            ],
-                                          )
-                                        : null,
-                                  ),
+                                        )
+                                      : null,
                                 );
                               },
                             );

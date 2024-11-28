@@ -1,217 +1,322 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_ratings_review_controller.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/widgets/bs_sort_ratings_page.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/widget/hairstylist_add_rating_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HairstylistReviewPage extends StatefulWidget {
-  const HairstylistReviewPage({super.key});
+  const HairstylistReviewPage({
+    super.key,
+    required this.clientEmail,
+    required this.isClient,
+    required this.email,
+  });
+  final String clientEmail;
+  final bool isClient;
+  final String email;
 
   @override
   State<HairstylistReviewPage> createState() => _ReviewPageState();
 }
 
 class _ReviewPageState extends State<HairstylistReviewPage> {
+  late TextEditingController reviewController;
+  late double rating;
+  late RatingsReviewController ratingsReviewController;
+  String? currentUserEmail;
+
+  @override
+  void initState() {
+    super.initState();
+    reviewController = TextEditingController();
+    rating = 0.0;
+    ratingsReviewController = RatingsReviewController(
+      clientEmail: widget.clientEmail,
+      reviewController: reviewController,
+      rating: rating,
+    );
+    currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Column(
-      children: [
-        Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.05,
-                right: screenWidth * 0.05,
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    'User reviews',
-                    style: GoogleFonts.poppins(
-                      color: const Color.fromARGB(255, 45, 65, 69),
-                      fontSize: screenWidth * 0.035,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            //  if (currentUserEmail == widget.email)
-            SizedBox(
-              height: screenHeight * 0.03,
-              child: OutlinedButton(
-                onPressed: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => AddServicePage(
-                  //       hairstylistEmail: widget.email,
-                  //     ),
-                  //   ),
-                  // ).then((_) {
-                  //   // Refresh the services after adding a new service
-                  //   setState(() {
-                  //     serviceController
-                  //         .fetchServicesForUsers(widget.email);
-                  //   });
-                  // });
-                },
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(
-                    color: Color.fromARGB(255, 18, 18, 18),
-                    width: 1,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: Text(
-                  'Leave a review',
-                  style: GoogleFonts.poppins(
-                    color: const Color.fromARGB(255, 18, 18, 18),
-                    fontSize: screenWidth * 0.025,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        Row(
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Padding(
+        padding: EdgeInsets.all(screenWidth * 0.05),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: screenWidth * 0.05,
-                vertical: screenHeight * 0.02,
-              ),
-              child: ClipOval(
-                // Profile Picture
-                child: Container(
-                  width: screenWidth * 0.12,
-                  height: screenWidth * 0.12,
-                  decoration: const BoxDecoration(
-                    color: Colors.transparent,
-                  ),
-                  child: Image.asset(
-                    'assets/images/icons/launcher_icon.png',
-                    width: screenWidth * 0.2,
-                    height: screenWidth * 0.2,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
               children: [
-                Row(
+                Column(
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: screenHeight * 0.02,
+                    Text(
+                      'Reviews',
+                      style: GoogleFonts.poppins(
+                        color: const Color.fromARGB(255, 45, 65, 69),
+                        fontSize: screenWidth * 0.035,
+                        fontWeight: FontWeight.w600,
                       ),
-                      child: Text(
-                        // Profile Name
-                        'Sample Name',
-                        style: GoogleFonts.poppins(
-                          color: const Color.fromARGB(255, 18, 18, 18),
-                          fontSize: screenWidth * 0.035,
-                          fontWeight: FontWeight.w500,
+                    ),
+                    Gap(screenHeight * 0.01),
+                    SizedBox(
+                      height: screenHeight * 0.03,
+                      width: screenWidth * 0.18,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return BSSortRatingPage(
+                                  email: widget.email,
+                                  clientEmail: widget.clientEmail,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                              color: Color.fromARGB(255, 48, 65, 69), width: 1),
+                          padding: EdgeInsets.only(
+                            top: screenHeight * 0.001,
+                            left: screenWidth * 0.04,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                         ),
-                      ),
-                    ),
-                    Gap(screenWidth * 0.015),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: screenHeight * 0.02,
-                        left: screenWidth * 0.35,
-                      ),
-                      child: Text(
-                        '4.4', // Sample time
-                        style: GoogleFonts.poppins(
-                            fontSize: screenHeight * 0.014,
-                            fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(255, 18, 18, 18)),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: screenHeight * 0.02,
-                        left: screenWidth * 0.01,
-                      ),
-                      child: SvgPicture.asset(
-                        'assets/images/profile_page/star.svg',
-                        width: screenWidth * 0.035,
+                        child: Row(
+                          children: [
+                            Text(
+                              'Sort',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.022,
+                                fontWeight: FontWeight.w500,
+                                color: const Color.fromARGB(255, 48, 65, 69),
+                              ),
+                            ),
+                            Gap(screenWidth * 0.02),
+                            const Icon(
+                              Icons.sort,
+                              size: 14,
+                              color: Color.fromARGB(255, 48, 65, 69),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 ),
-                Text(
-                  'Client',
-                  style: GoogleFonts.poppins(
-                    color: const Color.fromARGB(255, 118, 118, 118),
-                    fontSize: screenWidth * 0.03,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: screenHeight * 0.008,
-                    bottom: screenHeight * 0.010,
-                  ),
-                  child: Text(
-                    'Sample Description, Simeple Description,\nSimple Description.', // Description
-                    style: GoogleFonts.poppins(
-                      color: const Color.fromARGB(255, 18, 18, 18),
-                      fontSize: screenWidth * 0.030,
-                      fontWeight: FontWeight.w400,
+                Gap(screenWidth * 0.4),
+                if (widget.isClient && currentUserEmail == widget.clientEmail)
+                  SizedBox(
+                    width: screenWidth * 0.32,
+                    height: screenHeight * 0.035,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(
+                          color: Color.fromARGB(255, 18, 18, 18),
+                          width: 1,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(screenWidth * 0.05),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HairstylistAddRatingPage(
+                              clientEmail: widget.clientEmail,
+                              email: widget.email,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Leave a Review',
+                        style: GoogleFonts.poppins(
+                          color: const Color.fromARGB(255, 18, 18, 18),
+                          fontSize: screenWidth * 0.023,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
-                ),
               ],
+            ),
+            Gap(screenHeight * 0.02),
+            FutureBuilder<List<Map<String, dynamic>>>(
+              future: ratingsReviewController.fetchAccountReviewss(
+                  widget.clientEmail, widget.email),
+              builder: (context, snapshot) {
+                print('Snapshot data: ${snapshot.data}');
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          Color.fromARGB(255, 189, 49, 71)),
+                    ),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No reviews available',
+                      style: GoogleFonts.poppins(
+                        fontSize: MediaQuery.of(context).size.width * 0.04,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  );
+                } else {
+                  final reviews = snapshot.data!;
+                  return Expanded(
+                    // Constrain the ListView inside Column
+                    child: ListView.builder(
+                      itemCount: reviews.length,
+                      itemBuilder: (context, index) {
+                        final review = reviews[index];
+
+                        final String username =
+                            review['username'] ?? 'Unknown User';
+                        final String imageUrl = review['imageUrl'] ?? '';
+                        final String reviewText = review['reviewText'] ?? '';
+                        final double rating =
+                            (review['rating'] ?? 0.0).toDouble();
+
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    MediaQuery.of(context).size.width * 0.035,
+                                vertical:
+                                    MediaQuery.of(context).size.height * 0.001,
+                              ),
+                              child: ClipOval(
+                                child: (imageUrl.isNotEmpty)
+                                    ? Image.network(
+                                        imageUrl,
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.asset(
+                                        'assets/images/no_image.png',
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
+                                      ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        username,
+                                        style: GoogleFonts.poppins(
+                                          color: const Color.fromARGB(
+                                              255, 18, 18, 18),
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.035,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        rating.toString(),
+                                        style: GoogleFonts.poppins(
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.014,
+                                          fontWeight: FontWeight.w500,
+                                          color: const Color.fromARGB(
+                                              255, 18, 18, 18),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          left: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.01,
+                                          right: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.02,
+                                        ),
+                                        child: SvgPicture.asset(
+                                          'assets/images/profile_page/star.svg',
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.035,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    'Client',
+                                    style: GoogleFonts.poppins(
+                                      color: const Color.fromARGB(
+                                          255, 118, 118, 118),
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.03,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      top: MediaQuery.of(context).size.height *
+                                          0.008,
+                                      bottom:
+                                          MediaQuery.of(context).size.height *
+                                              0.010,
+                                    ),
+                                    child: Text(
+                                      reviewText,
+                                      style: GoogleFonts.poppins(
+                                        color: const Color.fromARGB(
+                                            255, 18, 18, 18),
+                                        fontSize:
+                                            MediaQuery.of(context).size.width *
+                                                0.030,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  );
+                }
+              },
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 }
-
-
-
-
- 
-              // OutlinedButton(
-              //   onPressed: () {
-              //     // Navigator.push(
-              //     //   context,
-              //     //   MaterialPageRoute(
-              //     // builder: (context) => const SignupPage(),
-              //     // ),
-              //     // );
-              //   },
-              //   style: OutlinedButton.styleFrom(
-              //     side: const BorderSide(
-              //       color: Color.fromARGB(255, 45, 65, 69),
-              //       width: 1,
-              //     ),
-              //     padding: EdgeInsets.symmetric(
-              //       vertical: screenHeight * 0.001,
-              //       horizontal: screenWidth * 0.04,
-              //     ),
-              //     shape: RoundedRectangleBorder(
-              //       borderRadius: BorderRadius.circular(15),
-              //     ),
-              //   ),
-              //   child: Text(
-              //     'write a review',
-              //     style: GoogleFonts.poppins(
-              //       color: const Color.fromARGB(255, 45, 65, 69),
-              //       fontSize: screenWidth * 0.025,
-              //       fontWeight: FontWeight.w500,
-              //     ),
-              //   ),
-              // ),

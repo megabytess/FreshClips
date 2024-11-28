@@ -10,9 +10,15 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BSBottomNavBarPage extends StatefulWidget {
-  const BSBottomNavBarPage({super.key, required this.email});
+  const BSBottomNavBarPage({
+    super.key,
+    required this.email,
+    required this.userEmail,
+  });
 
   final String email;
+  final String userEmail;
+  final bool isClient = false;
 
   @override
   State<BSBottomNavBarPage> createState() => _BottomNavBarPageState();
@@ -29,7 +35,11 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
     super.initState();
     _pages = [
       const BSHomePage(),
-      const BSAppointmentPage(),
+      BSAppointmentPage(
+        userEmail: widget.userEmail,
+        clientEmail: widget.email,
+        isClient: widget.isClient,
+      ),
       const BSMessagePage(),
       BSProfilePage(
         isClient: false,
@@ -230,7 +240,7 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
               },
             ),
             const Divider(
-              color: Color.fromARGB(255, 189, 189, 189), // Custom line color
+              color: Color.fromARGB(255, 189, 189, 189),
               thickness: 1.0,
               indent: 20.0,
               endIndent: 20.0,

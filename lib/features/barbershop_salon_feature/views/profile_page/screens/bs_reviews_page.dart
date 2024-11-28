@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_ratings_review_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/widgets/bs_add_ratings_review_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/widgets/bs_sort_ratings_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -11,9 +12,12 @@ class BSReviewPage extends StatefulWidget {
     super.key,
     required this.clientEmail,
     required this.isClient,
+    required this.email,
   });
+
   final String clientEmail;
   final bool isClient;
+  final String email;
 
   @override
   State<BSReviewPage> createState() => _BSReviewPageState();
@@ -49,19 +53,70 @@ class _BSReviewPageState extends State<BSReviewPage> {
         children: [
           Row(
             children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: screenHeight * 0.03,
-                  horizontal: screenWidth * 0.05,
-                ),
-                child: Text(
-                  'Reviews',
-                  style: GoogleFonts.poppins(
-                    color: const Color.fromARGB(255, 18, 18, 18),
-                    fontSize: screenWidth * 0.035,
-                    fontWeight: FontWeight.w600,
+              Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: screenHeight * 0.03,
+                      right: screenWidth * 0.05,
+                      left: screenWidth * 0.05,
+                    ),
+                    child: Text(
+                      'Reviews',
+                      style: GoogleFonts.poppins(
+                        color: const Color.fromARGB(255, 18, 18, 18),
+                        fontSize: screenWidth * 0.035,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
+                  Gap(screenHeight * 0.01),
+                  SizedBox(
+                    height: screenHeight * 0.03,
+                    width: screenWidth * 0.18,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return BSSortRatingPage(
+                            email: widget.email,
+                            clientEmail: widget.clientEmail,
+                          );
+                        }));
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(
+                            color: Color.fromARGB(255, 48, 65, 69), width: 1),
+                        padding: EdgeInsets.only(
+                          top: screenHeight * 0.001,
+                          left: screenWidth * 0.04,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Sort',
+                            style: GoogleFonts.poppins(
+                              fontSize: screenWidth * 0.022,
+                              fontWeight: FontWeight.w500,
+                              color: const Color.fromARGB(255, 48, 65, 69),
+                            ),
+                          ),
+                          Gap(screenWidth * 0.02),
+                          const Icon(
+                            Icons.sort,
+                            size: 14,
+                            color: Color.fromARGB(255, 48, 65, 69),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Gap(screenHeight * 0.02),
+                ],
               ),
               Gap(screenWidth * 0.38),
               if (currentUserEmail != null &&
@@ -72,7 +127,7 @@ class _BSReviewPageState extends State<BSReviewPage> {
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(
-                        color: Color.fromARGB(255, 18, 18, 18),
+                        color: Color.fromARGB(255, 48, 65, 69),
                         width: 1,
                       ),
                       shape: RoundedRectangleBorder(
@@ -94,45 +149,41 @@ class _BSReviewPageState extends State<BSReviewPage> {
                       style: GoogleFonts.poppins(
                         color: const Color.fromARGB(255, 18, 18, 18),
                         fontSize: screenWidth * 0.023,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
                 ),
             ],
           ),
-          Expanded(
-            child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: ratingsReviewController.fetchAllReviews(),
-              builder: (context, snapshot) {
-                print(snapshot.connectionState); // Add this to check the state
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          Color.fromARGB(255, 189, 49, 71)),
+          FutureBuilder<List<Map<String, dynamic>>>(
+            future: ratingsReviewController.fetchAccountReviewss(
+                widget.clientEmail, widget.email),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Color.fromARGB(255, 189, 49, 71)),
+                  ),
+                );
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(
+                  child: Text(
+                    'No reviews available',
+                    style: GoogleFonts.poppins(
+                      fontSize: MediaQuery.of(context).size.width * 0.04,
+                      color: Colors.grey,
                     ),
-                  );
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'No reviews available',
-                      style: GoogleFonts.poppins(
-                        fontSize: screenWidth * 0.04,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  );
-                } else {
-                  final reviews = snapshot.data!;
-                  print('Reviews: $reviews');
-
-                  return ListView.builder(
+                  ),
+                );
+              } else {
+                final reviews = snapshot.data!;
+                return Expanded(
+                  child: ListView.builder(
                     itemCount: reviews.length,
                     itemBuilder: (context, index) {
                       final review = reviews[index];
-
-                      // Extract reviewer data (client)
                       final String username =
                           review['username'] ?? 'Unknown User';
                       final String imageUrl = review['imageUrl'] ?? '';
@@ -145,14 +196,25 @@ class _BSReviewPageState extends State<BSReviewPage> {
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(
-                                horizontal: screenWidth * 0.035,
-                                vertical: screenHeight * 0.001),
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.035,
+                              vertical:
+                                  MediaQuery.of(context).size.height * 0.001,
+                            ),
                             child: ClipOval(
                               child: (imageUrl.isNotEmpty)
-                                  ? Image.network(review['imageUrl'] ?? '',
-                                      width: 50, height: 50, fit: BoxFit.cover)
-                                  : Image.asset('no image',
-                                      width: 50, height: 50, fit: BoxFit.cover),
+                                  ? Image.network(
+                                      imageUrl,
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      'assets/images/no_image.png',
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                    ),
                             ),
                           ),
                           Expanded(
@@ -166,7 +228,9 @@ class _BSReviewPageState extends State<BSReviewPage> {
                                       style: GoogleFonts.poppins(
                                         color: const Color.fromARGB(
                                             255, 18, 18, 18),
-                                        fontSize: screenWidth * 0.035,
+                                        fontSize:
+                                            MediaQuery.of(context).size.width *
+                                                0.035,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -174,7 +238,9 @@ class _BSReviewPageState extends State<BSReviewPage> {
                                     Text(
                                       rating.toString(),
                                       style: GoogleFonts.poppins(
-                                        fontSize: screenHeight * 0.014,
+                                        fontSize:
+                                            MediaQuery.of(context).size.height *
+                                                0.014,
                                         fontWeight: FontWeight.w500,
                                         color: const Color.fromARGB(
                                             255, 18, 18, 18),
@@ -182,12 +248,18 @@ class _BSReviewPageState extends State<BSReviewPage> {
                                     ),
                                     Padding(
                                       padding: EdgeInsets.only(
-                                        left: screenWidth * 0.01,
-                                        right: screenWidth * 0.02,
+                                        left:
+                                            MediaQuery.of(context).size.width *
+                                                0.01,
+                                        right:
+                                            MediaQuery.of(context).size.width *
+                                                0.02,
                                       ),
                                       child: SvgPicture.asset(
                                         'assets/images/profile_page/star.svg',
-                                        width: screenWidth * 0.035,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.035,
                                       ),
                                     ),
                                   ],
@@ -197,36 +269,41 @@ class _BSReviewPageState extends State<BSReviewPage> {
                                   style: GoogleFonts.poppins(
                                     color: const Color.fromARGB(
                                         255, 118, 118, 118),
-                                    fontSize: screenWidth * 0.03,
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            0.03,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(
-                                    top: screenHeight * 0.008,
-                                    bottom: screenHeight * 0.010,
+                                    top: MediaQuery.of(context).size.height *
+                                        0.008,
+                                    bottom: MediaQuery.of(context).size.height *
+                                        0.010,
                                   ),
                                   child: Text(
                                     reviewText,
                                     style: GoogleFonts.poppins(
                                       color:
                                           const Color.fromARGB(255, 18, 18, 18),
-                                      fontSize: screenWidth * 0.030,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.030,
                                       fontWeight: FontWeight.w400,
                                     ),
                                   ),
                                 ),
-                                Gap(screenHeight * 0.01),
                               ],
                             ),
                           ),
                         ],
                       );
                     },
-                  );
-                }
-              },
-            ),
+                  ),
+                );
+              }
+            },
           ),
         ],
       ),

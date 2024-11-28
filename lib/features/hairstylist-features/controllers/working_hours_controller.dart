@@ -24,7 +24,6 @@ class WorkingHoursController extends ChangeNotifier {
     try {
       final firestore = FirebaseFirestore.instance;
 
-      // Fetch the document directly by its email
       final docRef =
           firestore.collection('availability').where('email', isEqualTo: email);
       final docSnapshot = await docRef.get();

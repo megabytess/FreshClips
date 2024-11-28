@@ -2,8 +2,8 @@ class BookingAppointment {
   final String appointmentId;
   final String barbershopName;
   final String barbershopEmail;
-  final DateTime createdAt;
-  final DateTime appointmentDateTime;
+  // final DateTime createdAt;
+  // final DateTime appointmentDateTime;
   final List<String> servicesPicked;
   final double servicePrice;
   final String appointmentNotes;
@@ -14,8 +14,8 @@ class BookingAppointment {
     required this.appointmentId,
     required this.barbershopName,
     required this.barbershopEmail,
-    required this.createdAt,
-    required this.appointmentDateTime,
+    // required this.createdAt,
+    // required this.appointmentDateTime,
     required this.servicesPicked,
     required this.servicePrice,
     required this.appointmentNotes,
@@ -29,8 +29,8 @@ class BookingAppointment {
       'appointmentId': appointmentId,
       'barbershopName': barbershopName,
       'barbershopEmail': barbershopEmail,
-      'createdAt': createdAt.toIso8601String(),
-      'appointmentDateTime': appointmentDateTime.toIso8601String(),
+      // 'createdAt': createdAt.toIso8601String(),
+      // 'appointmentDateTime': appointmentDateTime.toIso8601String(),
       'servicesPicked': servicesPicked,
       'servicePrice': servicePrice,
       'appointmentNotes': appointmentNotes,
@@ -45,8 +45,8 @@ class BookingAppointment {
       appointmentId: map['appointmentId'] ?? '',
       barbershopName: map['barbershopName'] ?? '',
       barbershopEmail: map['barbershopEmail'] ?? '',
-      createdAt: DateTime.parse(map['createdAt']),
-      appointmentDateTime: DateTime.parse(map['appointmentDateTime']),
+      // createdAt: DateTime.parse(map['createdAt']),
+      // appointmentDateTime: DateTime.parse(map['appointmentDateTime']),
       servicesPicked: List<String>.from(map['servicesPicked'] ?? []),
       servicePrice: map['servicePrice']?.toDouble() ?? 0.0,
       appointmentNotes: map['appointmentNotes'] ?? '',

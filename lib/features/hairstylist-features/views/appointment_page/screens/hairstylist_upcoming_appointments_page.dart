@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appointment_page/widgets/tab_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HairstylistUpcomingAppointmentPage extends StatelessWidget {
-  const HairstylistUpcomingAppointmentPage({super.key});
+  const HairstylistUpcomingAppointmentPage({super.key, required this.userId});
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +24,11 @@ class HairstylistUpcomingAppointmentPage extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Center(
-        child: BSTabBarPage(),
-      ),
+      // body: Center(
+      //   child: BSTabBarPage(
+      //     userId: userId,
+      //   ),
+      // ),
     );
   }
 }

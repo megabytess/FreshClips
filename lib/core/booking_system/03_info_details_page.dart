@@ -7,19 +7,21 @@ import 'package:google_fonts/google_fonts.dart';
 class InfoDetailsPage extends StatefulWidget {
   const InfoDetailsPage({
     super.key,
-    required this.userId,
-    required this.accountName,
+    required this.userEmail,
+    // required this.accountName,
     required this.selectedTime,
-    required this.userType,
+    // required this.userType,
     required this.selectedServices,
     required this.selectedDate,
     required Map<String, Object> bookingData,
+    required this.clientEmail,
   });
 
-  final String userId;
-  final String accountName;
+  final String clientEmail;
+  final String userEmail;
+  // final String accountName;
   final TimeOfDay selectedTime;
-  final String userType;
+  // final String userType;
   final List<Service> selectedServices;
   final DateTime selectedDate;
 
@@ -42,7 +44,7 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          widget.accountName,
+          'Booking Details',
           style: GoogleFonts.poppins(
             fontSize: screenWidth * 0.04,
             fontWeight: FontWeight.w600,
@@ -51,9 +53,10 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
         backgroundColor: Colors.transparent,
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.05,
-          vertical: screenHeight * 0.02,
+        padding: EdgeInsets.only(
+          left: screenWidth * 0.05,
+          right: screenWidth * 0.05,
+          top: screenHeight * 0.04,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -148,10 +151,12 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => BookingSummaryPage(
-                            userId: widget.userId,
-                            accountName: widget.accountName,
+                            // profileEmail: widget.accountName,
+                            // isClient: widget.userType == 'client',
+                            userEmail: widget.userEmail,
+                            // accountName: widget.accountName,
                             selectedTime: widget.selectedTime,
-                            userType: widget.userType,
+                            // userType: widget.userType,
                             selectedServices: widget.selectedServices,
                             selectedDate: widget.selectedDate,
                             clientName: clientNameController.text,
@@ -161,6 +166,10 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                             description:
                                 widget.selectedServices[0].serviceDescription,
                             price: widget.selectedServices[0].price,
+                            // username: widget.accountName,
+                            clientEmail: widget.clientEmail,
+                            // isClient: widget.clientEmail == widget.userEmail,
+                            profileEmail: widget.clientEmail,
                           ),
                         ),
                       );

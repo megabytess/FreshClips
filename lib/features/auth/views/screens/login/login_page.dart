@@ -80,6 +80,8 @@ class _LoginPageState extends State<LoginPage> {
             MaterialPageRoute(
                 builder: (context) => BottomNavBarPage(
                       email: emailController.text,
+                      userId: userId,
+                      clientEmail: emailController.text,
                     )),
           );
         } else if (userType == 'Barbershop_Salon') {
@@ -89,6 +91,7 @@ class _LoginPageState extends State<LoginPage> {
             MaterialPageRoute(
                 builder: (context) => BSBottomNavBarPage(
                       email: emailController.text,
+                      userEmail: emailController.text,
                     )),
           );
         } else if (userType == 'Client') {
@@ -98,6 +101,7 @@ class _LoginPageState extends State<LoginPage> {
             MaterialPageRoute(
                 builder: (context) => ClientBottomNavBarPage(
                       email: emailController.text,
+                      clientEmail: emailController.text,
                     )),
           );
         }
