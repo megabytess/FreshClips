@@ -6,19 +6,21 @@ import 'package:freshclips_capstone/features/barbershop_salon_feature/controller
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class BSRatingsReviewPage extends StatefulWidget {
-  final String clientEmail;
-
-  const BSRatingsReviewPage({
+class HairstylistAddRatingPage extends StatefulWidget {
+  const HairstylistAddRatingPage({
     super.key,
     required this.clientEmail,
+    required this.email,
   });
+  final String clientEmail;
+  final String email;
 
   @override
-  RatingsReviewPageState createState() => RatingsReviewPageState();
+  State<HairstylistAddRatingPage> createState() =>
+      _HairstylistAddRatingPageState();
 }
 
-class RatingsReviewPageState extends State<BSRatingsReviewPage> {
+class _HairstylistAddRatingPageState extends State<HairstylistAddRatingPage> {
   late RatingsReviewController ratingsReviewController =
       RatingsReviewController(
     clientEmail: widget.clientEmail,
@@ -47,25 +49,23 @@ class RatingsReviewPageState extends State<BSRatingsReviewPage> {
   void submitReview(String clientEmail, String email) async {
     if (rating > 0 && reviewController.text.isNotEmpty) {
       try {
-        // Validate that both clientEmail and reviewedEmail are provided
         if (clientEmail.isEmpty || email.isEmpty) {
           print('Client email or reviewed email is empty');
           return;
         }
 
         // Fetch the client document (reviewer)
-        final userQuerySnapshot = await FirebaseFirestore.instance
+        final clientQuerySnapshot = await FirebaseFirestore.instance
             .collection('user')
             .where('email', isEqualTo: clientEmail)
             .get();
 
-        if (userQuerySnapshot.docs.isNotEmpty) {
-          final clientDoc = userQuerySnapshot.docs.first;
+        if (clientQuerySnapshot.docs.isNotEmpty) {
+          final clientDoc = clientQuerySnapshot.docs.first;
 
           final imageUrl = clientDoc.data()['imageUrl'] ?? '';
           final username = clientDoc.data()['username'] ?? 'Anonymous';
 
-          // Add the review document
           await FirebaseFirestore.instance.collection('reviews').add({
             'rating': rating,
             'reviewText': reviewController.text,
@@ -163,12 +163,11 @@ class RatingsReviewPageState extends State<BSRatingsReviewPage> {
                   try {
                     final clientEmail =
                         FirebaseAuth.instance.currentUser?.email ?? '';
-                    final email = widget.clientEmail;
-
+                    final email = widget.email;
                     print('Client Email: $clientEmail');
                     print('Reviewed Email: $email');
-
                     Navigator.pop(context);
+
                     if (clientEmail.isNotEmpty && email.isNotEmpty) {
                       submitReview(clientEmail, email);
                     } else {

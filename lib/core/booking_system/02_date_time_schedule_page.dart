@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/core/booking_system/03_info_details_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/models/services_model.dart';
@@ -10,15 +9,17 @@ class DateTimeSchedulePage extends StatefulWidget {
   const DateTimeSchedulePage({
     super.key,
     required this.selectedServices,
-    required this.userType,
-    required this.accountName,
-    required this.userId,
+    // required this.userType,
+
+    required this.userEmail,
+    required this.clientEmail,
   });
 
   final List<Service> selectedServices;
-  final String userType;
-  final String accountName;
-  final String userId;
+  // final String userType;
+
+  final String userEmail;
+  final String clientEmail;
 
   @override
   State<DateTimeSchedulePage> createState() => _DateTimeSchedulePageState();
@@ -28,12 +29,12 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
   TimeOfDay? selectedTime;
-  List<TimeOfDay> unavailableTimeSlots = []; // List to hold booked time slots
+  List<TimeOfDay> unavailableTimeSlots = [];
 
   List<TimeOfDay> getTimeSlots() {
     List<TimeOfDay> timeSlots = [];
-    TimeOfDay startTime = const TimeOfDay(hour: 10, minute: 0); // 10:00 AM
-    TimeOfDay endTime = const TimeOfDay(hour: 20, minute: 0); // 8:00 PM
+    TimeOfDay startTime = const TimeOfDay(hour: 9, minute: 15);
+    TimeOfDay endTime = const TimeOfDay(hour: 20, minute: 0);
 
     while (startTime.hour < endTime.hour ||
         (startTime.hour == endTime.hour &&
@@ -49,27 +50,8 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
     return timeSlots;
   }
 
-  Future<void> fetchUnavailableTimeSlots(DateTime date) async {
-    // Query Firestore for appointments on the selected date
-    final snapshot = await FirebaseFirestore.instance
-        .collection('appointments')
-        .where('selectedDate',
-            isEqualTo: Timestamp.fromDate(
-                date)) // Ensure we're filtering by the correct date
-        .get();
-
-    // Map the fetched documents to unavailable time slots
-    unavailableTimeSlots = snapshot.docs.map((doc) {
-      final hour = doc['hour'] as int;
-      final minute = doc['minute'] as int;
-      return TimeOfDay(hour: hour, minute: minute);
-    }).toList();
-
-    setState(() {});
-  }
-
   Future<void> selectTime(BuildContext context) async {
-    await fetchUnavailableTimeSlots(_selectedDay);
+    getTimeSlots();
 
     final List<TimeOfDay> timeSlots = getTimeSlots();
 
@@ -132,29 +114,33 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
 
   Future<void> confirmBooking() async {
     if (selectedTime != null) {
-      // Prepare the booking data but do not write to Firestore yet
+      // Prepare the booking data to pass to the next page
       final bookingData = {
-        'userId': widget.userId,
-        'accountName': widget.accountName,
+        'userId': widget.userEmail,
+
         'selectedServices':
             widget.selectedServices.map((service) => service.toMap()).toList(),
-        'userType': widget.userType,
+        // 'userType': widget.userType,
         'selectedDate': _selectedDay,
-        'selectedTime': selectedTime!,
+        // Store hour and minute separately
+        'hour': selectedTime!.hour,
+        'minute': selectedTime!.minute,
       };
 
-      // Navigate to the confirmation page with booking data
+      // Navigate to the confirmation page with the booking data
       Navigator.push(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(
           builder: (context) => InfoDetailsPage(
-            bookingData: bookingData,
-            accountName: widget.accountName,
+            bookingData: bookingData, // Pass the data directly
+
             selectedDate: _selectedDay,
             selectedTime: selectedTime!,
             selectedServices: widget.selectedServices,
-            userType: widget.userType,
-            userId: widget.userId,
+            // userType: widget.userType,
+            userEmail: widget.userEmail,
+            clientEmail: widget.clientEmail,
           ),
         ),
       );
@@ -170,7 +156,7 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          widget.accountName,
+          'Time & Date',
           style: GoogleFonts.poppins(
             fontSize: screenWidth * 0.04,
             fontWeight: FontWeight.w600,
@@ -200,7 +186,7 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
                       _selectedDay = selectedDay;
                       _focusedDay = focusedDay;
                     });
-                    fetchUnavailableTimeSlots(selectedDay);
+                    getTimeSlots();
                   },
                   calendarStyle: const CalendarStyle(
                     selectedDecoration: BoxDecoration(

@@ -10,8 +10,15 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BottomNavBarPage extends StatefulWidget {
-  const BottomNavBarPage({super.key, required this.email});
+  const BottomNavBarPage({
+    super.key,
+    required this.email,
+    required this.userId,
+    required this.clientEmail,
+  });
   final String email;
+  final String userId;
+  final String clientEmail;
 
   @override
   State<BottomNavBarPage> createState() => _BottomNavBarPageState();
@@ -28,9 +35,17 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
     super.initState();
     _pages = [
       HairstylistHomePage(),
-      HairstylistAppointmentPage(),
+      HairstylistAppointmentPage(
+        userEmail: widget.email,
+        clientEmail: widget.clientEmail,
+        isClient: true,
+      ),
       HairstylistMessagePage(),
-      HairstylistProfilePage(email: widget.email, isClient: false),
+      HairstylistProfilePage(
+        email: widget.email,
+        isClient: false,
+        clientEmail: widget.clientEmail,
+      ),
     ];
   }
 

@@ -5,13 +5,7 @@ import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appo
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class BSDeclinedPage extends StatelessWidget {
-  BSDeclinedPage({
-    super.key,
-    required this.userEmail,
-    required this.clientEmail,
-    // required this.userType,
-  });
+class BSApprovedPage extends StatelessWidget {
   final String userEmail;
   final String clientEmail;
   // final String userType;
@@ -19,6 +13,14 @@ class BSDeclinedPage extends StatelessWidget {
 
   final AppointmentsController appointmentsController =
       AppointmentsController();
+
+  BSApprovedPage({
+    super.key,
+    required this.userEmail,
+    required this.clientEmail,
+    // required this.userType,
+  });
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -30,7 +32,7 @@ class BSDeclinedPage extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('appointments')
             .where('bookedUser', isEqualTo: userEmail)
-            .where('status', isEqualTo: 'Declined')
+            .where('status', isEqualTo: 'Approved')
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -45,7 +47,7 @@ class BSDeclinedPage extends StatelessWidget {
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(
               child: Text(
-                'No Declined Appointments',
+                'No Approved Appointments',
                 style: GoogleFonts.poppins(
                   fontSize: screenWidth * 0.04,
                   fontWeight: FontWeight.w600,
@@ -62,7 +64,6 @@ class BSDeclinedPage extends StatelessWidget {
             itemBuilder: (context, index) {
               var appointment = appointments[index];
               final clientName = appointment['clientName'];
-              // final selectedDate = appointment['selectedDate'];
               final selectedTime = appointment['selectedTime'];
               final totalPrice = appointment['selectedServices']
                   // ignore: avoid_types_as_parameter_names
@@ -139,9 +140,9 @@ class BSDeclinedPage extends StatelessWidget {
                                 color: const Color.fromARGB(255, 18, 18, 18),
                               ),
                             ),
-                            Gap(screenWidth * 0.18),
+                            Gap(screenWidth * 0.15),
                             Text(
-                              'Declined',
+                              'Approved',
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.04,
                                 fontWeight: FontWeight.w700,

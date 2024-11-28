@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/client_notification_page.dart';
 import 'package:freshclips_capstone/features/client-features/views/home_page/screens/client_home_page.dart';
 import 'package:freshclips_capstone/features/client-features/views/message_page/screens/client_message_page.dart';
 import 'package:freshclips_capstone/features/client-features/views/nearby_page/screens/client_nearby_page.dart';
-import 'package:freshclips_capstone/features/client-features/views/profile_page/screens/client_home_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/profile_page/screens/client_profile_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ClientBottomNavBarPage extends StatefulWidget {
-  const ClientBottomNavBarPage({super.key, required this.email});
+  const ClientBottomNavBarPage({
+    super.key,
+    required this.email,
+    required this.clientEmail,
+  });
   final String email;
+  final String clientEmail;
+
   @override
   State<ClientBottomNavBarPage> createState() => _BottomNavBarPageState();
 }
@@ -29,7 +36,9 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
       const ClientHomePage(),
       const ClientNearbyPage(),
       ClientMessagePage(email: widget.email),
-      const ClientProfilePage(),
+      ClientProfilePage(
+        clientEmail: widget.clientEmail,
+      ),
     ];
   }
 
@@ -231,6 +240,36 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
             ),
             ListTile(
               leading: Icon(
+                Icons.notifications_active_rounded,
+                size: screenWidth * 0.065,
+                color: const Color.fromARGB(255, 48, 65, 69),
+              ),
+              title: Text(
+                'Notifications',
+                style: GoogleFonts.poppins(
+                  fontSize: screenWidth * 0.035,
+                  fontWeight: FontWeight.w500,
+                  color: const Color.fromARGB(255, 18, 18, 18),
+                ),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: screenWidth * 0.04,
+                color: const Color.fromARGB(255, 18, 18, 18),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ClientNotificationPage(
+                      clientEmail: widget.clientEmail,
+                    ),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(
                 Icons.settings_rounded,
                 color: const Color.fromARGB(255, 48, 65, 69),
                 size: screenWidth * 0.07,
@@ -257,7 +296,7 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
                 //   );
               },
             ),
-            Gap(screenHeight * 0.45),
+            Gap(screenHeight * 0.38),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
               child: ElevatedButton(
