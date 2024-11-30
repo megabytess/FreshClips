@@ -92,6 +92,7 @@ flutter:
     - assets/images/icons/logo_icon.png
     - assets/images/icons/launcher_icon.png
     - assets/images/icons/for_servicess.jpg
+    - assets/images/icons/drawer_pic.jpg
     - assets/images/bottomnav_bar_page/home_fill.svg
     - assets/images/bottomnav_bar_page/calendar_fill.svg
     - assets/images/bottomnav_bar_page/message_fill.svg

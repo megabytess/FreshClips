@@ -1,47 +1,58 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Client {
   final String id;
-  final String firstName;
-  final String lastName;
   final String email;
   final String phoneNumber;
-  final String location;
   final String imageUrl;
   final String password;
+  final String firstName;
+  final String lastName;
+  final String username;
+  final String location;
+  
 
   Client({
     required this.id,
-    required this.firstName,
-    required this.lastName,
     required this.email,
     required this.phoneNumber,
-    required this.location,
     required this.imageUrl,
     required this.password,
+    required this.firstName,
+    required this.lastName,
+    required this.username,
+    required this.location,
+
   });
 
-  factory Client.fromJson(Map<String, dynamic> json) {
+  // Convert client instance to Map<String, dynamic>
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'email': email,
+      'phoneNumber': phoneNumber,
+      'imageUrl': imageUrl,
+      'password': password,
+      'firstName': firstName,
+      'lastName': lastName,
+      'username': username,
+      'location': location,
+    };
+  }
+
+  // Convert Firestore document snapshot to client instance
+  factory Client.fromDocument(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
     return Client(
-      id: json['id'],
-      firstName: json['firstName'],
-      lastName: json['lastName'],
-      email: json['email'],
-      phoneNumber: json['phoneNumber'],
-      location: json['location'],
-      imageUrl: json['imageUrl'],
-      password: json['password'],
+      id: doc.id,
+      email: data['email'],
+      phoneNumber: data['phoneNumber'],
+      imageUrl: data['imageUrl'],
+      password: data['password'],
+      firstName: data['firstName'],
+      lastName: data['lastName'],
+      username: data['username'],
+      location: data['location'],
     );
   }
 }
-
-
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:freshclips_capstone/models/client.dart';
-
-// Future<Client> getClientById(String clientId) async {
-//   final clientDoc = await FirebaseFirestore.instance.collection('clients').doc(clientId).get();
-//   if (clientDoc.exists) {
-//     return Client.fromJson(clientDoc.data()!);
-//   } else {
-//     throw Exception('Client not found');
-//   }
-// }

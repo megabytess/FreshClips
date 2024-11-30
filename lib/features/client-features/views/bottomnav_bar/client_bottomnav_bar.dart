@@ -38,6 +38,7 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
       ClientMessagePage(email: widget.email),
       ClientProfilePage(
         clientEmail: widget.clientEmail,
+        email: widget.email,
       ),
     ];
   }
@@ -57,6 +58,7 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
       backgroundColor: const Color.fromARGB(255, 248, 248, 248),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         centerTitle: true,
         title: SvgPicture.asset(
           'assets/images/landing_page/freshclips_logo.svg',
@@ -64,7 +66,7 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
           width: screenWidth * 0.05,
         ),
       ),
-      drawer: Drawer(
+      endDrawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
@@ -78,16 +80,14 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
                         bottomRight: Radius.circular(screenWidth * 0.03),
                       ),
                       image: const DecorationImage(
-                        image: AssetImage(
-                            'assets/images/profile_page/cover_pic.jpg'),
+                        image: AssetImage('assets/images/icons/drawer_pic.jpg'),
                         fit: BoxFit.fill,
                       ),
                     ),
                   ),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.black
-                          .withOpacity(0.5), // Adjust overlay opacity
+                      color: Colors.black.withOpacity(0.5),
                       borderRadius: BorderRadius.only(
                         bottomRight: Radius.circular(screenWidth * 0.03),
                       ),

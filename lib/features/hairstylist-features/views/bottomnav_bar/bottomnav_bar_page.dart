@@ -65,13 +65,14 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
+        automaticallyImplyLeading: false,
         title: SvgPicture.asset(
           'assets/images/landing_page/freshclips_logo.svg',
           height: screenHeight * 0.05,
           width: screenWidth * 0.05,
         ),
       ),
-      drawer: Drawer(
+      endDrawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
@@ -85,16 +86,14 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
                         bottomRight: Radius.circular(screenWidth * 0.03),
                       ),
                       image: const DecorationImage(
-                        image: AssetImage(
-                            'assets/images/profile_page/cover_pic.jpg'),
+                        image: AssetImage('assets/images/icons/drawer_pic.jpg'),
                         fit: BoxFit.fill,
                       ),
                     ),
                   ),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.black
-                          .withOpacity(0.5), // Adjust overlay opacity
+                      color: Colors.black.withOpacity(0.5),
                       borderRadius: BorderRadius.only(
                         bottomRight: Radius.circular(screenWidth * 0.03),
                       ),
@@ -239,7 +238,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
               },
             ),
             const Divider(
-              color: Color.fromARGB(255, 189, 189, 189), // Custom line color
+              color: Color.fromARGB(255, 189, 189, 189),
               thickness: 1.0,
               indent: 20.0,
               endIndent: 20.0,
@@ -315,6 +314,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.transparent,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: SvgPicture.asset(

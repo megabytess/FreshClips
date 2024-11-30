@@ -78,10 +78,7 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
           password: passwordController.text.trim(),
         );
 
-        // Get the userId from the created user
         final userId = userCredential.user!.uid;
-
-        // Upload the user image to Firebase Storage
         final storageRef = FirebaseStorage.instance
             .ref()
             .child('user_image')

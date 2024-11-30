@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:freshclips_capstone/features/admin-features/screens/admin_home_page.dart';
+import 'package:freshclips_capstone/features/admin-features/screens/admin_bottomnab_bar_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/bs_bottomnav_bar.dart';
 import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/client_bottomnav_bar.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/bottomnav_bar_page.dart';
@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     // TODO: implement initState
-    emailController.text = 'client@gmail.com';
+    emailController.text = 'superadmin@freshclips.com';
     passwordController.text = '123456789';
     super.initState();
   }
@@ -37,26 +37,23 @@ class _LoginPageState extends State<LoginPage> {
   // Method to sign in the user
   void loginUser() async {
     try {
-      // Authenticate the user with email and password
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
       );
 
-      // Check if it's the Super Admin login
       if (emailController.text.trim() == 'superadmin@freshclips.com' &&
           passwordController.text.trim() == '123456789') {
-        // Navigate to AdminHomePage
         Navigator.pushReplacement(
           // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
-              builder: (context) => AdminHomePage(
+              builder: (context) => AdmingBottomNavbar(
                     email: emailController.text,
                   )),
         );
-        return; // Exit here since it's the admin login
+        return;
       }
 
       // Get the current user's UID
@@ -66,13 +63,10 @@ class _LoginPageState extends State<LoginPage> {
       DocumentSnapshot userDoc =
           await FirebaseFirestore.instance.collection('user').doc(userId).get();
 
-      // Check if the document exists
       if (userDoc.exists) {
-        // Get the userType from the Firestore document
         String userType = userDoc.get('userType');
-        print("User Type: $userType"); // Debugging line to check userType
+        print("User Type: $userType");
 
-        // Navigate to different pages based on userType
         if (userType == 'Hairstylist') {
           Navigator.pushReplacement(
             // ignore: use_build_context_synchronously

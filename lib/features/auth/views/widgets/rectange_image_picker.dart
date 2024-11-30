@@ -45,26 +45,25 @@ class _PickerImageState extends State<RectanglePickerImage> {
         getImagePickerRectangle();
       },
       child: Container(
-        width: screenWidth * 0.3,
+        width: double.infinity,
         height: screenWidth * 0.3,
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(15), // Rounded square
+          borderRadius: BorderRadius.circular(15),
         ),
         child: _image != null
             ? ClipRRect(
-                borderRadius: BorderRadius.circular(15), // Matching radius
+                borderRadius: BorderRadius.circular(15),
                 child: Image.file(
                   _image!.absolute,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fitWidth,
                   width: screenWidth * 0.3,
                   height: screenWidth * 0.3,
                 ),
               )
             : Icon(
                 Icons.add_photo_alternate_rounded,
-                size:
-                    screenWidth * 0.1, // Adjust icon size based on screen width
+                size: screenWidth * 0.1,
                 color: Colors.grey,
               ),
       ),

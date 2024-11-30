@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
 import 'package:freshclips_capstone/features/auth/views/widgets/image_picker.dart';
+import 'package:freshclips_capstone/features/auth/views/widgets/rectange_image_picker.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -31,6 +32,7 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
   final skillsController = TextEditingController();
   final yearsOfExperienceController = TextEditingController();
   File? selectUserImage;
+  File? selectVerifyImage;
 
   void signupHairstylist() async {
     if (lastNameController.text.trim().isEmpty ||
@@ -43,10 +45,13 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
         skillsController.text.trim().isEmpty ||
         yearsOfExperienceController.text.trim().isEmpty ||
         selectUserImage == null ||
+        selectVerifyImage == null ||
+        !RegExp(r"^[a-zA-Z]+(?:[' -][a-zA-Z]+)*$")
+            .hasMatch(firstNameController.text) ||
+        !RegExp(r"^[a-zA-Z]+(?:[' -][a-zA-Z]+)*$")
+            .hasMatch(lastNameController.text) ||
         !emailController.text.contains('@') ||
-        !emailController.text.contains('.com') ||
-        !RegExp(r'^[a-zA-Z]+$').hasMatch(firstNameController.text) ||
-        !RegExp(r'^[a-zA-Z]+$').hasMatch(lastNameController.text)) {
+        !emailController.text.contains('.com')) {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -94,7 +99,14 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
             .child('$userId.jpg');
         await storageRef.putFile(selectUserImage!);
 
-        // Get the download URL of the uploaded image
+        final verifyImageRef = FirebaseStorage.instance
+            .ref()
+            .child('verify_image')
+            .child('$userId.jpg');
+        await verifyImageRef.putFile(selectVerifyImage!);
+
+        final verifyImageUrl = await verifyImageRef.getDownloadURL();
+
         final imageUrl = await storageRef.getDownloadURL();
 
         // Set the user data in Firestore
@@ -109,7 +121,7 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
           'skills': skillsController.text,
           'yearsOfExperience': yearsOfExperienceController.text,
           'imageUrl': imageUrl,
-          'userType': "Hairstylist",
+          'verifyImageUrl': verifyImageUrl,
         });
 
         // Show success dialog and navigate back to landing page
@@ -133,7 +145,6 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
             actions: [
               TextButton(
                 onPressed: () {
-                  // Close the dialog
                   Navigator.pop(ctx);
 
                   // Navigate to LandingPage
@@ -578,6 +589,21 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
                     ),
                   ),
                 ),
+              ),
+              Gap(screenHeight * 0.01),
+              Text(
+                'Upload an ID to verify your identity.',
+                style: GoogleFonts.poppins(
+                  fontSize: screenWidth * 0.04,
+                  color: const Color.fromARGB(255, 23, 23, 23),
+                ),
+              ),
+              Center(
+                child: RectanglePickerImage(onImagePick: (File pickedImage) {
+                  setState(() {
+                    selectUserImage = pickedImage;
+                  });
+                }),
               ),
               Gap(screenHeight * 0.01),
               const Divider(
