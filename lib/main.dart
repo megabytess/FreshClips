@@ -10,11 +10,11 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
+  runApp(const FreshClips());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class FreshClips extends StatelessWidget {
+  const FreshClips({super.key});
 
   @override
   Widget build(BuildContext context) {
