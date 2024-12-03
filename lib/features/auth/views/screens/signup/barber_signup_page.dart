@@ -32,7 +32,7 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
   final skillsController = TextEditingController();
   final yearsOfExperienceController = TextEditingController();
   File? selectUserImage;
-  File? selectVerifyImage;
+  File? verifyImage;
 
   void signupHairstylist() async {
     if (lastNameController.text.trim().isEmpty ||
@@ -45,13 +45,14 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
         skillsController.text.trim().isEmpty ||
         yearsOfExperienceController.text.trim().isEmpty ||
         selectUserImage == null ||
-        selectVerifyImage == null ||
+        verifyImage == null ||
         !RegExp(r"^[a-zA-Z]+(?:[' -][a-zA-Z]+)*$")
             .hasMatch(firstNameController.text) ||
         !RegExp(r"^[a-zA-Z]+(?:[' -][a-zA-Z]+)*$")
             .hasMatch(lastNameController.text) ||
         !emailController.text.contains('@') ||
         !emailController.text.contains('.com')) {
+      // Show invalid input dialog
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -62,7 +63,7 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
             ),
           ),
           content: Text(
-            'Please complete the form correctly. Only use letters in the name fields.',
+            'Please complete the form correctly and upload both images.',
             style: GoogleFonts.poppins(
               fontSize: MediaQuery.of(context).size.width * 0.04,
             ),
@@ -89,27 +90,22 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
           password: passwordController.text.trim(),
         );
 
-        // Get the userId from the created user
         final userId = userCredential.user!.uid;
 
-        // Upload the user image to Firebase Storage
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('user_image')
-            .child('$userId.jpg');
-        await storageRef.putFile(selectUserImage!);
+        // Upload the first image
+        final userImageRef =
+            FirebaseStorage.instance.ref().child('user_images/$userId.jpg');
+        await userImageRef.putFile(selectUserImage!);
+        final imageUrl = await userImageRef.getDownloadURL();
 
+        // Upload the second image
         final verifyImageRef = FirebaseStorage.instance
             .ref()
-            .child('verify_image')
-            .child('$userId.jpg');
-        await verifyImageRef.putFile(selectVerifyImage!);
-
+            .child('verification_images/$userId.jpg');
+        await verifyImageRef.putFile(verifyImage!);
         final verifyImageUrl = await verifyImageRef.getDownloadURL();
 
-        final imageUrl = await storageRef.getDownloadURL();
-
-        // Set the user data in Firestore
+        // Save user data in Firestore
         await FirebaseFirestore.instance.collection('user').doc(userId).set({
           'lastName': lastNameController.text,
           'firstName': firstNameController.text,
@@ -117,16 +113,16 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
           'email': emailController.text,
           'phoneNumber': phoneNumberController.text,
           'location': locationController.text,
-          'password': passwordController.text,
           'skills': skillsController.text,
           'yearsOfExperience': yearsOfExperienceController.text,
           'imageUrl': imageUrl,
           'verifyImageUrl': verifyImageUrl,
+          'accountStatus': 'Pending',
+          'userType': "Hairstylist",
         });
 
-        // Show success dialog and navigate back to landing page
+        // Show success dialog
         showDialog(
-          // ignore: use_build_context_synchronously
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text(
@@ -151,7 +147,8 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const LandingPage()),
+                      builder: (context) => const LandingPage(),
+                    ),
                   );
                 },
                 child: Text(
@@ -162,64 +159,21 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
             ],
           ),
         );
-      } on FirebaseAuthException catch (e) {
-        // Handle Firebase Authentication errors
-        String errorMessage = '';
-        if (e.code == 'weak-password') {
-          errorMessage = 'The password provided is too weak.';
-        } else if (e.code == 'email-already-in-use') {
-          errorMessage = 'The account already exists for that email.';
-        } else {
-          errorMessage = 'An error occurred during signup. Please try again.';
-        }
-
-        // Show error dialog
-        showDialog(
-          // ignore: use_build_context_synchronously
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(
-              'Signup Error',
-              style: GoogleFonts.poppins(
-                fontSize: MediaQuery.of(ctx).size.width * 0.05,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            content: Text(
-              errorMessage,
-              style: GoogleFonts.poppins(
-                fontSize: MediaQuery.of(ctx).size.width * 0.04,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                },
-                child: Text(
-                  'OK',
-                  style: GoogleFonts.poppins(),
-                ),
-              ),
-            ],
-          ),
-        );
       } catch (e) {
-        // Handle general errors
+        // Handle errors
         showDialog(
-          // ignore: use_build_context_synchronously
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text(
               'Error',
               style: GoogleFonts.poppins(
-                fontSize: MediaQuery.of(ctx).size.width * 0.045,
+                fontSize: MediaQuery.of(context).size.width * 0.045,
               ),
             ),
             content: Text(
               'An error occurred: ${e.toString()}',
               style: GoogleFonts.poppins(
-                fontSize: MediaQuery.of(ctx).size.width * 0.04,
+                fontSize: MediaQuery.of(context).size.width * 0.04,
               ),
             ),
             actions: [
@@ -601,7 +555,7 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
               Center(
                 child: RectanglePickerImage(onImagePick: (File pickedImage) {
                   setState(() {
-                    selectUserImage = pickedImage;
+                    verifyImage = pickedImage;
                   });
                 }),
               ),

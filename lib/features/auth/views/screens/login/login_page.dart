@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:freshclips_capstone/features/admin-features/screens/admin_bottomnab_bar_page.dart';
+import 'package:freshclips_capstone/features/auth/views/widgets/declined_account_page.dart';
+import 'package:freshclips_capstone/features/auth/views/widgets/pending_account_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/bs_bottomnav_bar.dart';
 import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/client_bottomnav_bar.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/bottomnav_bar_page.dart';
@@ -29,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     // TODO: implement initState
-    emailController.text = 'superadmin@freshclips.com';
+    emailController.text = '@gmail.com';
     passwordController.text = '123456789';
     super.initState();
   }
@@ -58,27 +60,49 @@ class _LoginPageState extends State<LoginPage> {
 
       // Get the current user's UID
       String userId = userCredential.user!.uid;
-
-      // Retrieve the user's document from Firestore
       DocumentSnapshot userDoc =
           await FirebaseFirestore.instance.collection('user').doc(userId).get();
 
       if (userDoc.exists) {
         String userType = userDoc.get('userType');
+        String accountStatus = userDoc.get('accountStatus');
+
+        print("Account Status: $accountStatus");
         print("User Type: $userType");
 
-        if (userType == 'Hairstylist') {
+        if (userType == 'Hairstylist' && accountStatus == 'Approved') {
           Navigator.pushReplacement(
             // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(
-                builder: (context) => BottomNavBarPage(
-                      email: emailController.text,
-                      userId: userId,
-                      clientEmail: emailController.text,
-                    )),
+              builder: (context) => BottomNavBarPage(
+                email: emailController.text,
+                userId: userId,
+                clientEmail: emailController.text,
+              ),
+            ),
           );
-        } else if (userType == 'Barbershop_Salon') {
+        } else if (userType == 'Hairstylist' && accountStatus == 'Pending') {
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(
+              builder: (context) => PendingAccountPage(),
+            ),
+          );
+        } else if (userType == 'Hairstylist' && accountStatus == 'Declined') {
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(
+              builder: (context) => DeclinedAccountPage(
+                rejectionReason: userDoc.get('rejectionReason'),
+                email: emailController.text,
+              ),
+            ),
+          );
+        } else if (userType == 'Barbershop_Salon' &&
+            accountStatus == 'Approved') {
           Navigator.pushReplacement(
             // ignore: use_build_context_synchronously
             context,
@@ -88,7 +112,28 @@ class _LoginPageState extends State<LoginPage> {
                       userEmail: emailController.text,
                     )),
           );
-        } else if (userType == 'Client') {
+        } else if (userType == 'Barbershop_Salon' &&
+            accountStatus == 'Pending') {
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(
+              builder: (context) => PendingAccountPage(),
+            ),
+          );
+        } else if (userType == 'Barbershop_Salon' &&
+            accountStatus == 'Declined') {
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(
+              builder: (context) => DeclinedAccountPage(
+                rejectionReason: userDoc.get('rejectionReason'),
+                email: emailController.text,
+              ),
+            ),
+          );
+        } else if (userType == 'Client' && accountStatus == 'Approved') {
           Navigator.pushReplacement(
             // ignore: use_build_context_synchronously
             context,
@@ -176,7 +221,7 @@ class _LoginPageState extends State<LoginPage> {
               vertical: screenHeight * 0.03,
             ),
             child: TextFormField(
-              controller: emailController, // Email text field
+              controller: emailController,
               style: GoogleFonts.poppins(
                 fontSize: screenWidth * 0.04,
                 color: const Color.fromARGB(255, 23, 23, 23),

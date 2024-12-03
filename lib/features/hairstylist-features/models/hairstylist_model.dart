@@ -46,21 +46,29 @@ class Hairstylist {
 
   // Convert Firestore document snapshot to Hairstylist instance
   factory Hairstylist.fromDocument(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    final data = doc.data() as Map<String, dynamic>?;
+
+    if (data == null) {
+      throw Exception('Document data is null');
+    }
+
     return Hairstylist(
       id: doc.id,
-      email: data['email'],
-      phoneNumber: data['phoneNumber'],
-      imageUrl: data['imageUrl'],
-      password: data['password'],
-      firstName: data['firstName'],
-      lastName: data['lastName'],
-      username: data['username'],
-      location: data['location'],
-      skills: data['skills'],
+      email: data['email'] ?? '', // Default to an empty string if missing
+      phoneNumber: data['phoneNumber'] ?? '', // Default to empty
+      imageUrl: data['imageUrl'] ?? '', // Default to empty
+      password: data['password'] ?? '', // Default to empty
+      firstName: data['firstName'] ?? 'Unknown', // Default to 'Unknown'
+      lastName: data['lastName'] ?? 'Unknown', // Default to 'Unknown'
+      username: data['username'] ?? 'Unknown', // Default to 'Unknown'
+      location: data['location'] ?? 'Unknown', // Default to 'Unknown'
+      skills: data['skills'] ?? '', // Default to empty
       yearsOfExperience: data['yearsOfExperience'] is int
           ? data['yearsOfExperience']
-          : int.parse(data['yearsOfExperience']),
+          : data['yearsOfExperience'] is String
+              ? int.tryParse(data['yearsOfExperience']) ??
+                  0 // Parse or default to 0
+              : 0, // Default to 0 if missing or invalid
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/client-features/controllers/client_controller.dart';
-import 'package:freshclips_capstone/features/client-features/views/profile_page/screens/client_booking_histsory_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/profile_page/screens/client_booking_history_page.dart';
 import 'package:freshclips_capstone/features/client-features/views/profile_page/widgets/client_profile_details.dart';
 import 'package:google_fonts/google_fonts.dart';
 

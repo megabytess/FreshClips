@@ -380,16 +380,14 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                       ),
                                     ),
                                     const Divider(),
-                                    Flexible(
+                                    Expanded(
                                       child: ListView.builder(
                                         itemCount: availabilityData.length,
                                         itemBuilder: (context, index) {
-                                          // Retrieve the WorkingHours object for the current day
                                           Map<String, String> dayData =
                                               availabilityData[index]
                                                   .cast<String, String>();
 
-                                          // Get the day, status, opening time, and closing time values
                                           final String day = dayData['day'] ??
                                               'No day specified';
                                           final String status =
@@ -419,7 +417,6 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                               ),
                                             ),
                                             subtitle: Text(
-                                              // Display status and times, with a user-friendly message if times are empty
                                               '$status | $openingTime - $closingTime',
                                               style: GoogleFonts.poppins(
                                                 fontSize: screenWidth * 0.035,

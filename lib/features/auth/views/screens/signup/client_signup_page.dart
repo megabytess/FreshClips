@@ -130,6 +130,7 @@ class _ClientSignupPageState extends State<ClientSignupPage> {
             'password': passwordController.text.trim(),
             'imageUrl': imageUrl,
             'userType': "Client",
+            'accountStatus': "Approved",
           });
 
           // Show success dialog and navigate back to landing page
