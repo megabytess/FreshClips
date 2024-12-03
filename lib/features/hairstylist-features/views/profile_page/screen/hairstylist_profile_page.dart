@@ -34,7 +34,8 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
   List<PageTabItemModel> listPages = <PageTabItemModel>[];
 
   final TabPageController _controller = TabPageController();
-  final HairstylistController hairstylistController = HairstylistController();
+  late final HairstylistController hairstylistController =
+      HairstylistController();
   late final WorkingHoursController workingHoursController =
       WorkingHoursController(email: widget.email, context: context);
   List<Map<String, String?>> availabilityData = [];
@@ -75,7 +76,6 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
             isClient: true,
           )),
     );
-
     hairstylistController.getHairstylist(widget.email);
     currentUserEmail = FirebaseAuth.instance.currentUser?.email;
     hairstylistController.loadStatus();
@@ -89,6 +89,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
       reviewController: reviewController,
     );
     getAverageRating();
+
     super.initState();
   }
 
@@ -146,7 +147,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
 
     return AnimatedBuilder(
       animation: hairstylistController,
-      builder: (context, snapshot) {
+      builder: (context, child) {
         if (hairstylistController.isLoading) {
           return const Center(
             child: CircularProgressIndicator(
@@ -157,11 +158,17 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
           );
         }
 
-        // Null check for hairstylist data
         final hairstylist = hairstylistController.hairstylist;
         if (hairstylist == null) {
           return const Center(
-            child: Text('No hairstylist data available'),
+            child: Text(
+              'Hairstylist not found',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           );
         }
 
@@ -197,13 +204,10 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                         decoration: const BoxDecoration(
                           color: Color.fromARGB(255, 186, 199, 206),
                         ),
-                        child: (hairstylistController.hairstylist?.imageUrl !=
-                                null)
-                            ? Image.network(
-                                hairstylistController.hairstylist!.imageUrl,
-                                fit: BoxFit.cover,
-                              )
-                            : const Icon(Icons.person, size: 50),
+                        child: Image.network(
+                          hairstylistController.hairstylist!.imageUrl,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
@@ -211,7 +215,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${hairstylist.firstName} ${hairstylist.lastName}',
+                        '${hairstylistController.hairstylist!.firstName} ${hairstylistController.hairstylist!.lastName}',
                         style: GoogleFonts.poppins(
                           color: const Color.fromARGB(255, 18, 18, 18),
                           fontSize: screenWidth * 0.045,

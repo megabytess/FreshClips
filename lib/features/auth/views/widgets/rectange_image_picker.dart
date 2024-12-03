@@ -46,7 +46,7 @@ class _PickerImageState extends State<RectanglePickerImage> {
       },
       child: Container(
         width: double.infinity,
-        height: screenWidth * 0.3,
+        height: screenWidth * 0.5,
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey),
           borderRadius: BorderRadius.circular(15),

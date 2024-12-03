@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
 import 'package:freshclips_capstone/features/auth/views/widgets/image_picker.dart';
+import 'package:freshclips_capstone/features/auth/views/widgets/rectange_image_picker.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -27,7 +28,7 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
   final passwordController = TextEditingController();
   final phoneNumberController = TextEditingController();
   final locationController = TextEditingController();
-
+  File? verifyImage;
   File? selectUserImage;
 
   void signupBarbershopSalon() async {
@@ -38,6 +39,7 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
         locationController.text.trim().isEmpty ||
         passwordController.text.trim().isEmpty ||
         selectUserImage == null ||
+        verifyImage == null ||
         !emailController.text.contains('@') ||
         !emailController.text.contains('.com') ||
         !RegExp(r'^[a-zA-Z]+$').hasMatch(shopNameController.text)) {
@@ -79,14 +81,18 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
         );
 
         final userId = userCredential.user!.uid;
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('user_image')
-            .child('$userId.jpg');
-        await storageRef.putFile(selectUserImage!);
 
-        // Get the download URL of the uploaded image
-        final imageUrl = await storageRef.getDownloadURL();
+        final userImageRef =
+            FirebaseStorage.instance.ref().child('user_images/$userId.jpg');
+        await userImageRef.putFile(selectUserImage!);
+        final imageUrl = await userImageRef.getDownloadURL();
+
+        // Upload the second image
+        final verifyImageRef = FirebaseStorage.instance
+            .ref()
+            .child('verification_images/$userId.jpg');
+        await verifyImageRef.putFile(verifyImage!);
+        final verifyImageUrl = await verifyImageRef.getDownloadURL();
 
         // Set the user data in Firestore
         await FirebaseFirestore.instance.collection('user').doc(userId).set({
@@ -97,6 +103,8 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
           'location': locationController.text,
           'password': passwordController.text,
           'imageUrl': imageUrl,
+          'verifyImageUrl': verifyImageUrl,
+          'accountStatus': 'Pending',
           'userType': "Barbershop_Salon",
         });
 
@@ -440,6 +448,21 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
                     ),
                   ),
                 ),
+              ),
+              Gap(screenHeight * 0.01),
+              Text(
+                'Upload an ID to verify your identity.',
+                style: GoogleFonts.poppins(
+                  fontSize: screenWidth * 0.04,
+                  color: const Color.fromARGB(255, 23, 23, 23),
+                ),
+              ),
+              Center(
+                child: RectanglePickerImage(onImagePick: (File pickedImage) {
+                  setState(() {
+                    verifyImage = pickedImage;
+                  });
+                }),
               ),
               Gap(screenHeight * 0.01),
               const Divider(

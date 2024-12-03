@@ -59,109 +59,109 @@ class _BSInfoPageState extends State<BSInfoPage> {
           }
 
           return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: screenWidth * 0.02,
-                        top: screenHeight * 0.01,
-                      ),
-                      child: Text(
-                        'Username:',
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.032,
-                          fontWeight: FontWeight.w500,
-                          color: const Color.fromARGB(100, 18, 18, 18),
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: screenHeight * 0.01,
+                left: screenWidth * 0.03,
+                right: screenWidth * 0.03,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: screenHeight * 0.01,
+                        ),
+                        child: Text(
+                          'Username:',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.032,
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromARGB(100, 18, 18, 18),
+                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: screenWidth * 0.02,
-                        top: screenHeight * 0.01,
-                      ),
-                      child: Text(
-                        barbershopsalonController.barbershopsalon!.username,
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.035,
-                          fontWeight: FontWeight.w600,
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: screenHeight * 0.01,
+                        ),
+                        child: Text(
+                          barbershopsalonController.barbershopsalon!.username,
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.035,
+                            fontWeight: FontWeight.w600,
+                            color: const Color.fromARGB(255, 18, 18, 18),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Gap(screenHeight * 0.01),
-                Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: screenWidth * 0.02,
-                        top: screenHeight * 0.001,
-                      ),
-                      child: Text(
-                        'Email:',
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.032,
-                          fontWeight: FontWeight.w500,
-                          color: const Color.fromARGB(100, 18, 18, 18),
+                    ],
+                  ),
+                  Gap(screenHeight * 0.01),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: screenHeight * 0.001,
+                        ),
+                        child: Text(
+                          'Email:',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.032,
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromARGB(100, 18, 18, 18),
+                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: screenWidth * 0.02,
-                      ),
-                      child: Text(
-                        barbershopsalonController.barbershopsalon!.email,
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.035,
-                          fontWeight: FontWeight.w600,
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: screenWidth * 0.02,
+                        ),
+                        child: Text(
+                          barbershopsalonController.barbershopsalon!.email,
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.035,
+                            fontWeight: FontWeight.w600,
+                            color: const Color.fromARGB(255, 18, 18, 18),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Gap(screenHeight * 0.01),
-                Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: screenWidth * 0.02,
-                        top: screenHeight * 0.001,
-                      ),
-                      child: Text(
-                        'Location:',
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.032,
-                          fontWeight: FontWeight.w500,
-                          color: const Color.fromARGB(100, 18, 18, 18),
+                    ],
+                  ),
+                  Gap(screenHeight * 0.01),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: screenHeight * 0.001,
+                        ),
+                        child: Text(
+                          'Location:',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.032,
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromARGB(100, 18, 18, 18),
+                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: screenWidth * 0.02,
-                      ),
-                      child: Text(
-                        barbershopsalonController.barbershopsalon!.location,
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.035,
-                          fontWeight: FontWeight.w600,
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: screenWidth * 0.02,
+                        ),
+                        child: Text(
+                          barbershopsalonController.barbershopsalon!.location,
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.035,
+                            fontWeight: FontWeight.w600,
+                            color: const Color.fromARGB(255, 18, 18, 18),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Gap(screenHeight * 0.02),
-                Padding(
-                  padding: EdgeInsets.all(screenWidth * 0.03),
-                  child: Column(
+                    ],
+                  ),
+                  Gap(screenHeight * 0.02),
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
@@ -344,8 +344,8 @@ class _BSInfoPageState extends State<BSInfoPage> {
                       ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

@@ -31,29 +31,29 @@ class HairstylistController extends ChangeNotifier {
 
   // Method to fetch hairstylist data from Firestore
   void getHairstylist(String email) async {
-    isLoading = true;
-    notifyListeners();
     try {
+      // Query the Firestore collection
       final querySnapshot = await FirebaseFirestore.instance
           .collection('user')
           .where('email', isEqualTo: email)
           .get();
 
+      // Check if any documents were found
       if (querySnapshot.docs.isEmpty) {
-        print('No hairstylist found with the given email');
-        isLoading = false;
-        notifyListeners();
-        return;
-      }
+        print('No document found for email: $email');
+        throw Exception('User not found');
+      } else {
+        for (var documentSnapshot in querySnapshot.docs) {
+          print(
+              "Document ID: ${documentSnapshot.id}, Data: ${documentSnapshot.data()}");
+          documentSnapshot.data();
 
-      final documentSnapshot = querySnapshot.docs.first;
-      print('Hairstylist found: ${documentSnapshot.data()}');
-      hairstylist = Hairstylist.fromDocument(documentSnapshot);
-    } catch (error) {
-      print('Error fetching hairstylist: $error');
-    } finally {
-      isLoading = false;
-      notifyListeners();
+          hairstylist = Hairstylist.fromDocument(documentSnapshot);
+        }
+      }
+    } catch (e) {
+      // Handle any errors
+      print('Error fetching hairstylist: $e');
     }
   }
 }
