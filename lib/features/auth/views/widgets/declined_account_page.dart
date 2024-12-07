@@ -106,10 +106,10 @@ class _DeclinedAccountPageState extends State<DeclinedAccountPage> {
                 ),
               ],
             ),
-            const Gap(20),
+            const Gap(50),
             Text(
               'Upload another ID to verify your account.',
-              style: bodyStyle(screenWidth * 0.04, color: Colors.black87),
+              style: bodyStyle(screenWidth * 0.035, color: Colors.black),
             ),
             const Gap(20),
             Center(
@@ -119,7 +119,7 @@ class _DeclinedAccountPageState extends State<DeclinedAccountPage> {
                 });
               }),
             ),
-            const Gap(20),
+            const Gap(40),
             Center(
               child: SizedBox(
                 width: double.infinity,

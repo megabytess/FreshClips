@@ -28,6 +28,13 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
     fetchWorkingHours();
   }
 
+  String formatTime(DateTime? dateTime) {
+    if (null == dateTime) {
+      return 'Not Set';
+    }
+    return DateFormat('h:mm a').format(dateTime);
+  }
+
   void fetchWorkingHours() async {
     try {
       setState(() {
@@ -74,12 +81,11 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
   }
 
   // edit availability functionality
-  void editAvailability(String day, String currentStatus,
-      String currentOpeningTime, String currentClosingTime) async {
+  void editAvailability(String day, bool currentStatus,
+      DateTime currentOpeningTime, DateTime currentClosingTime) async {
     // Parse the provided times
-    TimeOfDay newOpeningTime = _parseTimeOfDay(currentOpeningTime);
-    TimeOfDay newClosingTime = _parseTimeOfDay(currentClosingTime);
-    String selectedStatus = currentStatus;
+
+    bool selectedStatus = currentStatus;
 
     await showDialog(
       context: context,
@@ -97,12 +103,12 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  DropdownButtonFormField<String>(
+                  DropdownButtonFormField<bool>(
                     value: selectedStatus,
-                    items: ['Shop Open', 'Shop Closed'].map((String status) {
-                      return DropdownMenuItem<String>(
+                    items: [true, false].map((bool status) {
+                      return DropdownMenuItem<bool>(
                         value: status,
-                        child: Text(status),
+                        child: Text(status ? 'Shop Open' : 'Shop Closed'),
                       );
                     }).toList(),
                     onChanged: (newStatus) {
@@ -123,7 +129,7 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Opening Time: ${newOpeningTime.format(context)}',
+                        'Opening Time: ${formatTime(currentOpeningTime)}',
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -133,11 +139,18 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
                         onPressed: () async {
                           final pickedTime = await showTimePicker(
                             context: context,
-                            initialTime: newOpeningTime,
+                            initialTime: TimeOfDay.now(),
+                          );
+                          DateTime newOpeningTime = DateTime(
+                            DateTime.now().year,
+                            DateTime.now().month,
+                            DateTime.now().day,
+                            pickedTime?.hour ?? TimeOfDay.now().hour,
+                            pickedTime?.minute ?? TimeOfDay.now().minute,
                           );
                           if (pickedTime != null) {
                             setState(() {
-                              newOpeningTime = pickedTime;
+                              newOpeningTime = newOpeningTime;
                             });
                           }
                         },
@@ -156,7 +169,7 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Closing Time: ${newClosingTime.format(context)}',
+                        'Closing Time:  ${formatTime(currentOpeningTime)}',
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -166,11 +179,18 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
                         onPressed: () async {
                           final pickedTime = await showTimePicker(
                             context: context,
-                            initialTime: newClosingTime,
+                            initialTime: TimeOfDay.now(),
+                          );
+                          DateTime newClosingTime = DateTime(
+                            DateTime.now().year,
+                            DateTime.now().month,
+                            DateTime.now().day,
+                            pickedTime?.hour ?? TimeOfDay.now().hour,
+                            pickedTime?.minute ?? TimeOfDay.now().minute,
                           );
                           if (pickedTime != null) {
                             setState(() {
-                              newClosingTime = pickedTime;
+                              newClosingTime = newClosingTime;
                             });
                           }
                         },
@@ -201,17 +221,12 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    // Format the times for consistent storage
-                    String formattedOpeningTime =
-                        '${newOpeningTime.hourOfPeriod}:${newOpeningTime.minute.toString().padLeft(2, '0')} ${newOpeningTime.period == DayPeriod.am ? 'AM' : 'PM'}';
-                    String formattedClosingTime =
-                        '${newClosingTime.hourOfPeriod}:${newClosingTime.minute.toString().padLeft(2, '0')} ${newClosingTime.period == DayPeriod.am ? 'AM' : 'PM'}';
-
                     await editWorkingHours(
                       day,
                       selectedStatus,
-                      formattedOpeningTime,
-                      formattedClosingTime,
+                      // formattedOpeningTime,
+                      currentOpeningTime,
+                      currentClosingTime,
                     );
                     fetchWorkingHours(); // Refresh the data after edit
                     Navigator.pop(context);
@@ -233,35 +248,9 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
     );
   }
 
-  // Function to parse a time string to TimeOfDay
-  TimeOfDay _parseTimeOfDay(String timeString) {
-    try {
-      // Trim and replace any non-breaking spaces
-      timeString = timeString.trim().replaceAll('\u00A0', ' ');
-
-      // Split the string to get hours and period (AM/PM)
-      final parts = timeString.split(' ');
-      final timePart = parts[0].split(':');
-      final hour = int.parse(timePart[0]);
-      final minute = int.parse(timePart[1]);
-
-      // Determine if it's AM or PM
-      final isPM = parts.length > 1 && parts[1].toUpperCase() == 'PM';
-
-      // Handle conversion to 24-hour format
-      return TimeOfDay(
-        hour: isPM && hour < 12 ? hour + 12 : (hour == 12 && !isPM ? 0 : hour),
-        minute: minute,
-      );
-    } catch (e) {
-      print('Error parsing time: $e');
-      return TimeOfDay.now(); // Fallback to current time on error
-    }
-  }
-
   // Function to edit working hours
-  Future<void> editWorkingHours(
-      String day, String status, String openingTime, String closingTime) async {
+  Future<void> editWorkingHours(String day, bool status, DateTime openingTime,
+      DateTime closingTime) async {
     try {
       await workingHoursController.updateWorkingHours(
           widget.email, day, status, openingTime, closingTime);
@@ -388,8 +377,10 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
                                             editAvailability(
                                               dayData['day'],
                                               dayData['status'],
-                                              openingTime,
-                                              closingTime,
+                                              dayData['openingTime'],
+                                              dayData['closingTime'],
+                                              // openingTime,
+                                              // closingTime,
                                             );
                                           },
                                         ),

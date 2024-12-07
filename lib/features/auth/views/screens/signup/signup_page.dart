@@ -98,7 +98,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ),
                 child: Text(
-                  'Hairstylist',
+                  'Barber / Hairstylist',
                   style: GoogleFonts.poppins(
                     fontSize: screenWidth * 0.045,
                     fontWeight: FontWeight.w500,

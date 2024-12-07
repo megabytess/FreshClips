@@ -38,7 +38,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
       HairstylistController();
   late final WorkingHoursController workingHoursController =
       WorkingHoursController(email: widget.email, context: context);
-  List<Map<String, String?>> availabilityData = [];
+  List<Map<String, dynamic>> availabilityData = [];
   bool isLoading = true;
   String? selectedStoreHours;
   String? currentUserEmail;

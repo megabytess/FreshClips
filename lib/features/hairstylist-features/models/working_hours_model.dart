@@ -1,8 +1,8 @@
 class WorkingHours {
   String day;
-  String status; // Shop Open / Shop Closed
-  String? openingTime;
-  String? closingTime;
+  bool status; // Shop Open / Shop Closed
+  DateTime? openingTime;
+  DateTime? closingTime;
 
   WorkingHours({
     required this.day,
@@ -23,9 +23,9 @@ class WorkingHours {
   factory WorkingHours.fromMap(Map<String, dynamic> map) {
     return WorkingHours(
       day: map['day'] ?? '',
-      status: map['status'] ?? 'Available',
-      openingTime: map['openingTime'],
-      closingTime: map['closingTime'],
+      status: map['status'] ?? false,
+      openingTime: map['openingTime']?.toDate(),
+      closingTime: map['closingTime']?.toDate(),
     );
   }
 }

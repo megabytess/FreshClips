@@ -18,6 +18,8 @@ class BSManageAvailabilityPage extends StatefulWidget {
 class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
   List<Map<String, dynamic>> availabilityData = [];
   bool isLoading = true;
+  DateTime? newOpeningTime;
+  DateTime? newClosingTime;
 
   late final WorkingHoursController workingHoursController =
       WorkingHoursController(email: widget.email, context: context);
@@ -27,6 +29,13 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
     super.initState();
     workingHoursController;
     fetchWorkingHours();
+  }
+
+  String formatTime(DateTime? dateTime) {
+    if (null == dateTime) {
+      return 'Not Set';
+    }
+    return DateFormat('h:mm a').format(dateTime);
   }
 
   void fetchWorkingHours() async {
@@ -53,8 +62,8 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
             'day': workingHour.day,
             'status': workingHour.status,
             'date': parsedDate.toIso8601String(),
-            'openingTime': workingHour.openingTime ?? 'Not Set',
-            'closingTime': workingHour.closingTime ?? 'Not Set',
+            'openingTime': workingHour.openingTime,
+            'closingTime': workingHour.closingTime,
           };
         }).toList();
 
@@ -75,12 +84,12 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
   }
 
   // edit availability functionality
-  void editAvailability(String day, String currentStatus,
-      String currentOpeningTime, String currentClosingTime) async {
+  void editAvailability(String day, bool currentStatus,
+      DateTime currentOpeningTime, DateTime currentClosingTime) async {
     // Parse the provided times
-    TimeOfDay newOpeningTime = _parseTimeOfDay(currentOpeningTime);
-    TimeOfDay newClosingTime = _parseTimeOfDay(currentClosingTime);
-    String selectedStatus = currentStatus;
+    // TimeOfDay newOpeningTime = _parseTimeOfDay(currentOpeningTime);
+    // TimeOfDay newClosingTime = _parseTimeOfDay(currentClosingTime);
+    bool selectedStatus = currentStatus;
 
     await showDialog(
       context: context,
@@ -98,12 +107,12 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  DropdownButtonFormField<String>(
+                  DropdownButtonFormField<bool>(
                     value: selectedStatus,
-                    items: ['Shop Open', 'Shop Closed'].map((String status) {
-                      return DropdownMenuItem<String>(
+                    items: [true, false].map((bool status) {
+                      return DropdownMenuItem<bool>(
                         value: status,
-                        child: Text(status),
+                        child: Text(status ? 'Shop Open' : 'Shop Closed'),
                       );
                     }).toList(),
                     onChanged: (newStatus) {
@@ -123,8 +132,9 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      // Display the formatted time, or 'Not set' if the time is null
                       Text(
-                        'Opening Time: ${newOpeningTime.format(context)}',
+                        'Opening Time: ${formatTime(newOpeningTime ?? currentOpeningTime)}',
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -132,13 +142,24 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
                       ),
                       TextButton(
                         onPressed: () async {
+                          // Show the time picker dialog
                           final pickedTime = await showTimePicker(
                             context: context,
-                            initialTime: newOpeningTime,
+                            initialTime:
+                                TimeOfDay.fromDateTime(currentOpeningTime),
                           );
+
+                          // If a time was picked, update the newOpeningTime
                           if (pickedTime != null) {
                             setState(() {
-                              newOpeningTime = pickedTime;
+                              newOpeningTime = DateTime(
+                                DateTime.now().year,
+                                DateTime.now().month,
+                                DateTime.now().day,
+                                pickedTime.hour,
+                                pickedTime.minute,
+                              );
+                              print("Picked Opening Time: $newOpeningTime");
                             });
                           }
                         },
@@ -157,7 +178,7 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Closing Time: ${newClosingTime.format(context)}',
+                        'Closing Time: ${formatTime(newClosingTime ?? currentClosingTime)}',
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -167,11 +188,20 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
                         onPressed: () async {
                           final pickedTime = await showTimePicker(
                             context: context,
-                            initialTime: newClosingTime,
+                            initialTime:
+                                TimeOfDay.fromDateTime(currentClosingTime),
                           );
+
                           if (pickedTime != null) {
                             setState(() {
-                              newClosingTime = pickedTime;
+                              newClosingTime = DateTime(
+                                DateTime.now().year,
+                                DateTime.now().month,
+                                DateTime.now().day,
+                                pickedTime.hour,
+                                pickedTime.minute,
+                              );
+                              print("Picked Closing Time: $newClosingTime");
                             });
                           }
                         },
@@ -202,19 +232,16 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    // Format the times for consistent storage
-                    String formattedOpeningTime =
-                        '${newOpeningTime.hourOfPeriod}:${newOpeningTime.minute.toString().padLeft(2, '0')} ${newOpeningTime.period == DayPeriod.am ? 'AM' : 'PM'}';
-                    String formattedClosingTime =
-                        '${newClosingTime.hourOfPeriod}:${newClosingTime.minute.toString().padLeft(2, '0')} ${newClosingTime.period == DayPeriod.am ? 'AM' : 'PM'}';
-
                     await editWorkingHours(
                       day,
                       selectedStatus,
-                      formattedOpeningTime,
-                      formattedClosingTime,
+                      newOpeningTime ??
+                          currentOpeningTime, // Use newOpeningTime if available
+                      newClosingTime ??
+                          currentClosingTime, // Use newClosingTime if available
                     );
-                    fetchWorkingHours(); // Refresh the data after edit
+                    fetchWorkingHours(); // Refresh the data after the edit
+                    Navigator.pop(context);
                     Navigator.pop(context);
                   },
                   child: Text(
@@ -235,7 +262,7 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
   }
 
   // Function to parse a time string to TimeOfDay
-  TimeOfDay _parseTimeOfDay(String timeString) {
+  TimeOfDay parseTimeOfDay(String timeString) {
     try {
       // Trim and replace any non-breaking spaces
       timeString = timeString.trim().replaceAll('\u00A0', ' ');
@@ -261,11 +288,11 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
   }
 
   // Function to edit working hours
-  Future<void> editWorkingHours(
-      String day, String status, String openingTime, String closingTime) async {
+  Future<void> editWorkingHours(String day, bool status,
+      DateTime currentOpeningTime, DateTime currentClosingTime) async {
     try {
       await workingHoursController.updateWorkingHours(
-          widget.email, day, status, openingTime, closingTime);
+          widget.email, day, status, currentOpeningTime, currentClosingTime);
     } catch (e) {
       print('Error editing working hours: $e');
     }
@@ -330,9 +357,9 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
                                   // print('Day Data: $dayData');
 
                                   String openingTime =
-                                      dayData['openingTime'] ?? 'Not set';
+                                      formatTime(dayData['openingTime']);
                                   String closingTime =
-                                      dayData['closingTime'] ?? 'Not set';
+                                      formatTime(dayData['closingTime']);
 
                                   return ListTile(
                                     title: Text(
@@ -347,7 +374,7 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Status: ${dayData['status']}',
+                                          'Status: ${dayData['status'] == true ? 'Shop Open' : 'Shop Closed'}',
                                           style: GoogleFonts.poppins(
                                             fontSize: screenWidth * 0.04,
                                             fontWeight: FontWeight.w500,
@@ -389,8 +416,10 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
                                             editAvailability(
                                               dayData['day'],
                                               dayData['status'],
-                                              openingTime,
-                                              closingTime,
+                                              // openingTime,
+                                              // closingTime,
+                                              dayData['openingTime'],
+                                              dayData['closingTime'],
                                             );
                                           },
                                         ),

@@ -11,7 +11,7 @@ class WorkingHoursController extends ChangeNotifier {
   }
 
   // Placeholder for availability status
-  Map<DateTime, Map<String, String>> availabilityStatus = {};
+  Map<DateTime, Map<String, dynamic>> availabilityStatus = {};
 
   bool isLoading = false;
   final String email;
@@ -30,7 +30,6 @@ class WorkingHoursController extends ChangeNotifier {
 
       if (docSnapshot.docs.isNotEmpty) {
         var docData = docSnapshot.docs.first.data();
-        print('Fetched Document Data: $docData');
 
         if (docData['workingHours'] != null) {
           List<WorkingHours> workingHoursList = [];
@@ -38,16 +37,19 @@ class WorkingHoursController extends ChangeNotifier {
 
           // Loop through each entry (day and availability) in the working hours map
           hoursData.forEach((day, availability) {
-            workingHoursList.add(
-              WorkingHours(
-                day: day,
-                status: availability['status'] ?? 'Closed',
-                openingTime:
-                    availability['openingTime']?.toString().trim() ?? '',
-                closingTime:
-                    availability['closingTime']?.toString().trim() ?? '',
-              ),
-            );
+            final openingDateTime = availability['openingTime'] != null
+                ? (availability['openingTime'] as Timestamp).toDate()
+                : null;
+            final closingDateTime = availability['closingTime'] != null
+                ? (availability['closingTime'] as Timestamp).toDate()
+                : null;
+
+            workingHoursList.add(WorkingHours(
+              day: day,
+              status: availability['status'],
+              openingTime: openingDateTime,
+              closingTime: closingDateTime,
+            ));
           });
 
           print('Success: Working hours fetched successfully for email $email');
@@ -104,38 +106,28 @@ class WorkingHoursController extends ChangeNotifier {
   }
 
   // Method to update working hours in Firestore
-  Future<void> updateWorkingHours(String email, String day, String status,
-      String openingTime, String closingTime) async {
+  Future<void> updateWorkingHours(String email, String day, bool status,
+      DateTime currentOpeningTime, DateTime currentClosingTime) async {
     try {
-      // Debug statement to check the email
-      print('Updating working hours for email: $email');
+      // Locate the specific document
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('workingHours')
+          .where('email', isEqualTo: email)
+          .where('day', isEqualTo: day)
+          .get();
 
-      // Reference to the user's document based on email
-      final querySnapshot = FirebaseFirestore.instance
-          .collection('availability')
-          .where('email', isEqualTo: email);
-
-      // Fetch the document to check if it exists
-      final docSnapshot = await querySnapshot.get();
-
-      if (docSnapshot.docs.isNotEmpty) {
-        // Document exists, get the document reference
-        final docRef = docSnapshot.docs.first.reference;
-
-        // Update the working hours for the given day
-        await docRef.update({
-          'workingHours.$day': {
-            'status': status,
-            'openingTime': openingTime,
-            'closingTime': closingTime,
-          }
+      for (var doc in querySnapshot.docs) {
+        // Update the document
+        await doc.reference.update({
+          'status': status,
+          'openingTime': Timestamp.fromDate(currentOpeningTime),
+          'closingTime': Timestamp.fromDate(currentClosingTime),
         });
-        print("Success: Working hours updated successfully for $day.");
-      } else {
-        print("Error: No document found for the specified email.");
       }
+
+      print("Working hours updated successfully!");
     } catch (e) {
-      print('Error updating working hours in Firestore: $e');
+      print("Error updating working hours: $e");
     }
   }
 
@@ -196,9 +188,9 @@ class WorkingHoursController extends ChangeNotifier {
     String formattedDay = DateFormat('EEEE, MMMM d, yyyy').format(date);
     return WorkingHours(
       day: formattedDay,
-      status: availabilityStatus[date]?['status'] ?? 'Shop Open',
-      openingTime: availabilityStatus[date]?['openingTime'] ?? 'Not Set',
-      closingTime: availabilityStatus[date]?['closingTime'] ?? 'Not Set',
+      status: availabilityStatus[date]?['status'] ?? false,
+      openingTime: availabilityStatus[date]?['openingTime'],
+      closingTime: availabilityStatus[date]?['closingTime'],
     );
   }
 }
