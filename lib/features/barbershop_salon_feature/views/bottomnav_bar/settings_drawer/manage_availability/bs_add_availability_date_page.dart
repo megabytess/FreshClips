@@ -17,7 +17,8 @@ class BSAvailabilityDatePage extends StatefulWidget {
 
 class _AvailabilityDatePageState extends State<BSAvailabilityDatePage> {
   List<DateTime> availableDates = [];
-  Map<DateTime, Map<String, String>> availabilityStatus = {};
+  Map<DateTime, Map<String, dynamic>> availabilityStatus = {};
+  bool isAvailable = true;
   late WorkingHoursController workingHoursController =
       WorkingHoursController(email: widget.email, context: context);
 
@@ -29,7 +30,7 @@ class _AvailabilityDatePageState extends State<BSAvailabilityDatePage> {
         WorkingHoursController(email: widget.email, context: context);
 
     for (var date in availableDates) {
-      availabilityStatus[date] = {'status': 'Shop Open'};
+      availabilityStatus[date] = {'status': true};
     }
   }
 
@@ -44,10 +45,18 @@ class _AvailabilityDatePageState extends State<BSAvailabilityDatePage> {
     String formattedDay = DateFormat('EEEE, MMMM d, yyyy').format(date);
     return WorkingHours(
       day: formattedDay,
-      status: availabilityStatus[date]?['status'] ?? 'Shop Open',
-      openingTime: availabilityStatus[date]?['openingTime'] ?? 'Not Set',
-      closingTime: availabilityStatus[date]?['closingTime'] ?? 'Not Set',
+      status: availabilityStatus[date]?['status'],
+      openingTime: availabilityStatus[date]?['openingTime'],
+      closingTime: availabilityStatus[date]?['closingTime'],
     );
+  }
+
+  //Format Time
+  String formatTime(DateTime? dateTime) {
+    if (null == dateTime) {
+      return 'Not Set';
+    }
+    return DateFormat('h:mma').format(dateTime);
   }
 
   // Function to save the availability status to Firestore
@@ -156,7 +165,7 @@ class _AvailabilityDatePageState extends State<BSAvailabilityDatePage> {
 
         // Initialize with both opening and closing time fields if not present
         availabilityStatus[date] ??= {
-          'status': 'Shop Open',
+          'status': false, // dapat TRUE daan
           'openingTime': '',
           'closingTime': ''
         };
@@ -206,7 +215,7 @@ class _AvailabilityDatePageState extends State<BSAvailabilityDatePage> {
                       DateFormat('EEEE, MMMM d, yyyy').format(date);
 
                   // Ensure each date entry in availabilityStatus has a default map
-                  availabilityStatus[date] ??= {'status': 'Shop Open'};
+                  availabilityStatus[date] ??= {'status': false};
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,14 +228,13 @@ class _AvailabilityDatePageState extends State<BSAvailabilityDatePage> {
                         ),
                       ),
                       Gap(screenHeight * 0.01),
-                      DropdownButtonFormField<String>(
+                      DropdownButtonFormField<bool>(
                         value: availabilityStatus[date]!['status'],
-                        items:
-                            ['Shop Open', 'Shop Closed'].map((String status) {
-                          return DropdownMenuItem<String>(
+                        items: [true, false].map((bool status) {
+                          return DropdownMenuItem<bool>(
                             value: status,
                             child: Text(
-                              status,
+                              status ? 'Shop Open' : 'Shop Closed',
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.04,
                               ),

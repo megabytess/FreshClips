@@ -17,7 +17,7 @@ class AvailabilityDatePage extends StatefulWidget {
 
 class _AvailabilityDatePageState extends State<AvailabilityDatePage> {
   List<DateTime> availableDates = [];
-  Map<DateTime, Map<String, String>> availabilityStatus = {};
+  Map<DateTime, Map<String, dynamic>> availabilityStatus = {};
   late WorkingHoursController workingHoursController =
       WorkingHoursController(email: widget.email, context: context);
 
@@ -29,7 +29,7 @@ class _AvailabilityDatePageState extends State<AvailabilityDatePage> {
         WorkingHoursController(email: widget.email, context: context);
 
     for (var date in availableDates) {
-      availabilityStatus[date] = {'status': 'Shop Open'};
+      availabilityStatus[date] = {'status': false};
     }
   }
 
@@ -44,10 +44,17 @@ class _AvailabilityDatePageState extends State<AvailabilityDatePage> {
     String formattedDay = DateFormat('EEEE, MMMM d, yyyy').format(date);
     return WorkingHours(
       day: formattedDay,
-      status: availabilityStatus[date]?['status'] ?? 'Shop Open',
-      openingTime: availabilityStatus[date]?['openingTime'] ?? 'Not Set',
-      closingTime: availabilityStatus[date]?['closingTime'] ?? 'Not Set',
+      status: availabilityStatus[date]?['status'] ?? false,
+      openingTime: availabilityStatus[date]?['openingTime'],
+      closingTime: availabilityStatus[date]?['closingTime'],
     );
+  }
+
+  String formatTime(DateTime? dateTime) {
+    if (null == dateTime) {
+      return 'Not Set';
+    }
+    return DateFormat('h:mm a').format(dateTime);
   }
 
   // Function to save the availability status to Firestore
@@ -152,22 +159,27 @@ class _AvailabilityDatePageState extends State<AvailabilityDatePage> {
 
     if (pickedTime != null) {
       setState(() {
-        final formattedTime = pickedTime.format(context);
+        // Create a DateTime object using the date and picked time
+        final selectedDateTime = DateTime(
+          date.year,
+          date.month,
+          date.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
 
         // Initialize with both opening and closing time fields if not present
         availabilityStatus[date] ??= {
-          'status': 'Shop Open',
-          'openingTime': '',
-          'closingTime': ''
+          'status': true,
+          'openingTime': null, // Initialize as null
+          'closingTime': null, // Initialize as null
         };
 
         // Update either opening or closing time based on the boolean flag
         if (isOpeningTime) {
-          (availabilityStatus[date] as Map<String, String>)['openingTime'] =
-              formattedTime;
+          availabilityStatus[date]!['openingTime'] = selectedDateTime;
         } else {
-          (availabilityStatus[date] as Map<String, String>)['closingTime'] =
-              formattedTime;
+          availabilityStatus[date]!['closingTime'] = selectedDateTime;
         }
       });
     }
@@ -206,7 +218,7 @@ class _AvailabilityDatePageState extends State<AvailabilityDatePage> {
                       DateFormat('EEEE, MMMM d, yyyy').format(date);
 
                   // Ensure each date entry in availabilityStatus has a default map
-                  availabilityStatus[date] ??= {'status': 'Shop Open'};
+                  availabilityStatus[date] ??= {'status': false};
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,14 +231,13 @@ class _AvailabilityDatePageState extends State<AvailabilityDatePage> {
                         ),
                       ),
                       Gap(screenHeight * 0.01),
-                      DropdownButtonFormField<String>(
+                      DropdownButtonFormField<bool>(
                         value: availabilityStatus[date]!['status'],
-                        items:
-                            ['Shop Open', 'Shop Closed'].map((String status) {
-                          return DropdownMenuItem<String>(
+                        items: [true, false].map((bool status) {
+                          return DropdownMenuItem<bool>(
                             value: status,
                             child: Text(
-                              status,
+                              status ? 'Shop Open' : 'Shop Closed',
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.04,
                               ),
@@ -287,8 +298,8 @@ class _AvailabilityDatePageState extends State<AvailabilityDatePage> {
                                   ),
                                 ),
                                 child: Text(
-                                  availabilityStatus[date]?['openingTime'] ??
-                                      'Not Set',
+                                  formatTime(
+                                      availabilityStatus[date]?['openingTime']),
                                   style: GoogleFonts.poppins(
                                     fontSize: screenWidth * 0.035,
                                     color:
@@ -307,8 +318,8 @@ class _AvailabilityDatePageState extends State<AvailabilityDatePage> {
                                   ),
                                 ),
                                 child: Text(
-                                  availabilityStatus[date]?['closingTime'] ??
-                                      'Not Set',
+                                  formatTime(
+                                      availabilityStatus[date]?['closingTime']),
                                   style: GoogleFonts.poppins(
                                     fontSize: screenWidth * 0.035,
                                     color:

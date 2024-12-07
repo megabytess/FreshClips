@@ -44,7 +44,6 @@ class _InfoPageState extends State<HairstylistInfoPage> {
       body: AnimatedBuilder(
         animation: hairstylistController,
         builder: (context, snapshot) {
-          // Check if the data is still loading
           if (hairstylistController.isLoading) {
             return const Center(
               child: CircularProgressIndicator(
@@ -52,6 +51,13 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                   Color.fromARGB(255, 189, 49, 71),
                 ),
               ),
+            );
+          }
+
+          final barbershopsalon = hairstylistController.hairstylist;
+          if (barbershopsalon == null) {
+            return const Center(
+              child: Text('No hairstylist data available'),
             );
           }
 
@@ -72,7 +78,7 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                           top: screenHeight * 0.01,
                         ),
                         child: Text(
-                          'Username:',
+                          'Username: ',
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.032,
                             fontWeight: FontWeight.w500,

@@ -13,6 +13,8 @@ import 'package:freshclips_capstone/features/hairstylist-features/controllers/wo
 import 'package:freshclips_capstone/features/hairstylist-features/models/working_hours_model.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BSProfilePage extends StatefulWidget {
   const BSProfilePage({
@@ -38,13 +40,13 @@ class _BSProfilePageState extends State<BSProfilePage> {
   late final WorkingHoursController workingHoursController =
       WorkingHoursController(email: widget.email, context: context);
   late final TextEditingController reviewController;
-  List<Map<String, String?>> availabilityData = [];
+  List<Map<String, dynamic>> availabilityData = [];
   bool isLoading = false;
   String? selectedStoreHours;
   String? currentUserEmail;
-
   double averageRating = 0.0;
   late RatingsReviewController ratingsReviewController;
+  String shopStatus = 'Loading...'; // Initial status
 
   @override
   void initState() {
@@ -87,12 +89,26 @@ class _BSProfilePageState extends State<BSProfilePage> {
       ),
     );
     barbershopsalonController.getBarbershopSalon(widget.email);
-    barbershopsalonController.loadStatus();
-
     workingHoursController;
     fetchWorkingHours();
     currentUserEmail = FirebaseAuth.instance.currentUser?.email;
     getAverageRating();
+    loadShopStatus();
+  }
+
+  // Fetch the stored status from SharedPreferences
+  Future<void> loadShopStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      shopStatus = prefs.getString('shopStatus') ?? 'No status available';
+    });
+  }
+
+  String formatTime(DateTime? dateTime) {
+    if (null == dateTime) {
+      return 'Not Set';
+    }
+    return DateFormat('h:mm a').format(dateTime);
   }
 
   void fetchWorkingHours() async {
@@ -259,105 +275,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                           ),
                         ],
                       ),
-                      Gap(screenHeight * 0.001),
-                      widget.isClient && currentUserEmail != widget.email
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  barbershopsalonController.selectedStatus,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: screenWidth * 0.032,
-                                    fontWeight: FontWeight.w700,
-                                    color: barbershopsalonController
-                                                .selectedStatus ==
-                                            'SHOP OPEN'
-                                        ? Colors.green
-                                        : Colors.red,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : GestureDetector(
-                              onTap: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return Container(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: screenHeight * 0.02,
-                                        horizontal: screenWidth * 0.03,
-                                      ),
-                                      height: screenHeight * 0.3,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Select Status',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: screenWidth * 0.04,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          const Divider(),
-                                          ListTile(
-                                            title: Text(
-                                              'SHOP OPEN',
-                                              style: GoogleFonts.poppins(
-                                                fontSize: screenWidth * 0.035,
-                                                fontWeight: FontWeight.w600,
-                                                color: const Color.fromARGB(
-                                                    255, 18, 18, 18),
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              barbershopsalonController
-                                                  .updateStatus('SHOP OPEN');
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                          ListTile(
-                                            title: Text(
-                                              'SHOP CLOSED',
-                                              style: GoogleFonts.poppins(
-                                                fontSize: screenWidth * 0.035,
-                                                fontWeight: FontWeight.w600,
-                                                color: const Color.fromARGB(
-                                                    255, 18, 18, 18),
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              barbershopsalonController
-                                                  .updateStatus('SHOP CLOSED');
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    barbershopsalonController.selectedStatus,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.032,
-                                      fontWeight: FontWeight.w700,
-                                      color: barbershopsalonController
-                                                  .selectedStatus ==
-                                              'SHOP OPEN'
-                                          ? Colors.green
-                                          : Colors.red,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                      Text(shopStatus, style: GoogleFonts.poppins()),
                       GestureDetector(
                         onTap: () {
                           showModalBottomSheet(
@@ -384,31 +302,16 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                       child: ListView.builder(
                                         itemCount: availabilityData.length,
                                         itemBuilder: (context, index) {
-                                          Map<String, String> dayData =
-                                              availabilityData[index]
-                                                  .cast<String, String>();
+                                          var dayData = availabilityData[index];
 
-                                          final String day = dayData['day'] ??
-                                              'No day specified';
-                                          final String status =
-                                              dayData['status'] ??
-                                                  'Status not available';
-                                          final String openingTime =
-                                              dayData['openingTime']
-                                                          ?.isNotEmpty ==
-                                                      true
-                                                  ? dayData['openingTime']!
-                                                  : 'No opening time specified';
-                                          final String closingTime =
-                                              dayData['closingTime']
-                                                          ?.isNotEmpty ==
-                                                      true
-                                                  ? dayData['closingTime']!
-                                                  : 'No closing time specified';
+                                          String openingTime = formatTime(
+                                              dayData['openingTime']);
+                                          String closingTime = formatTime(
+                                              dayData['closingTime']);
 
                                           return ListTile(
                                             title: Text(
-                                              day,
+                                              dayData['day'],
                                               style: GoogleFonts.poppins(
                                                 fontSize: screenWidth * 0.035,
                                                 fontWeight: FontWeight.w400,
@@ -417,7 +320,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                               ),
                                             ),
                                             subtitle: Text(
-                                              '$status | $openingTime - $closingTime',
+                                              '${dayData['status'] == true ? 'Shop Open' : 'Shop Closed'} | $openingTime - $closingTime',
                                               style: GoogleFonts.poppins(
                                                 fontSize: screenWidth * 0.035,
                                                 fontWeight: FontWeight.w600,

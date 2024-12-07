@@ -75,7 +75,7 @@ class _BSInfoPageState extends State<BSInfoPage> {
                           top: screenHeight * 0.01,
                         ),
                         child: Text(
-                          'Username:',
+                          'Username: ',
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.032,
                             fontWeight: FontWeight.w500,
