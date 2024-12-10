@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/controllers/edit_profile_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/hairstylist_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/settings_drawer/profile_details/update_hairstylist_profile_page.dart';
 import 'package:gap/gap.dart';
@@ -15,7 +14,6 @@ class ProfileDetailsPage extends StatefulWidget {
 
 class _EditProfilePageState extends State<ProfileDetailsPage> {
   HairstylistController hairstylistController = HairstylistController();
-  ProfileController profileController = ProfileController();
 
   @override
   void initState() {
@@ -45,6 +43,17 @@ class _EditProfilePageState extends State<ProfileDetailsPage> {
         builder: (context, snapshot) {
           // Check if the data is still loading
           if (hairstylistController.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Color.fromARGB(255, 189, 49, 71),
+                ),
+              ),
+            );
+          }
+
+          final hairstylist = hairstylistController.hairstylist;
+          if (hairstylist == null) {
             return const Center(
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(
@@ -171,12 +180,11 @@ class _EditProfilePageState extends State<ProfileDetailsPage> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: screenWidth * 0.02,
-                        ),
+                      Gap(screenHeight * 0.01),
+                      Expanded(
                         child: Text(
-                          hairstylistController.hairstylist!.location,
+                          hairstylistController
+                              .hairstylist!.location['address'],
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.w600,

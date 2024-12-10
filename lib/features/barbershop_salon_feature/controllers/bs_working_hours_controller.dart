@@ -4,7 +4,6 @@ import 'package:freshclips_capstone/features/hairstylist-features/models/working
 import 'package:intl/intl.dart';
 
 class BSAvailabilityController extends ChangeNotifier {
-  // Method to set loading state
   void setLoading(bool value) {
     isLoading = value;
     notifyListeners();
@@ -16,25 +15,23 @@ class BSAvailabilityController extends ChangeNotifier {
 
   BSAvailabilityController({required this.email, required this.context});
 
-  TimeOfDay _parseTimeOfDay(String time) {
-    final format = DateFormat.jm(); // e.g., '5:30 PM'
-    final dateTime = format.parse(time); // Parse time string to DateTime
+  TimeOfDay parseTimeOfDay(String time) {
+    final format = DateFormat.jm(); // '5:30 PM'
+    final dateTime = format.parse(time);
     return TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
   }
 
   // Fetch existing working hours from Firestore
-  Future<List<WorkingHours>> fetchWorkingHours(String email) async {
+  Future<List<WorkingHours>> fetchWorkingHoursBS(String email) async {
     try {
       final firestore = FirebaseFirestore.instance;
 
-      // Fetch the document directly by its email
       final docRef =
           firestore.collection('availability').where('email', isEqualTo: email);
       final docSnapshot = await docRef.get();
 
       if (docSnapshot.docs.isNotEmpty) {
         var docData = docSnapshot.docs.first.data();
-        print('Fetched Document Data: $docData');
 
         if (docData['workingHours'] != null) {
           List<WorkingHours> workingHoursList = [];
@@ -42,23 +39,19 @@ class BSAvailabilityController extends ChangeNotifier {
 
           // Loop through each entry (day and availability) in the working hours map
           hoursData.forEach((day, availability) {
-            // Parse openingTime and closingTime strings to TimeOfDay
+            final openingDateTime = availability['openingTime'] != null
+                ? (availability['openingTime'] as Timestamp).toDate()
+                : null;
+            final closingDateTime = availability['closingTime'] != null
+                ? (availability['closingTime'] as Timestamp).toDate()
+                : null;
 
-            final openingDateTime =
-                (availability['openingTime'] as Timestamp).toDate();
-            final closingDateTime =
-                (availability['closingTime'] as Timestamp).toDate();
-
-            // Convert TimeOfDay to DateTime using today's date as reference
-
-            workingHoursList.add(
-              WorkingHours(
-                day: day,
-                status: availability['status'],
-                openingTime: openingDateTime,
-                closingTime: closingDateTime,
-              ),
-            );
+            workingHoursList.add(WorkingHours(
+              day: day,
+              status: availability['status'],
+              openingTime: openingDateTime,
+              closingTime: closingDateTime,
+            ));
           });
 
           print('Success: Working hours fetched successfully for email $email');
@@ -78,41 +71,87 @@ class BSAvailabilityController extends ChangeNotifier {
   }
 
   // Add or Update working hours in Firestore
-  Future<void> addAvailabilityForHairstylist(
-      String workingHoursEmail, List<WorkingHours> workingHours) async {
+  Future<void> addAvailabilityForBS(
+      String email, List<WorkingHours> workingHours) async {
     try {
       setLoading(true);
       final firestore = FirebaseFirestore.instance;
 
-      // Reference to the 'availability' collection
       DocumentReference userAvailabilityDoc =
           firestore.collection('availability').doc();
 
-      // Generate a unique user ID for this availability entry
       String randomUserId = userAvailabilityDoc.id;
 
-      // Convert the list of WorkingHours into a map format where each day's availability is stored as a field
       Map<String, dynamic> availabilityMap = {};
       for (var hours in workingHours) {
-        availabilityMap[hours.day] =
-            hours.toMap(); // Convert each WorkingHours to a map
+        availabilityMap[hours.day] = hours.toMap();
       }
 
-      // Add the working hours data directly to the 'availability' document
       await userAvailabilityDoc.set({
         'userId': randomUserId,
-        'email': workingHoursEmail,
+        'email': email,
         'workingHours': availabilityMap, // Stores all 7 days of availability
       });
 
       print(
-          'Success: Availability added for user $workingHoursEmail with userId $randomUserId.');
+          'Success: Availability added for user $email with userId $randomUserId.');
     } catch (e) {
       print('Error adding availability: $e');
     } finally {
       setLoading(false);
     }
   }
+
+// Shop Status Checker
+  // Future<String> getShopStatus(String email) async {
+  //   try {
+  //     final firestore = FirebaseFirestore.instance;
+
+  //     // Get the current day in the format stored in Firestore (e.g., "Monday")
+  //     final currentDay = DateFormat('EEEE').format(DateTime.now());
+  //     final currentTime = DateTime.now();
+
+  //     print('Current Day: $currentDay');
+  //     print('Current Time: $currentTime');
+
+  //     // Query Firestore to find the document for the current day
+  //     final querySnapshot = await firestore
+  //         .collection('availability')
+  //         .where('email', isEqualTo: email)
+  //         .where('day', isEqualTo: currentDay)
+  //         .limit(1)
+  //         .get();
+
+  //     if (querySnapshot.docs.isNotEmpty) {
+  //       final workingHoursData = querySnapshot.docs.first.data();
+
+  //       // Map the Firestore document data to the WorkingHours model
+  //       final workingHours = WorkingHours.fromMap(workingHoursData);
+
+  //       print('Working Hours: ${workingHours.toMap()}');
+
+  //       if (workingHours.openingTime != null &&
+  //           workingHours.closingTime != null) {
+  //         if (workingHours.status == true &&
+  //             currentTime.isAfter(workingHours.openingTime!) &&
+  //             currentTime.isBefore(workingHours.closingTime!)) {
+  //           return "SHOP OPEN";
+  //         } else {
+  //           return "SHOP CLOSED";
+  //         }
+  //       } else {
+  //         print('Opening or closing time is not set.');
+  //         return "SHOP CLOSED";
+  //       }
+  //     } else {
+  //       print('No working hours found for the current day.');
+  //       return "SHOP CLOSED";
+  //     }
+  //   } catch (e) {
+  //     print("Error fetching shop status: $e");
+  //     return "ERROR";
+  //   }
+  // }
 
   // Future<void> updateWorkingHoursBS(String email, String day, String status,
   //     String openingTime, String closingTime) async {
@@ -148,51 +187,6 @@ class BSAvailabilityController extends ChangeNotifier {
   //     print('Error updating working hours in Firestore: $e');
   //   }
   // }
-
-  // Delete working hours for a specific day
-  Future<void> deleteWorkingHours(String day) async {
-    try {
-      final firestore = FirebaseFirestore.instance;
-
-      // Find the document where the email matches
-      final docSnapshot = await firestore
-          .collection('bs_availability')
-          .where('email', isEqualTo: email)
-          .get();
-
-      if (docSnapshot.docs.isNotEmpty) {
-        var docData = docSnapshot.docs.first.data();
-
-        DocumentReference docRef = docSnapshot.docs.first.reference;
-
-        // Get the existing working hours map
-        Map<String, dynamic> hoursData = docData['workingHours'];
-
-        // Check if the day exists in the working hours map
-        if (hoursData.containsKey(day)) {
-          hoursData.remove(day);
-
-          // If no working hours remain, delete the entire document
-          if (hoursData.isEmpty) {
-            await docRef.delete();
-            print('Success: All working hours deleted, document removed');
-          } else {
-            // Otherwise, update the document with the new working hours (without the deleted day)
-            await docRef.update({
-              'workingHours': hoursData,
-            });
-            print('Success: Working hours for $day deleted');
-          }
-        } else {
-          print('Error: No entry found for day $day');
-        }
-      } else {
-        print('Error: No availability document found for email $email');
-      }
-    } catch (e) {
-      print('Error deleting working hours: $e');
-    }
-  }
 
   // Function to display a time picker for start and end times
   Future<TimeOfDay?> pickTime(TimeOfDay initialTime) async {

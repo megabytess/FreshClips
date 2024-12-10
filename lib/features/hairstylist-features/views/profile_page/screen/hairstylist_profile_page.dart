@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -13,6 +14,7 @@ import 'package:freshclips_capstone/features/hairstylist-features/views/profile_
 import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/hairtstylist_portfolio_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class HairstylistProfilePage extends StatefulWidget {
   const HairstylistProfilePage({
@@ -43,6 +45,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
   String? selectedStoreHours;
   String? currentUserEmail;
   late final TextEditingController reviewController;
+  String hairstylistStatus = "Loading...";
 
   double averageRating = 0.0;
   late RatingsReviewController ratingsReviewController;
@@ -89,8 +92,153 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
       reviewController: reviewController,
     );
     getAverageRating();
-
+    getHairstylistStatus(widget.email).then((status) {
+      setState(() {
+        hairstylistStatus = status;
+      });
+    });
     super.initState();
+  }
+
+  Future<String> getHairstylistStatus(String email) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      final currentTime = DateTime.now();
+      final currentDate =
+          DateTime(currentTime.year, currentTime.month, currentTime.day);
+
+      final formattedDate = DateFormat('EEEE, MMMM d, yyyy')
+          .format(currentDate); // "Monday, December 9, 2024"
+      print(formattedDate);
+
+      final querySnapshot = await firestore
+          .collection('availability')
+          .where('email', isEqualTo: email)
+          .get();
+
+      // DEcember 9, 2024 schedule
+
+      print('email: $email');
+      if (querySnapshot.docs.isNotEmpty) {
+        // final workingHoursData = querySnapshot.docs.first.data();
+        print('not empty querySnapshot');
+
+        for (var doc in querySnapshot.docs) {
+          final workingHoursData = doc.data()['workingHours'];
+
+          // Check if the day exists in the workingHours map
+          if (workingHoursData != null &&
+              workingHoursData.containsKey(formattedDate)) {
+            final dayData = workingHoursData[formattedDate];
+
+            // Check if 'status' is true or false for the current day
+            // final status = dayData['status'];
+
+            // Retrieve openingTime and closingTime as timestamps
+            final openingTimeTimestamp = dayData['openingTime'] as Timestamp;
+            final closingTimeTimestamp = dayData['closingTime'] as Timestamp;
+
+            // Convert timestamps to DateTime
+            final openingTime = openingTimeTimestamp.toDate();
+            final closingTime = closingTimeTimestamp.toDate();
+
+            // Check if current time is between openingTime and closingTime
+            if (currentTime.isAfter(openingTime) &&
+                currentTime.isBefore(closingTime)) {
+              return 'AVAILABLE';
+            } else {
+              return 'NOT AVAILABLE';
+            }
+
+            // if (status != null) {
+            //   return status ? 'SHOP OPEN' : 'SHOP CLOSED';
+            // } else {
+            //   return 'Status not available for today';
+            // }
+          }
+        }
+
+        return 'No working hours for today';
+
+        //   final workingHoursData = querySnapshot.docs
+        //       .map((doc) => WorkingHours.fromJson(doc.data()))
+        //       .toList();
+        //   print('working hours data: $workingHoursData');
+
+        //   for (final workingHours in workingHoursData) {
+        //     final formattedShopDate = DateFormat('EEEE, MMMM d, yyyy')
+        //         .format(workingHours.day as DateTime);
+
+        //     print(
+        //         "Comparing today's date: $formattedDate with shop's working day: $formattedShopDate");
+
+        //     if (formattedDate == formattedShopDate) {
+        //       // Compare if today matches the shop's working day
+        //       final currentTime = DateTime.now();
+        //       final openingTime = workingHours.openingTime;
+        //       final closingTime = workingHours.closingTime;
+
+        //       if (workingHours.status == true &&
+        //           currentTime.isAfter(openingTime!) &&
+        //           currentTime.isBefore(closingTime!)) {
+        //         return "SHOP OPEN";
+        //       } else {
+        //         return "SHOP CLOSED";
+        //       }
+        //     }
+        //   }
+        // } // Format the shop's working day
+
+        //   print('Working Hours Data: $workingHoursData');
+        //   print('current time: $currentTime');
+        //   print('Opening Time: ${workingHoursData['openingTime']}');
+        //   print('Closing Time: ${workingHoursData['closingTime']}');
+        //   print('Status: ${workingHoursData['status']}');
+
+        //   if (workingHoursData['day'] == null ||
+        //       workingHoursData['openingTime'] == null ||
+        //       workingHoursData['closingTime'] == null ||
+        //       workingHoursData['status'] == null) {
+        //     print('Error: Missing fields in Firestore document.');
+        //     return "SHOP CLOSED";
+        //   }
+
+        //   // Map the Firestore document data to the WorkingHours model
+        //   final workingHours = WorkingHours.fromMap(workingHoursData);
+        //   print('Working Hours: ${workingHours.toMap()}');
+
+        //   if (workingHours.openingTime != null &&
+        //       workingHours.closingTime != null) {
+        //     if (workingHours.status == true &&
+        //         currentTime.isAfter(workingHours.openingTime!) &&
+        //         currentTime.isBefore(workingHours.closingTime!)) {
+        //       return "SHOP OPEN";
+        //     } else {
+        //       return "SHOP CLOSED";
+        //     }
+        //   } else {
+        //     print('Opening or closing time is not set.');
+        //     return "SHOP CLOSED";
+        //   }
+        // } else {
+        //   print('No working hours found for the given email.');
+        //   return "SHOP CLOSED";
+      } else {
+        print('empty');
+      }
+    } catch (e) {
+      print("Error fetching shop status: $e");
+      return "ERROR";
+    }
+    return "SHOP CLOSED"; // Default return statement
+  }
+
+  String formatTime(DateTime? dateTime) {
+    if (null == dateTime) {
+      return 'Not Set';
+    }
+    return DateFormat('h:mm a').format(dateTime);
   }
 
   void fetchWorkingHours() async {
@@ -111,7 +259,8 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
               .toList();
 
           if (availabilityData.isNotEmpty) {
-            selectedStoreHours = availabilityData[0]['status'];
+            selectedStoreHours =
+                availabilityData[0]['status'] ? 'SHOP OPEN' : 'SHOP CLOSED';
           }
 
           isLoading = false;
@@ -161,12 +310,9 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
         final hairstylist = hairstylistController.hairstylist;
         if (hairstylist == null) {
           return const Center(
-            child: Text(
-              'Hairstylist not found',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Color.fromARGB(255, 189, 49, 71),
               ),
             ),
           );
@@ -267,104 +413,16 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                         ],
                       ),
                       Gap(screenHeight * 0.001),
-                      (widget.isClient && currentUserEmail != widget.email)
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  hairstylistController.selectedStatus,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: screenWidth * 0.032,
-                                    fontWeight: FontWeight.w700,
-                                    color:
-                                        hairstylistController.selectedStatus ==
-                                                'SHOP OPEN'
-                                            ? Colors.green
-                                            : Colors.red,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : GestureDetector(
-                              onTap: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return Container(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: screenHeight * 0.02,
-                                        horizontal: screenWidth * 0.03,
-                                      ),
-                                      height: screenHeight * 0.3,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Select Status',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: screenWidth * 0.04,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          const Divider(),
-                                          ListTile(
-                                            title: Text(
-                                              'SHOP OPEN',
-                                              style: GoogleFonts.poppins(
-                                                fontSize: screenWidth * 0.035,
-                                                fontWeight: FontWeight.w600,
-                                                color: const Color.fromARGB(
-                                                    255, 18, 18, 18),
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              hairstylistController
-                                                  .updateStatus('SHOP OPEN');
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                          ListTile(
-                                            title: Text(
-                                              'SHOP CLOSED',
-                                              style: GoogleFonts.poppins(
-                                                fontSize: screenWidth * 0.035,
-                                                fontWeight: FontWeight.w600,
-                                                color: const Color.fromARGB(
-                                                    255, 18, 18, 18),
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              hairstylistController
-                                                  .updateStatus('SHOP CLOSED');
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    hairstylistController.selectedStatus,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.032,
-                                      fontWeight: FontWeight.w700,
-                                      color: hairstylistController
-                                                  .selectedStatus ==
-                                              'SHOP OPEN'
-                                          ? Colors.green
-                                          : Colors.red,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                      Text(
+                        hairstylistStatus,
+                        style: GoogleFonts.poppins(
+                          color: hairstylistStatus == "AVAILABLE"
+                              ? Colors.green
+                              : Colors.red,
+                          fontSize: screenWidth * 0.035,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       Gap(screenHeight * 0.001),
                       GestureDetector(
                         onTap: () {
@@ -381,7 +439,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Shop Hours",
+                                      "Schedule",
                                       style: GoogleFonts.poppins(
                                         fontSize: screenWidth * 0.04,
                                         fontWeight: FontWeight.w600,
@@ -392,29 +450,16 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                                       child: ListView.builder(
                                         itemCount: availabilityData.length,
                                         itemBuilder: (context, index) {
-                                          // Retrieve the WorkingHours object for the current day
-                                          Map<String, String> dayData =
-                                              availabilityData[index]
-                                                  .cast<String, String>();
+                                          var dayData = availabilityData[index];
+
+                                          String openingTime = formatTime(
+                                              dayData['openingTime']);
+                                          String closingTime = formatTime(
+                                              dayData['closingTime']);
 
                                           // Get the day, status, opening time, and closing time values
                                           final String day = dayData['day'] ??
                                               'No day specified';
-                                          final String status =
-                                              dayData['status'] ??
-                                                  'Status not available';
-                                          final String openingTime =
-                                              dayData['openingTime']
-                                                          ?.isNotEmpty ==
-                                                      true
-                                                  ? dayData['openingTime']!
-                                                  : 'No opening time specified';
-                                          final String closingTime =
-                                              dayData['closingTime']
-                                                          ?.isNotEmpty ==
-                                                      true
-                                                  ? dayData['closingTime']!
-                                                  : 'No closing time specified';
 
                                           return ListTile(
                                             title: Text(
@@ -428,7 +473,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                                             ),
                                             subtitle: Text(
                                               // Display status and times, with a user-friendly message if times are empty
-                                              '$status - $openingTime | $closingTime',
+                                              '${dayData['status'] == true ? 'AVAILABLE' : 'NOT AVAILABLE'} | $openingTime - $closingTime',
                                               style: GoogleFonts.poppins(
                                                 fontSize: screenWidth * 0.035,
                                                 fontWeight: FontWeight.w600,
@@ -451,7 +496,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Shop availability',
+                              'Hairstylist Schedule',
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.035,
                                 fontWeight: FontWeight.w400,
@@ -603,3 +648,106 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
     );
   }
 }
+
+
+
+
+//  (widget.isClient && currentUserEmail != widget.email)
+//                           ? Row(
+//                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                               children: [
+//                                 Text(
+//                                   hairstylistController.selectedStatus,
+//                                   style: GoogleFonts.poppins(
+//                                     fontSize: screenWidth * 0.032,
+//                                     fontWeight: FontWeight.w700,
+//                                     color:
+//                                         hairstylistController.selectedStatus ==
+//                                                 'AVAILABLE'
+//                                             ? Colors.green
+//                                             : Colors.red,
+//                                   ),
+//                                 ),
+//                               ],
+//                             )
+//                           : GestureDetector(
+//                               onTap: () {
+//                                 showModalBottomSheet(
+//                                   context: context,
+//                                   builder: (BuildContext context) {
+//                                     return Container(
+//                                       padding: EdgeInsets.symmetric(
+//                                         vertical: screenHeight * 0.02,
+//                                         horizontal: screenWidth * 0.03,
+//                                       ),
+//                                       height: screenHeight * 0.3,
+//                                       child: Column(
+//                                         crossAxisAlignment:
+//                                             CrossAxisAlignment.start,
+//                                         children: [
+//                                           Text(
+//                                             'Select Status',
+//                                             style: GoogleFonts.poppins(
+//                                               fontSize: screenWidth * 0.04,
+//                                               fontWeight: FontWeight.w600,
+//                                             ),
+//                                           ),
+//                                           const Divider(),
+//                                           ListTile(
+//                                             title: Text(
+//                                               'AVAILABLE',
+//                                               style: GoogleFonts.poppins(
+//                                                 fontSize: screenWidth * 0.035,
+//                                                 fontWeight: FontWeight.w600,
+//                                                 color: const Color.fromARGB(
+//                                                     255, 18, 18, 18),
+//                                               ),
+//                                             ),
+//                                             onTap: () {
+//                                               hairstylistController
+//                                                   .updateStatus('AVAILABLE');
+//                                               Navigator.pop(context);
+//                                             },
+//                                           ),
+//                                           ListTile(
+//                                             title: Text(
+//                                               'NOT AVAILABLE',
+//                                               style: GoogleFonts.poppins(
+//                                                 fontSize: screenWidth * 0.035,
+//                                                 fontWeight: FontWeight.w600,
+//                                                 color: const Color.fromARGB(
+//                                                     255, 18, 18, 18),
+//                                               ),
+//                                             ),
+//                                             onTap: () {
+//                                               hairstylistController
+//                                                   .updateStatus(
+//                                                       'NOT AVAILABLE');
+//                                               Navigator.pop(context);
+//                                             },
+//                                           ),
+//                                         ],
+//                                       ),
+//                                     );
+//                                   },
+//                                 );
+//                               },
+//                               child: Row(
+//                                 mainAxisAlignment:
+//                                     MainAxisAlignment.spaceBetween,
+//                                 children: [
+//                                   Text(
+//                                     hairstylistController.selectedStatus,
+//                                     style: GoogleFonts.poppins(
+//                                       fontSize: screenWidth * 0.032,
+//                                       fontWeight: FontWeight.w700,
+//                                       color: hairstylistController
+//                                                   .selectedStatus ==
+//                                               'AVAIABLE'
+//                                           ? Colors.green
+//                                           : Colors.red,
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),

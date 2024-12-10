@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -5,16 +6,15 @@ import 'package:flutter_tabbar_page/flutter_tabbar_page.dart';
 import 'package:freshclips_capstone/core/booking_system/01_booking_template_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_ratings_review_controller.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_working_hours_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_barbers_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_info_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_reviews_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_timeline_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/controllers/working_hours_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/models/working_hours_model.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BSProfilePage extends StatefulWidget {
   const BSProfilePage({
@@ -37,16 +37,17 @@ class _BSProfilePageState extends State<BSProfilePage> {
   final TabPageController tabPageController = TabPageController();
   final BarbershopSalonController barbershopsalonController =
       BarbershopSalonController();
-  late final WorkingHoursController workingHoursController =
-      WorkingHoursController(email: widget.email, context: context);
+
   late final TextEditingController reviewController;
   List<Map<String, dynamic>> availabilityData = [];
   bool isLoading = false;
   String? selectedStoreHours;
   String? currentUserEmail;
+  User? currentUser;
   double averageRating = 0.0;
   late RatingsReviewController ratingsReviewController;
-  String shopStatus = 'Loading...'; // Initial status
+  String shopStatus = "Loading...";
+  late final BSAvailabilityController bsAvailabilityController;
 
   @override
   void initState() {
@@ -88,20 +89,14 @@ class _BSProfilePageState extends State<BSProfilePage> {
         ),
       ),
     );
+    bsAvailabilityController =
+        BSAvailabilityController(email: widget.email, context: context);
     barbershopsalonController.getBarbershopSalon(widget.email);
-    workingHoursController;
     fetchWorkingHours();
     currentUserEmail = FirebaseAuth.instance.currentUser?.email;
     getAverageRating();
-    loadShopStatus();
-  }
-
-  // Fetch the stored status from SharedPreferences
-  Future<void> loadShopStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      shopStatus = prefs.getString('shopStatus') ?? 'No status available';
-    });
+    fetchShopStatus();
+    print('Email in initState: ${widget.email}');
   }
 
   String formatTime(DateTime? dateTime) {
@@ -114,7 +109,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
   void fetchWorkingHours() async {
     try {
       List<WorkingHours> workingHoursList =
-          await workingHoursController.fetchWorkingHours(widget.email);
+          await bsAvailabilityController.fetchWorkingHoursBS(widget.email);
 
       if (workingHoursList.isNotEmpty) {
         setState(() {
@@ -128,7 +123,8 @@ class _BSProfilePageState extends State<BSProfilePage> {
               .toList();
 
           if (availabilityData.isNotEmpty) {
-            selectedStoreHours = availabilityData[0]['status'];
+            selectedStoreHours =
+                availabilityData[0]['status'] ? 'SHOP OPEN' : 'SHOP CLOSED';
           }
 
           isLoading = false;
@@ -154,6 +150,147 @@ class _BSProfilePageState extends State<BSProfilePage> {
     setState(() {
       averageRating = avgRating;
     });
+  }
+
+  void fetchShopStatus() async {
+    final status = await getShopStatus(widget.email); // Pass the user's email
+    setState(() {
+      shopStatus = status;
+    });
+  }
+
+  Future<String> getShopStatus(String email) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      final currentTime = DateTime.now();
+      final currentDate =
+          DateTime(currentTime.year, currentTime.month, currentTime.day);
+
+      final formattedDate = DateFormat('EEEE, MMMM d, yyyy')
+          .format(currentDate); // "Monday, December 9, 2024"
+      print(formattedDate);
+
+      final querySnapshot = await firestore
+          .collection('availability')
+          .where('email', isEqualTo: email)
+          .get();
+
+      // DEcember 9, 2024 schedule
+
+      print('email: $email');
+      if (querySnapshot.docs.isNotEmpty) {
+        // final workingHoursData = querySnapshot.docs.first.data();
+        print('not empty querySnapshot');
+
+        for (var doc in querySnapshot.docs) {
+          final workingHoursData = doc.data()['workingHours'];
+
+          // Check if the day exists in the workingHours map
+          if (workingHoursData != null &&
+              workingHoursData.containsKey(formattedDate)) {
+            final dayData = workingHoursData[formattedDate];
+
+            // Check if 'status' is true or false for the current day
+            // final status = dayData['status'];
+
+            // Retrieve openingTime and closingTime as timestamps
+            final openingTimeTimestamp = dayData['openingTime'] as Timestamp;
+            final closingTimeTimestamp = dayData['closingTime'] as Timestamp;
+
+            // Convert timestamps to DateTime
+            final openingTime = openingTimeTimestamp.toDate();
+            final closingTime = closingTimeTimestamp.toDate();
+
+            // Check if current time is between openingTime and closingTime
+            if (currentTime.isAfter(openingTime) &&
+                currentTime.isBefore(closingTime)) {
+              return 'SHOP OPEN';
+            } else {
+              return 'SHOP CLOSED';
+            }
+
+            // if (status != null) {
+            //   return status ? 'SHOP OPEN' : 'SHOP CLOSED';
+            // } else {
+            //   return 'Status not available for today';
+            // }
+          }
+        }
+
+        return 'No working hours for today';
+
+        //   final workingHoursData = querySnapshot.docs
+        //       .map((doc) => WorkingHours.fromJson(doc.data()))
+        //       .toList();
+        //   print('working hours data: $workingHoursData');
+
+        //   for (final workingHours in workingHoursData) {
+        //     final formattedShopDate = DateFormat('EEEE, MMMM d, yyyy')
+        //         .format(workingHours.day as DateTime);
+
+        //     print(
+        //         "Comparing today's date: $formattedDate with shop's working day: $formattedShopDate");
+
+        //     if (formattedDate == formattedShopDate) {
+        //       // Compare if today matches the shop's working day
+        //       final currentTime = DateTime.now();
+        //       final openingTime = workingHours.openingTime;
+        //       final closingTime = workingHours.closingTime;
+
+        //       if (workingHours.status == true &&
+        //           currentTime.isAfter(openingTime!) &&
+        //           currentTime.isBefore(closingTime!)) {
+        //         return "SHOP OPEN";
+        //       } else {
+        //         return "SHOP CLOSED";
+        //       }
+        //     }
+        //   }
+        // } // Format the shop's working day
+
+        //   print('Working Hours Data: $workingHoursData');
+        //   print('current time: $currentTime');
+        //   print('Opening Time: ${workingHoursData['openingTime']}');
+        //   print('Closing Time: ${workingHoursData['closingTime']}');
+        //   print('Status: ${workingHoursData['status']}');
+
+        //   if (workingHoursData['day'] == null ||
+        //       workingHoursData['openingTime'] == null ||
+        //       workingHoursData['closingTime'] == null ||
+        //       workingHoursData['status'] == null) {
+        //     print('Error: Missing fields in Firestore document.');
+        //     return "SHOP CLOSED";
+        //   }
+
+        //   // Map the Firestore document data to the WorkingHours model
+        //   final workingHours = WorkingHours.fromMap(workingHoursData);
+        //   print('Working Hours: ${workingHours.toMap()}');
+
+        //   if (workingHours.openingTime != null &&
+        //       workingHours.closingTime != null) {
+        //     if (workingHours.status == true &&
+        //         currentTime.isAfter(workingHours.openingTime!) &&
+        //         currentTime.isBefore(workingHours.closingTime!)) {
+        //       return "SHOP OPEN";
+        //     } else {
+        //       return "SHOP CLOSED";
+        //     }
+        //   } else {
+        //     print('Opening or closing time is not set.');
+        //     return "SHOP CLOSED";
+        //   }
+        // } else {
+        //   print('No working hours found for the given email.');
+        //   return "SHOP CLOSED";
+      } else {
+        print('empty');
+      }
+    } catch (e) {
+      print("Error fetching shop status: $e");
+      return "ERROR";
+    }
+    return "SHOP CLOSED"; // Default return statement
   }
 
   @override
@@ -275,7 +412,16 @@ class _BSProfilePageState extends State<BSProfilePage> {
                           ),
                         ],
                       ),
-                      Text(shopStatus, style: GoogleFonts.poppins()),
+                      Text(
+                        shopStatus,
+                        style: GoogleFonts.poppins(
+                          color: shopStatus == "SHOP OPEN"
+                              ? Colors.green
+                              : Colors.red,
+                          fontSize: screenWidth * 0.035,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       GestureDetector(
                         onTap: () {
                           showModalBottomSheet(
@@ -291,7 +437,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Shop Hours",
+                                      "Available Dates",
                                       style: GoogleFonts.poppins(
                                         fontSize: screenWidth * 0.04,
                                         fontWeight: FontWeight.w600,
@@ -394,11 +540,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                   MaterialPageRoute(
                                     builder: (context) => BookingTemplatePage(
                                       clientEmail: widget.email,
-                                      // accountName: barbershopsalonController
-                                      //     .barbershopsalon!.shopName,
                                       userEmail: widget.email,
-                                      // userType:
-                                      //     widget.isClient ? 'Client' : 'Owner',
                                     ),
                                   ),
                                 );

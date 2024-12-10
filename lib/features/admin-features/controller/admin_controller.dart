@@ -121,4 +121,82 @@ class AdminVerifyController extends ChangeNotifier {
       print("Error submitting another verification: $e");
     }
   }
+
+  // Fetch all hairstylists
+  Future<List<Map<String, dynamic>>> fetchAllHairstylist(String email) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      Query query = firestore
+          .collection('user')
+          .where('userType', isEqualTo: 'Hairstylist');
+
+      final querySnapshot = await query.get();
+
+      // Optional filtering by email
+      if (email.isNotEmpty) {
+        query = query.where('email', isEqualTo: email);
+      }
+
+      // Map documents to a list of Maps
+      return querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+    } catch (e) {
+      print('Error fetching hairstylists: $e');
+      return [];
+    }
+  }
+
+  // Fetch all clients
+  Future<List<Map<String, dynamic>>> fetchAllClients(String email) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      Query query =
+          firestore.collection('user').where('userType', isEqualTo: 'Client');
+
+      final querySnapshot = await query.get();
+
+      // Optional filtering by email
+      if (email.isNotEmpty) {
+        query = query.where('email', isEqualTo: email);
+      }
+
+      // Map documents to a list of Maps
+      return querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+    } catch (e) {
+      print('Error fetching clients: $e');
+      return [];
+    }
+  }
+
+  // Fetch all barbershop/salon
+  Future<List<Map<String, dynamic>>> fetchAllBarbershopSalon(
+      String email) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      Query query = firestore
+          .collection('user')
+          .where('userType', isEqualTo: 'Barbershop_Salon');
+
+      final querySnapshot = await query.get();
+
+      // Optional filtering by email
+      if (email.isNotEmpty) {
+        query = query.where('email', isEqualTo: email);
+      }
+
+      // Map documents to a list of Maps
+      return querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+    } catch (e) {
+      print('Error fetching barbershop/salon: $e');
+      return [];
+    }
+  }
 }

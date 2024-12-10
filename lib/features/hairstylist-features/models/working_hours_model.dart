@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class WorkingHours {
-  String day;
-  bool status; // Shop Open / Shop Closed
-  DateTime? openingTime;
-  DateTime? closingTime;
+  final String day;
+  final bool status;
+  final DateTime? openingTime;
+  final DateTime? closingTime;
 
   WorkingHours({
     required this.day,
@@ -11,6 +13,19 @@ class WorkingHours {
     this.closingTime,
   });
 
+  factory WorkingHours.fromMap(Map<String, dynamic> data) {
+    return WorkingHours(
+      day: data['day'] as String,
+      status: data['status'] as bool,
+      openingTime: data['openingTime'] != null
+          ? (data['openingTime'] as Timestamp).toDate()
+          : null,
+      closingTime: data['closingTime'] != null
+          ? (data['closingTime'] as Timestamp).toDate()
+          : null,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'day': day,
@@ -18,14 +33,5 @@ class WorkingHours {
       'openingTime': openingTime,
       'closingTime': closingTime,
     };
-  }
-
-  factory WorkingHours.fromMap(Map<String, dynamic> map) {
-    return WorkingHours(
-      day: map['day'] ?? '',
-      status: map['status'] ?? false,
-      openingTime: map['openingTime']?.toDate(),
-      closingTime: map['closingTime']?.toDate(),
-    );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_working_hours_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/working_hours_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/models/working_hours_model.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/settings_drawer/manage_availability/add_availability_date_page.dart';
@@ -24,10 +25,14 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
   late final WorkingHoursController workingHoursController =
       WorkingHoursController(email: widget.email, context: context);
 
+  late BSAvailabilityController availabilityController;
+
   @override
   void initState() {
     super.initState();
     workingHoursController;
+    availabilityController =
+        BSAvailabilityController(email: widget.email, context: context);
     fetchWorkingHours();
   }
 
@@ -45,7 +50,7 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
       });
 
       List<WorkingHours> fetchedData =
-          await workingHoursController.fetchWorkingHours(widget.email);
+          await availabilityController.fetchWorkingHoursBS(widget.email);
 
       setState(() {
         availabilityData = fetchedData.map((workingHour) {
@@ -83,184 +88,6 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
     }
   }
 
-  // edit availability functionality
-  void editAvailability(String day, bool currentStatus,
-      DateTime currentOpeningTime, DateTime currentClosingTime) async {
-    // Parse the provided times
-    // TimeOfDay newOpeningTime = _parseTimeOfDay(currentOpeningTime);
-    // TimeOfDay newClosingTime = _parseTimeOfDay(currentClosingTime);
-    bool selectedStatus = currentStatus;
-
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text(
-                'Edit Availability',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DropdownButtonFormField<bool>(
-                    value: selectedStatus,
-                    items: [true, false].map((bool status) {
-                      return DropdownMenuItem<bool>(
-                        value: status,
-                        child: Text(status ? 'Shop Open' : 'Shop Closed'),
-                      );
-                    }).toList(),
-                    onChanged: (newStatus) {
-                      setState(() {
-                        selectedStatus = newStatus!;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Status',
-                      hintStyle: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Display the formatted time, or 'Not set' if the time is null
-                      Text(
-                        'Opening Time: ${formatTime(newOpeningTime ?? currentOpeningTime)}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          // Show the time picker dialog
-                          final pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime:
-                                TimeOfDay.fromDateTime(currentOpeningTime),
-                          );
-
-                          // If a time was picked, update the newOpeningTime
-                          if (pickedTime != null) {
-                            setState(() {
-                              newOpeningTime = DateTime(
-                                DateTime.now().year,
-                                DateTime.now().month,
-                                DateTime.now().day,
-                                pickedTime.hour,
-                                pickedTime.minute,
-                              );
-                              print("Picked Opening Time: $newOpeningTime");
-                            });
-                          }
-                        },
-                        child: Text(
-                          'Change',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(255, 189, 49, 71),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Closing Time: ${formatTime(newClosingTime ?? currentClosingTime)}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          final pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime:
-                                TimeOfDay.fromDateTime(currentClosingTime),
-                          );
-
-                          if (pickedTime != null) {
-                            setState(() {
-                              newClosingTime = DateTime(
-                                DateTime.now().year,
-                                DateTime.now().month,
-                                DateTime.now().day,
-                                pickedTime.hour,
-                                pickedTime.minute,
-                              );
-                              print("Picked Closing Time: $newClosingTime");
-                            });
-                          }
-                        },
-                        child: Text(
-                          'Change',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(255, 189, 49, 71),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    'Cancel',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: const Color.fromARGB(255, 18, 18, 18),
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    await editWorkingHours(
-                      day,
-                      selectedStatus,
-                      newOpeningTime ??
-                          currentOpeningTime, // Use newOpeningTime if available
-                      newClosingTime ??
-                          currentClosingTime, // Use newClosingTime if available
-                    );
-                    fetchWorkingHours(); // Refresh the data after the edit
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Save',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: const Color.fromARGB(255, 18, 18, 18),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
   // Function to parse a time string to TimeOfDay
   TimeOfDay parseTimeOfDay(String timeString) {
     try {
@@ -287,17 +114,6 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
     }
   }
 
-  // Function to edit working hours
-  Future<void> editWorkingHours(String day, bool status,
-      DateTime currentOpeningTime, DateTime currentClosingTime) async {
-    try {
-      await workingHoursController.updateWorkingHours(
-          widget.email, day, status, currentOpeningTime, currentClosingTime);
-    } catch (e) {
-      print('Error editing working hours: $e');
-    }
-  }
-
   // Function to handle the delete functionality
   void deleteAvailability(String day) async {
     await workingHoursController.deleteWorkingHours(day);
@@ -321,6 +137,37 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        actions: [
+          SizedBox(
+            width: screenWidth * 0.15,
+            height: screenHeight * 0.03,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) {
+                    return AvailabilityDatePage(
+                      email: widget.email,
+                    );
+                  },
+                ));
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 189, 49, 71),
+                foregroundColor: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
+              ),
+              child: Text(
+                'Edit',
+                style: GoogleFonts.poppins(
+                  fontSize: screenWidth * 0.025,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+          Gap(screenWidth * 0.02),
+        ],
       ),
       body: Center(
         child: isLoading
@@ -353,93 +200,61 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
                                 itemBuilder: (context, index) {
                                   var dayData = availabilityData[index];
 
-                                  // // Debug print to check dayData contents
-                                  // print('Day Data: $dayData');
-
                                   String openingTime =
                                       formatTime(dayData['openingTime']);
                                   String closingTime =
                                       formatTime(dayData['closingTime']);
 
                                   return ListTile(
-                                    title: Text(
-                                      dayData['day'],
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.045,
-                                        fontWeight: FontWeight.w600,
+                                      title: Text(
+                                        dayData['day'],
+                                        style: GoogleFonts.poppins(
+                                          fontSize: screenWidth * 0.045,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
-                                    ),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Status: ${dayData['status'] == true ? 'Shop Open' : 'Shop Closed'}',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: screenWidth * 0.04,
-                                            fontWeight: FontWeight.w500,
-                                            color: const Color.fromARGB(
-                                                255, 18, 18, 18),
+                                      subtitle: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Status: ${dayData['status'] == true ? 'Shop Open' : 'Shop Closed'}',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: screenWidth * 0.04,
+                                              fontWeight: FontWeight.w500,
+                                              color: const Color.fromARGB(
+                                                  255, 18, 18, 18),
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          'Opening Time: $openingTime',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: screenWidth * 0.04,
-                                            fontWeight: FontWeight.w500,
-                                            color: const Color.fromARGB(
-                                                255, 18, 18, 18),
+                                          Text(
+                                            'Opening Time: $openingTime',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: screenWidth * 0.04,
+                                              fontWeight: FontWeight.w500,
+                                              color: const Color.fromARGB(
+                                                  255, 18, 18, 18),
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          'Closing Time: $closingTime',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: screenWidth * 0.04,
-                                            fontWeight: FontWeight.w500,
-                                            color: const Color.fromARGB(
-                                                255, 18, 18, 18),
+                                          Text(
+                                            'Closing Time: $closingTime',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: screenWidth * 0.04,
+                                              fontWeight: FontWeight.w500,
+                                              color: const Color.fromARGB(
+                                                  255, 18, 18, 18),
+                                            ),
                                           ),
+                                        ],
+                                      ),
+                                      trailing: IconButton(
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          size: 30,
                                         ),
-                                      ],
-                                    ),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.edit_calendar_rounded,
-                                            size: 30,
-                                            color:
-                                                Color.fromARGB(255, 18, 18, 18),
-                                          ),
-                                          onPressed: () {
-                                            editAvailability(
-                                              dayData['day'],
-                                              dayData['status'],
-                                              // openingTime,
-                                              // closingTime,
-                                              dayData['openingTime'],
-                                              dayData['closingTime'],
-                                            );
-                                          },
-                                        ),
-                                        const SizedBox(
-                                            width:
-                                                8), // Using SizedBox instead of Gap
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.delete_outline_rounded,
-                                            size: 30,
-                                            color:
-                                                Color.fromARGB(255, 18, 18, 18),
-                                          ),
-                                          onPressed: () {
-                                            deleteAvailability(dayData['day']);
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  );
+                                        onPressed: () {
+                                          deleteAvailability(dayData['day']);
+                                        },
+                                      ));
                                 },
                               ),
                   ),

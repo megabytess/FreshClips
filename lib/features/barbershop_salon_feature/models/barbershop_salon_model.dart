@@ -5,9 +5,8 @@ class BarbershopSalon {
   final String shopName;
   final String email;
   final String username;
-  // final String address;
   final String phoneNumber;
-  final String location;
+  final Map<String, dynamic> location;
   final String imageUrl;
   final String password;
 
@@ -31,7 +30,7 @@ class BarbershopSalon {
       email: data['email'] ?? '',
       username: data['username'] ?? '',
       phoneNumber: data['phoneNumber'] ?? '',
-      location: data['location'] ?? '',
+      location: data['location'] as Map<String, dynamic>,
       imageUrl: data['imageUrl'] ?? '',
       password: data['password'] ?? '',
     );

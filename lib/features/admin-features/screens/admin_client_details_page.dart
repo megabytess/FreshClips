@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/client-features/controllers/client_controller.dart';
-import 'package:freshclips_capstone/features/client-features/views/profile_page/widgets/client_update_profile_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ClientProfileDetailsPage extends StatefulWidget {
-  const ClientProfileDetailsPage({super.key, required this.email});
+class AdminClientDetailsPage extends StatefulWidget {
+  const AdminClientDetailsPage({super.key, required this.email});
   final String email;
 
   @override
-  State<ClientProfileDetailsPage> createState() => _EditProfilePageState();
+  State<AdminClientDetailsPage> createState() => _AdminClientDetailsPageState();
 }
 
-class _EditProfilePageState extends State<ClientProfileDetailsPage> {
-  ClientController clientController = ClientController();
+class _AdminClientDetailsPageState extends State<AdminClientDetailsPage> {
+  final ClientController clientController = ClientController();
 
   @override
   void initState() {
@@ -25,18 +24,18 @@ class _EditProfilePageState extends State<ClientProfileDetailsPage> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Profile details',
+          'Client details',
           style: GoogleFonts.poppins(
             fontSize: screenWidth * 0.04,
             fontWeight: FontWeight.w600,
           ),
         ),
         backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: AnimatedBuilder(
         animation: clientController,
@@ -213,41 +212,6 @@ class _EditProfilePageState extends State<ClientProfileDetailsPage> {
                         ),
                       ),
                     ],
-                  ),
-                  Gap(screenHeight * 0.01),
-                  SizedBox(
-                    height: screenHeight * 0.07,
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ClientUpdateProfilePage(
-                                email: widget.email,
-                                client: clientController.client!),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 189, 49, 70),
-                        padding: EdgeInsets.symmetric(
-                          vertical: screenWidth * 0.04,
-                          horizontal: screenWidth * 0.2,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Text(
-                        'Update profile',
-                        style: GoogleFonts.poppins(
-                          color: const Color.fromARGB(255, 248, 248, 248),
-                          fontSize: screenWidth * 0.035,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
                   ),
                 ],
               ),

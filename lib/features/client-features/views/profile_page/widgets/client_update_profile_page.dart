@@ -55,7 +55,7 @@ class _EditProfilePageState extends State<ClientUpdateProfilePage> {
       emailController.text = widget.client.email;
       phoneNumberController.text = widget.client.phoneNumber;
       usernameController.text = widget.client.username;
-      locationController.text = widget.client.location;
+      // locationController.text = widget.client.location;
     });
   }
 
@@ -221,6 +221,27 @@ class _EditProfilePageState extends State<ClientUpdateProfilePage> {
                     ),
                     Gap(screenHeight * 0.02),
 
+                    // Phone number
+                    TextFormField(
+                      controller: phoneNumberController,
+                      decoration: InputDecoration(
+                        labelText: 'Phone number',
+                        labelStyle: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.035,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a username';
+                        }
+                        return null;
+                      },
+                    ),
+                    Gap(screenHeight * 0.02),
+
                     // Location
                     TextFormField(
                       controller: locationController,
@@ -263,7 +284,7 @@ class _EditProfilePageState extends State<ClientUpdateProfilePage> {
                               firstName: firstNameController.text,
                               lastName: lastNameController.text,
                               username: usernameController.text,
-                              location: locationController.text,
+                              location: clientController.client!.location,
                             );
 
                             // Convert to Map<String, dynamic>

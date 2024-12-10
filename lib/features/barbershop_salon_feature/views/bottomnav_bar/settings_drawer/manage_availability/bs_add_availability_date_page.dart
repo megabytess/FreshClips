@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_working_hours_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/working_hours_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/models/working_hours_model.dart';
 import 'package:gap/gap.dart';
@@ -19,16 +20,17 @@ class _AvailabilityDatePageState extends State<BSAvailabilityDatePage> {
   List<DateTime> availableDates = [];
   Map<DateTime, Map<String, dynamic>> availabilityStatus = {};
   bool isAvailable = true;
-  late WorkingHoursController workingHoursController =
-      WorkingHoursController(email: widget.email, context: context);
+  late WorkingHoursController workingHoursController;
+  late BSAvailabilityController bsAvailibilityController;
 
   @override
   void initState() {
     super.initState();
     availableDates = generateNextWeekDates();
-    workingHoursController =
+    workingHoursController = workingHoursController =
         WorkingHoursController(email: widget.email, context: context);
-
+    bsAvailibilityController =
+        BSAvailabilityController(email: widget.email, context: context);
     for (var date in availableDates) {
       availabilityStatus[date] = {'status': true};
     }
@@ -66,7 +68,7 @@ class _AvailabilityDatePageState extends State<BSAvailabilityDatePage> {
         return dateTimeToWorkingHours(date);
       }).toList();
 
-      await workingHoursController.addAvailabilityForHairstylist(
+      await bsAvailibilityController.addAvailabilityForBS(
           widget.email, workingHours);
 
       showDialog(
@@ -99,6 +101,7 @@ class _AvailabilityDatePageState extends State<BSAvailabilityDatePage> {
                   ),
                 ),
                 onPressed: () {
+                  Navigator.of(context).pop();
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 },
@@ -143,7 +146,7 @@ class _AvailabilityDatePageState extends State<BSAvailabilityDatePage> {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
+                  Navigator.of(context).pop();
                 },
               ),
             ],
@@ -165,7 +168,7 @@ class _AvailabilityDatePageState extends State<BSAvailabilityDatePage> {
 
         // Initialize with both opening and closing time fields if not present
         availabilityStatus[date] ??= {
-          'status': false, // dapat TRUE daan
+          'status': true, // dapat TRUE daan
           'openingTime': '',
           'closingTime': ''
         };
@@ -209,13 +212,12 @@ class _AvailabilityDatePageState extends State<BSAvailabilityDatePage> {
               child: ListView.builder(
                 itemCount: availableDates.length,
                 itemBuilder: (context, index) {
-                  // Define `date` and `formattedDate` inside the itemBuilder
                   DateTime date = availableDates[index];
                   String formattedDate =
                       DateFormat('EEEE, MMMM d, yyyy').format(date);
 
                   // Ensure each date entry in availabilityStatus has a default map
-                  availabilityStatus[date] ??= {'status': false};
+                  availabilityStatus[date] ??= {'status': true};
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -305,7 +307,7 @@ class _AvailabilityDatePageState extends State<BSAvailabilityDatePage> {
                                 ),
                               ),
                               ElevatedButton(
-                                onPressed: () => _pickTime(date, false),
+                                onPressed: () => _pickTime(date, true),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor:
                                       const Color.fromARGB(255, 186, 199, 206),

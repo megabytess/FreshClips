@@ -7,6 +7,7 @@ import 'package:freshclips_capstone/features/hairstylist-features/controllers/ha
 import 'package:freshclips_capstone/features/hairstylist-features/models/hairstylist_model.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UpdateProfilePage extends StatefulWidget {
@@ -36,6 +37,8 @@ class _EditProfilePageState extends State<UpdateProfilePage> {
   ProfileController profileController = ProfileController();
 
   File? _imageFile;
+  LatLng? selectedLatLng;
+  String? selectedAddress;
 
   @override
   void initState() {
@@ -54,7 +57,7 @@ class _EditProfilePageState extends State<UpdateProfilePage> {
       emailController.text = widget.hairstylist.email;
       phoneNumberController.text = widget.hairstylist.phoneNumber;
       usernameController.text = widget.hairstylist.username;
-      locationController.text = widget.hairstylist.location;
+
       skillsController.text = widget.hairstylist.skills;
       yearsOfExperienceController.text =
           widget.hairstylist.yearsOfExperience.toString();
@@ -110,7 +113,6 @@ class _EditProfilePageState extends State<UpdateProfilePage> {
       body: AnimatedBuilder(
         animation: hairstylistController,
         builder: (context, snapshot) {
-          // If hairstylist data is null or controller is loading, show loading or error message
           if (hairstylistController.isLoading) {
             return const Center(
               child: CircularProgressIndicator(
@@ -122,9 +124,9 @@ class _EditProfilePageState extends State<UpdateProfilePage> {
           }
 
           if (hairstylistController.hairstylist == null) {
-            return const Center(child: Text('Hairstylist data not available'));
+            return const Center(
+                child: Text('hairstylist salon data not available'));
           }
-
           return SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.all(screenWidth * 0.05),
@@ -303,7 +305,8 @@ class _EditProfilePageState extends State<UpdateProfilePage> {
                               firstName: firstNameController.text,
                               lastName: lastNameController.text,
                               username: usernameController.text,
-                              location: locationController.text,
+                              location:
+                                  hairstylistController.hairstylist!.location,
                               skills: skillsController.text,
                               yearsOfExperience:
                                   int.parse(yearsOfExperienceController.text),

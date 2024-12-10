@@ -51,11 +51,14 @@ class _ClientProfilePageState extends State<ClientProfilePage> {
           );
         }
 
-        // Null check for client data
         final client = clientController.client;
         if (client == null) {
           return const Center(
-            child: Text('No client data available'),
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Color.fromARGB(255, 189, 49, 71),
+              ),
+            ),
           );
         }
 
@@ -66,7 +69,7 @@ class _ClientProfilePageState extends State<ClientProfilePage> {
               Expanded(
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0), // Reduced padding
+                    padding: const EdgeInsets.all(8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -153,10 +156,9 @@ class _ClientProfilePageState extends State<ClientProfilePage> {
                             ),
                           ],
                         ),
-                        SizedBox(height: screenHeight * 0.02), // Added spacing
+                        SizedBox(height: screenHeight * 0.02),
                         Padding(
-                          padding: EdgeInsets.only(
-                              left: screenWidth * 0.03), // Added left padding
+                          padding: EdgeInsets.only(left: screenWidth * 0.03),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -190,11 +192,50 @@ class _ClientProfilePageState extends State<ClientProfilePage> {
                                     ),
                                   ),
                                   SizedBox(width: screenWidth * 0.03),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                        left: screenWidth * 0.02,
+                                      ),
+                                      child: Text(
+                                        clientController
+                                            .client!.location['address'],
+                                        style: GoogleFonts.poppins(
+                                          fontSize: screenWidth * 0.035,
+                                          fontWeight: FontWeight.w600,
+                                          color: const Color.fromARGB(
+                                              255, 18, 18, 18),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: screenHeight * 0.005),
+                              Row(
+                                children: [
                                   Text(
-                                    clientController.client!.location,
+                                    'Phone number:',
                                     style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.04,
-                                      fontWeight: FontWeight.w400,
+                                      fontSize: screenWidth * 0.045,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(width: screenWidth * 0.03),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                        left: screenWidth * 0.02,
+                                      ),
+                                      child: Text(
+                                        clientController.client!.phoneNumber,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: screenWidth * 0.035,
+                                          fontWeight: FontWeight.w600,
+                                          color: const Color.fromARGB(
+                                              255, 18, 18, 18),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ],

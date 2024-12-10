@@ -80,184 +80,184 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
     }
   }
 
-  // edit availability functionality
-  void editAvailability(String day, bool currentStatus,
-      DateTime currentOpeningTime, DateTime currentClosingTime) async {
-    // Parse the provided times
+  // // edit availability functionality
+  // void editAvailability(String day, bool currentStatus,
+  //     DateTime currentOpeningTime, DateTime currentClosingTime) async {
+  //   // Parse the provided times
 
-    bool selectedStatus = currentStatus;
+  //   bool selectedStatus = currentStatus;
 
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text(
-                'Edit Availability',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DropdownButtonFormField<bool>(
-                    value: selectedStatus,
-                    items: [true, false].map((bool status) {
-                      return DropdownMenuItem<bool>(
-                        value: status,
-                        child: Text(status ? 'Shop Open' : 'Shop Closed'),
-                      );
-                    }).toList(),
-                    onChanged: (newStatus) {
-                      setState(() {
-                        selectedStatus = newStatus!;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Status',
-                      hintStyle: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Opening Time: ${formatTime(currentOpeningTime)}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          final pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.now(),
-                          );
-                          DateTime newOpeningTime = DateTime(
-                            DateTime.now().year,
-                            DateTime.now().month,
-                            DateTime.now().day,
-                            pickedTime?.hour ?? TimeOfDay.now().hour,
-                            pickedTime?.minute ?? TimeOfDay.now().minute,
-                          );
-                          if (pickedTime != null) {
-                            setState(() {
-                              newOpeningTime = newOpeningTime;
-                            });
-                          }
-                        },
-                        child: Text(
-                          'Change',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(255, 189, 49, 71),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Closing Time:  ${formatTime(currentOpeningTime)}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          final pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.now(),
-                          );
-                          DateTime newClosingTime = DateTime(
-                            DateTime.now().year,
-                            DateTime.now().month,
-                            DateTime.now().day,
-                            pickedTime?.hour ?? TimeOfDay.now().hour,
-                            pickedTime?.minute ?? TimeOfDay.now().minute,
-                          );
-                          if (pickedTime != null) {
-                            setState(() {
-                              newClosingTime = newClosingTime;
-                            });
-                          }
-                        },
-                        child: Text(
-                          'Change',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(255, 189, 49, 71),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    'Cancel',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: const Color.fromARGB(255, 18, 18, 18),
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    await editWorkingHours(
-                      day,
-                      selectedStatus,
-                      // formattedOpeningTime,
-                      currentOpeningTime,
-                      currentClosingTime,
-                    );
-                    fetchWorkingHours(); // Refresh the data after edit
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Save',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: const Color.fromARGB(255, 18, 18, 18),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
+  //   await showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return StatefulBuilder(
+  //         builder: (context, setState) {
+  //           return AlertDialog(
+  //             title: Text(
+  //               'Edit Availability',
+  //               style: GoogleFonts.poppins(
+  //                 fontSize: 20,
+  //                 fontWeight: FontWeight.w600,
+  //               ),
+  //             ),
+  //             content: Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 DropdownButtonFormField<bool>(
+  //                   value: selectedStatus,
+  //                   items: [true, false].map((bool status) {
+  //                     return DropdownMenuItem<bool>(
+  //                       value: status,
+  //                       child: Text(status ? 'Shop Open' : 'Shop Closed'),
+  //                     );
+  //                   }).toList(),
+  //                   onChanged: (newStatus) {
+  //                     setState(() {
+  //                       selectedStatus = newStatus!;
+  //                     });
+  //                   },
+  //                   decoration: InputDecoration(
+  //                     labelText: 'Status',
+  //                     hintStyle: GoogleFonts.poppins(
+  //                       fontSize: 14,
+  //                       fontWeight: FontWeight.w500,
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 20),
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                   children: [
+  //                     Text(
+  //                       'Opening Time: ${formatTime(currentOpeningTime)}',
+  //                       style: GoogleFonts.poppins(
+  //                         fontSize: 14,
+  //                         fontWeight: FontWeight.w500,
+  //                       ),
+  //                     ),
+  //                     TextButton(
+  //                       onPressed: () async {
+  //                         final pickedTime = await showTimePicker(
+  //                           context: context,
+  //                           initialTime: TimeOfDay.now(),
+  //                         );
+  //                         DateTime newOpeningTime = DateTime(
+  //                           DateTime.now().year,
+  //                           DateTime.now().month,
+  //                           DateTime.now().day,
+  //                           pickedTime?.hour ?? TimeOfDay.now().hour,
+  //                           pickedTime?.minute ?? TimeOfDay.now().minute,
+  //                         );
+  //                         if (pickedTime != null) {
+  //                           setState(() {
+  //                             newOpeningTime = newOpeningTime;
+  //                           });
+  //                         }
+  //                       },
+  //                       child: Text(
+  //                         'Change',
+  //                         style: GoogleFonts.poppins(
+  //                           fontSize: 12,
+  //                           fontWeight: FontWeight.w500,
+  //                           color: const Color.fromARGB(255, 189, 49, 71),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                   children: [
+  //                     Text(
+  //                       'Closing Time:  ${formatTime(currentOpeningTime)}',
+  //                       style: GoogleFonts.poppins(
+  //                         fontSize: 14,
+  //                         fontWeight: FontWeight.w500,
+  //                       ),
+  //                     ),
+  //                     TextButton(
+  //                       onPressed: () async {
+  //                         final pickedTime = await showTimePicker(
+  //                           context: context,
+  //                           initialTime: TimeOfDay.now(),
+  //                         );
+  //                         DateTime newClosingTime = DateTime(
+  //                           DateTime.now().year,
+  //                           DateTime.now().month,
+  //                           DateTime.now().day,
+  //                           pickedTime?.hour ?? TimeOfDay.now().hour,
+  //                           pickedTime?.minute ?? TimeOfDay.now().minute,
+  //                         );
+  //                         if (pickedTime != null) {
+  //                           setState(() {
+  //                             newClosingTime = newClosingTime;
+  //                           });
+  //                         }
+  //                       },
+  //                       child: Text(
+  //                         'Change',
+  //                         style: GoogleFonts.poppins(
+  //                           fontSize: 12,
+  //                           fontWeight: FontWeight.w500,
+  //                           color: const Color.fromARGB(255, 189, 49, 71),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ],
+  //             ),
+  //             actions: [
+  //               TextButton(
+  //                 onPressed: () => Navigator.pop(context),
+  //                 child: Text(
+  //                   'Cancel',
+  //                   style: GoogleFonts.poppins(
+  //                     fontSize: 14,
+  //                     fontWeight: FontWeight.w500,
+  //                     color: const Color.fromARGB(255, 18, 18, 18),
+  //                   ),
+  //                 ),
+  //               ),
+  //               TextButton(
+  //                 onPressed: () async {
+  //                   await editWorkingHours(
+  //                     day,
+  //                     selectedStatus,
+  //                     // formattedOpeningTime,
+  //                     currentOpeningTime,
+  //                     currentClosingTime,
+  //                   );
+  //                   fetchWorkingHours(); // Refresh the data after edit
+  //                   Navigator.pop(context);
+  //                 },
+  //                 child: Text(
+  //                   'Save',
+  //                   style: GoogleFonts.poppins(
+  //                     fontSize: 14,
+  //                     fontWeight: FontWeight.w500,
+  //                     color: const Color.fromARGB(255, 18, 18, 18),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
   // Function to edit working hours
-  Future<void> editWorkingHours(String day, bool status, DateTime openingTime,
-      DateTime closingTime) async {
-    try {
-      await workingHoursController.updateWorkingHours(
-          widget.email, day, status, openingTime, closingTime);
-    } catch (e) {
-      print('Error editing working hours: $e');
-    }
-  }
+  // Future<void> editWorkingHours(String day, bool status, DateTime openingTime,
+  //     DateTime closingTime) async {
+  //   try {
+  //     await workingHoursController.updateWorkingHours(
+  //         widget.email, day, status, openingTime, closingTime);
+  //   } catch (e) {
+  //     print('Error editing working hours: $e');
+  //   }
+  // }
 
   // Function to handle the delete functionality
   void deleteAvailability(String day) async {
@@ -282,6 +282,37 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        actions: [
+          SizedBox(
+            width: screenWidth * 0.15,
+            height: screenHeight * 0.03,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) {
+                    return AvailabilityDatePage(
+                      email: widget.email,
+                    );
+                  },
+                ));
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 189, 49, 71),
+                foregroundColor: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
+              ),
+              child: Text(
+                'Edit',
+                style: GoogleFonts.poppins(
+                  fontSize: screenWidth * 0.025,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+          Gap(screenWidth * 0.02),
+        ],
       ),
       body: Center(
         child: isLoading
@@ -314,13 +345,10 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
                                 itemBuilder: (context, index) {
                                   var dayData = availabilityData[index];
 
-                                  // // Debug print to check dayData contents
-                                  // print('Day Data: $dayData');
-
                                   String openingTime =
-                                      dayData['openingTime'] ?? 'Not set';
+                                      formatTime(dayData['openingTime']);
                                   String closingTime =
-                                      dayData['closingTime'] ?? 'Not set';
+                                      formatTime(dayData['closingTime']);
 
                                   return ListTile(
                                     title: Text(
@@ -335,7 +363,7 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Status: ${dayData['status']}',
+                                          'Status: ${dayData['status'] == true ? 'Shop Open' : 'Shop Closed'}',
                                           style: GoogleFonts.poppins(
                                             fontSize: screenWidth * 0.04,
                                             fontWeight: FontWeight.w500,
@@ -367,33 +395,10 @@ class _ManageAvailabilityPageState extends State<ManageAvailabilityPage> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         IconButton(
-                                          icon: const Icon(
-                                            Icons.edit_calendar_rounded,
-                                            size: 30,
-                                            color:
-                                                Color.fromARGB(255, 18, 18, 18),
-                                          ),
-                                          onPressed: () {
-                                            editAvailability(
-                                              dayData['day'],
-                                              dayData['status'],
-                                              dayData['openingTime'],
-                                              dayData['closingTime'],
-                                              // openingTime,
-                                              // closingTime,
-                                            );
-                                          },
-                                        ),
-                                        const SizedBox(
-                                            width:
-                                                8), // Using SizedBox instead of Gap
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.delete_outline_rounded,
-                                            size: 30,
-                                            color:
-                                                Color.fromARGB(255, 18, 18, 18),
-                                          ),
+                                          icon: const Icon(Icons.delete_rounded,
+                                              size: 30,
+                                              color: Color.fromARGB(
+                                                  255, 189, 49, 71)),
                                           onPressed: () {
                                             deleteAvailability(dayData['day']);
                                           },

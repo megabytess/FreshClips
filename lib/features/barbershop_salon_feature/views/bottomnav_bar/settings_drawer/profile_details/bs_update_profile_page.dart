@@ -50,7 +50,6 @@ class _EditProfilePageState extends State<BSUpdateProfilePage> {
       emailController.text = widget.barbershopsalon.email;
       phoneNumberController.text = widget.barbershopsalon.phoneNumber;
       usernameController.text = widget.barbershopsalon.username;
-      locationController.text = widget.barbershopsalon.location;
     });
   }
 
@@ -277,7 +276,8 @@ class _EditProfilePageState extends State<BSUpdateProfilePage> {
                               password: widget.barbershopsalon.password,
                               shopName: shopNameController.text,
                               username: usernameController.text,
-                              location: locationController.text,
+                              location: barbershopsalonController
+                                  .barbershopsalon!.location,
                             );
 
                             // Convert to Map<String, dynamic>
