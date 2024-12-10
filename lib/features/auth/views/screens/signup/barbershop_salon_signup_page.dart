@@ -7,9 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
 import 'package:freshclips_capstone/features/auth/views/widgets/image_picker.dart';
+import 'package:freshclips_capstone/features/auth/views/widgets/location_picker_page.dart';
 import 'package:freshclips_capstone/features/auth/views/widgets/rectange_image_picker.dart';
 import 'package:gap/gap.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class BarbershopSalonPage extends StatefulWidget {
   const BarbershopSalonPage({super.key});
@@ -27,19 +30,20 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final phoneNumberController = TextEditingController();
-  final locationController = TextEditingController();
   File? verifyImage;
   File? selectUserImage;
+  LatLng? selectedLatLng;
+  String? selectedAddress;
 
   void signupBarbershopSalon() async {
     if (shopNameController.text.trim().isEmpty ||
         usernameController.text.trim().isEmpty ||
         emailController.text.trim().isEmpty ||
         phoneNumberController.text.trim().isEmpty ||
-        locationController.text.trim().isEmpty ||
         passwordController.text.trim().isEmpty ||
         selectUserImage == null ||
         verifyImage == null ||
+        selectedLatLng == null ||
         !emailController.text.contains('@') ||
         !emailController.text.contains('.com') ||
         !RegExp(r'^[a-zA-Z]+$').hasMatch(shopNameController.text)) {
@@ -100,10 +104,14 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
           'username': usernameController.text,
           'email': emailController.text,
           'phoneNumber': phoneNumberController.text,
-          'location': locationController.text,
           'password': passwordController.text,
           'imageUrl': imageUrl,
           'verifyImageUrl': verifyImageUrl,
+          'location': {
+            'latitude': selectedLatLng!.latitude,
+            'longitude': selectedLatLng!.longitude,
+            'address': selectedAddress,
+          },
           'accountStatus': 'Pending',
           'userType': "Barbershop_Salon",
         });
@@ -413,42 +421,76 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
                 ),
               ),
               Gap(screenHeight * 0.01),
-              TextFormField(
-                controller: locationController,
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.04,
-                  color: const Color.fromARGB(255, 23, 23, 23),
-                ),
-                decoration: InputDecoration(
-                  labelText: 'Shop Location',
-                  labelStyle: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.035,
-                    color: const Color.fromARGB(255, 186, 199, 206),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: screenHeight * 0.02,
-                    horizontal: screenWidth * 0.03,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(255, 23, 23, 23),
-                    ),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(
-                        screenWidth * 0.03,
+              SizedBox(
+                width: double.infinity,
+                height: screenHeight * 0.05,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LocationPicker(
+                          onLocationSelected: (LatLng location) async {
+                            setState(() {
+                              selectedLatLng = location;
+                            });
+                            // Reverse geocoding
+                            try {
+                              List<Placemark> placemarks =
+                                  await placemarkFromCoordinates(
+                                location.latitude,
+                                location.longitude,
+                              );
+                              if (placemarks.isNotEmpty) {
+                                Placemark place = placemarks.first;
+                                setState(() {
+                                  selectedAddress =
+                                      "${place.street}, ${place.subLocality} ${place.locality}, ${place.administrativeArea}";
+                                });
+                              }
+                            } catch (e) {
+                              setState(() {
+                                selectedAddress = "Error fetching address";
+                              });
+                            }
+                          },
+                        ),
                       ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 45, 65, 69),
+                    foregroundColor: const Color.fromARGB(255, 248, 248, 248),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.1,
+                      vertical: screenHeight * 0.01,
                     ),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(255, 23, 23, 23),
-                    ),
-                    borderRadius: BorderRadius.circular(
-                      screenWidth * 0.03,
+                  child: Text(
+                    'Pick location',
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.032,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ),
+              if (selectedAddress != null)
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.06,
+                    vertical: screenHeight * 0.02,
+                  ),
+                  child: Text(
+                    'Selected Location: $selectedAddress',
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.04,
+                      fontWeight: FontWeight.w400,
+                      color: const Color.fromARGB(255, 23, 23, 23),
+                    ),
+                  ),
+                ),
               Gap(screenHeight * 0.01),
               Text(
                 'Upload an ID to verify your identity.',

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/admin-features/controller/admin_controller.dart';
+import 'package:freshclips_capstone/features/admin-features/screens/list_users/admin_bs_page.dart';
+import 'package:freshclips_capstone/features/admin-features/screens/list_users/admin_clients_page.dart';
+import 'package:freshclips_capstone/features/admin-features/screens/list_users/admin_hairstylist_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AdminUsersPage extends StatefulWidget {
-  const AdminUsersPage({super.key});
+  const AdminUsersPage({super.key, required this.email});
+  final String email;
 
   @override
   State<AdminUsersPage> createState() => _AdminUsersPageState();
@@ -22,20 +26,20 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
     pages = [
       TabPageModel(
         title: 'Clients',
-        content: const Center(
-          child: Text('Clients Page'),
+        content: AdminClientsPage(
+          email: widget.email,
         ),
       ),
       TabPageModel(
         title: 'Hairstylists',
-        content: const Center(
-          child: Text('Hairstylists Page'),
+        content: AdminHairstylistPage(
+          email: widget.email,
         ),
       ),
       TabPageModel(
         title: 'Shops',
-        content: const Center(
-          child: Text('Barbershop_Salon Page'),
+        content: AdminBSPage(
+          email: widget.email,
         ),
       ),
     ];
@@ -49,67 +53,66 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
       backgroundColor: const Color.fromARGB(255, 248, 248, 248),
       body: Column(
         children: [
-          Flexible(
-            child: TabBarPage(
-              controller: this,
-              pages: pages,
-              isSwipable: true,
-              tabBackgroundColor: Colors.transparent,
-              tabitemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {
-                    setState(() {
-                      currentIndex = index;
-                    });
-                  },
-                  child: SizedBox(
-                    width: screenWidth / pages.length,
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        Center(
-                          child: Text(
-                            pages[index].title ?? "",
-                            style: GoogleFonts.poppins(
-                              fontWeight: currentIndex == index
-                                  ? FontWeight.w700
-                                  : FontWeight.w500,
-                              color: currentIndex == index
-                                  ? const Color.fromARGB(255, 18, 18, 18)
-                                  : const Color.fromARGB(30, 18, 18, 18),
-                              fontSize: screenWidth * 0.035,
-                            ),
+          TabBarPage(
+            controller: this,
+            pages: pages,
+            isSwipable: true,
+            tabBackgroundColor: Colors.transparent,
+            tabitemBuilder: (context, index) {
+              return InkWell(
+                onTap: () {
+                  setState(() {
+                    currentIndex = index;
+                  });
+                },
+                child: SizedBox(
+                  width: screenWidth / pages.length,
+                  height: screenWidth * 0.12,
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Center(
+                        child: Text(
+                          pages[index].title ?? "",
+                          style: GoogleFonts.poppins(
+                            fontWeight: currentIndex == index
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                            color: currentIndex == index
+                                ? const Color.fromARGB(255, 18, 18, 18)
+                                : const Color.fromARGB(30, 18, 18, 18),
+                            fontSize: screenWidth * 0.035,
                           ),
                         ),
-                        Container(
-                          height: 4,
-                          width: screenWidth * 0.18,
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(screenWidth * 0.10),
-                            gradient: currentIndex == index
-                                ? const LinearGradient(
-                                    colors: [
-                                      Color.fromARGB(255, 189, 49, 71),
-                                      Color.fromARGB(255, 255, 106, 0),
-                                    ],
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                  )
-                                : const LinearGradient(
-                                    colors: [
-                                      Colors.transparent,
-                                      Colors.transparent
-                                    ],
-                                  ),
-                          ),
+                      ),
+                      Container(
+                        height: 4,
+                        width: screenWidth * 0.18,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(screenWidth * 0.10),
+                          gradient: currentIndex == index
+                              ? const LinearGradient(
+                                  colors: [
+                                    Color.fromARGB(255, 189, 49, 71),
+                                    Color.fromARGB(255, 255, 106, 0),
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                )
+                              : const LinearGradient(
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.transparent
+                                  ],
+                                ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
           Expanded(
             child: pages[currentIndex].content,

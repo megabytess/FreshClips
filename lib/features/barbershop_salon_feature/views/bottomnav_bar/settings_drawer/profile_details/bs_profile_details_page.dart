@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/settings_drawer/profile_details/bs_update_profile_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/controllers/edit_profile_controller.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -16,7 +15,6 @@ class BSProfileDetailsPage extends StatefulWidget {
 class _EditProfilePageState extends State<BSProfileDetailsPage> {
   BarbershopSalonController barbershopsalonController =
       BarbershopSalonController();
-  ProfileController profileController = ProfileController();
 
   @override
   void initState() {
@@ -174,16 +172,19 @@ class _EditProfilePageState extends State<BSProfileDetailsPage> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: screenWidth * 0.02,
-                        ),
-                        child: Text(
-                          barbershopsalonController.barbershopsalon!.location,
-                          style: GoogleFonts.poppins(
-                            fontSize: screenWidth * 0.035,
-                            fontWeight: FontWeight.w600,
-                            color: const Color.fromARGB(255, 18, 18, 18),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            left: screenWidth * 0.02,
+                          ),
+                          child: Text(
+                            barbershopsalonController
+                                .barbershopsalon!.location['address'],
+                            style: GoogleFonts.poppins(
+                              fontSize: screenWidth * 0.035,
+                              fontWeight: FontWeight.w600,
+                              color: const Color.fromARGB(255, 18, 18, 18),
+                            ),
                           ),
                         ),
                       ),

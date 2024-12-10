@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:freshclips_capstone/features/client-features/controllers/client_controller.dart';
-import 'package:freshclips_capstone/features/client-features/views/profile_page/widgets/client_update_profile_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_controller.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ClientProfileDetailsPage extends StatefulWidget {
-  const ClientProfileDetailsPage({super.key, required this.email});
+class AdminBSDetailsPage extends StatefulWidget {
+  const AdminBSDetailsPage({super.key, required this.email});
   final String email;
 
   @override
-  State<ClientProfileDetailsPage> createState() => _EditProfilePageState();
+  State<AdminBSDetailsPage> createState() => _AdminBSDetailsPageState();
 }
 
-class _EditProfilePageState extends State<ClientProfileDetailsPage> {
-  ClientController clientController = ClientController();
+final BarbershopSalonController barbershopsalonController =
+    BarbershopSalonController();
 
+class _AdminBSDetailsPageState extends State<AdminBSDetailsPage> {
   @override
   void initState() {
     super.initState();
-    clientController.fetchClientData(widget.email);
+    barbershopsalonController.getBarbershopSalon(widget.email);
   }
 
   @override
@@ -30,19 +30,20 @@ class _EditProfilePageState extends State<ClientProfileDetailsPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Profile details',
+          'Shop details',
           style: GoogleFonts.poppins(
             fontSize: screenWidth * 0.04,
             fontWeight: FontWeight.w600,
           ),
         ),
         backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: AnimatedBuilder(
-        animation: clientController,
+        animation: barbershopsalonController,
         builder: (context, snapshot) {
           // Check if the data is still loading
-          if (clientController.isLoading) {
+          if (barbershopsalonController.isLoading) {
             return const Center(
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(
@@ -62,19 +63,27 @@ class _EditProfilePageState extends State<ClientProfileDetailsPage> {
                 children: [
                   Center(
                     child: ClipOval(
-                      child: Image.network(
-                        clientController.client!.imageUrl,
-                        width: screenWidth * 0.3,
-                        height: screenWidth * 0.3,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.error),
+                      child: Container(
+                        width: screenWidth * 0.35,
+                        height: screenWidth * 0.35,
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 186, 199, 206),
+                        ),
+                        child: (barbershopsalonController
+                                    .barbershopsalon?.imageUrl !=
+                                null)
+                            ? Image.network(
+                                barbershopsalonController
+                                    .barbershopsalon!.imageUrl,
+                                fit: BoxFit.cover,
+                              )
+                            : const Icon(Icons.person, size: 50),
                       ),
                     ),
                   ),
                   Gap(screenHeight * 0.02),
                   Text(
-                    '${clientController.client?.firstName ?? ''} ${clientController.client?.lastName ?? ''}',
+                    barbershopsalonController.barbershopsalon!.shopName,
                     style: GoogleFonts.poppins(
                       color: const Color.fromARGB(255, 18, 18, 18),
                       fontSize: screenWidth * 0.05,
@@ -104,7 +113,7 @@ class _EditProfilePageState extends State<ClientProfileDetailsPage> {
                           top: screenHeight * 0.01,
                         ),
                         child: Text(
-                          '@${clientController.client!.username}',
+                          '@${barbershopsalonController.barbershopsalon!.username}',
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.w600,
@@ -136,7 +145,7 @@ class _EditProfilePageState extends State<ClientProfileDetailsPage> {
                           left: screenWidth * 0.02,
                         ),
                         child: Text(
-                          clientController.client!.email,
+                          barbershopsalonController.barbershopsalon!.email,
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.w600,
@@ -169,7 +178,8 @@ class _EditProfilePageState extends State<ClientProfileDetailsPage> {
                             left: screenWidth * 0.02,
                           ),
                           child: Text(
-                            clientController.client!.location['address'],
+                            barbershopsalonController
+                                .barbershopsalon!.location['address'],
                             style: GoogleFonts.poppins(
                               fontSize: screenWidth * 0.035,
                               fontWeight: FontWeight.w600,
@@ -197,58 +207,48 @@ class _EditProfilePageState extends State<ClientProfileDetailsPage> {
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            left: screenWidth * 0.02,
-                          ),
-                          child: Text(
-                            clientController.client!.phoneNumber,
-                            style: GoogleFonts.poppins(
-                              fontSize: screenWidth * 0.035,
-                              fontWeight: FontWeight.w600,
-                              color: const Color.fromARGB(255, 18, 18, 18),
-                            ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: screenWidth * 0.02,
+                        ),
+                        child: Text(
+                          barbershopsalonController
+                              .barbershopsalon!.phoneNumber,
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.035,
+                            fontWeight: FontWeight.w600,
+                            color: const Color.fromARGB(255, 18, 18, 18),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  Gap(screenHeight * 0.01),
-                  SizedBox(
-                    height: screenHeight * 0.07,
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ClientUpdateProfilePage(
-                                email: widget.email,
-                                client: clientController.client!),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 189, 49, 70),
-                        padding: EdgeInsets.symmetric(
-                          vertical: screenWidth * 0.04,
-                          horizontal: screenWidth * 0.2,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Text(
-                        'Update profile',
-                        style: GoogleFonts.poppins(
-                          color: const Color.fromARGB(255, 248, 248, 248),
-                          fontSize: screenWidth * 0.035,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
+
+                  // Gap(screenHeight * 0.04),
+                  // OutlinedButton(
+                  //   onPressed: () {
+                  //     // Call delete method from ProfileController
+                  //     profileController.deleteUserProfile(widget.email);
+
+                  //     // Optionally, navigate to another page or show a success message
+                  //     Navigator.pop(context); // or any other page
+                  //   },
+                  //   style: OutlinedButton.styleFrom(
+                  //     side: const BorderSide(
+                  //       color: Color.fromARGB(255, 189, 49, 70),
+                  //     ),
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(20),
+                  //     ),
+                  //   ),
+                  //   child: Text(
+                  //     'Delete account',
+                  //     style: GoogleFonts.poppins(
+                  //       color: const Color.fromARGB(255, 189, 49, 70),
+                  //       fontSize: screenWidth * 0.035,
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

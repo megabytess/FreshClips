@@ -131,6 +131,7 @@ class _BSInfoPageState extends State<BSInfoPage> {
                   ),
                   Gap(screenHeight * 0.01),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
                         padding: EdgeInsets.only(
@@ -145,12 +146,47 @@ class _BSInfoPageState extends State<BSInfoPage> {
                           ),
                         ),
                       ),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            left: screenWidth * 0.02,
+                          ),
+                          child: Text(
+                            barbershopsalonController
+                                .barbershopsalon!.location['address'],
+                            style: GoogleFonts.poppins(
+                              fontSize: screenWidth * 0.035,
+                              fontWeight: FontWeight.w600,
+                              color: const Color.fromARGB(255, 18, 18, 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Gap(screenHeight * 0.01),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: screenHeight * 0.001,
+                        ),
+                        child: Text(
+                          'Phone number:',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.032,
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromARGB(100, 18, 18, 18),
+                          ),
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.only(
                           left: screenWidth * 0.02,
                         ),
                         child: Text(
-                          barbershopsalonController.barbershopsalon!.location,
+                          barbershopsalonController
+                              .barbershopsalon!.phoneNumber,
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.w600,

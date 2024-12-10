@@ -117,7 +117,6 @@ class WorkingHoursController extends ChangeNotifier {
           .get();
 
       for (var doc in querySnapshot.docs) {
-        // Update the document
         await doc.reference.update({
           'status': status,
           'openingTime': Timestamp.fromDate(currentOpeningTime),
@@ -188,7 +187,7 @@ class WorkingHoursController extends ChangeNotifier {
     String formattedDay = DateFormat('EEEE, MMMM d, yyyy').format(date);
     return WorkingHours(
       day: formattedDay,
-      status: availabilityStatus[date]?['status'] ?? false,
+      status: availabilityStatus[date]?['status'] ?? true,
       openingTime: availabilityStatus[date]?['openingTime'],
       closingTime: availabilityStatus[date]?['closingTime'],
     );

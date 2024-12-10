@@ -16,28 +16,32 @@ class ClientController extends ChangeNotifier {
   Future<void> fetchClientData(String email) async {
     isLoading = true;
     notifyListeners();
+
     try {
-      final querySnapshot = await FirebaseFirestore.instance
+      final firestore = FirebaseFirestore.instance;
+      final querySnapshot = await firestore
           .collection('user')
           .where('email', isEqualTo: email)
+          .limit(1)
           .get();
 
       if (querySnapshot.docs.isEmpty) {
-        print('No client found with the given email');
-        isLoading = false;
-        notifyListeners();
-        return;
+        print('No document found for email: $email');
+        throw Exception('User not found');
+      } else {
+        for (var documentSnapshot in querySnapshot.docs) {
+          print(
+              "Document ID: ${documentSnapshot.id}, Data: ${documentSnapshot.data()}");
+          client = Client.fromDocument(documentSnapshot);
+        }
       }
-
-      final documentSnapshot = querySnapshot.docs.first;
-      print('Client found: ${documentSnapshot.data()}');
-      client = Client.fromDocument(documentSnapshot);
-    } catch (error) {
-      print('Error fetching client: $error');
-    } finally {
-      isLoading = false;
-      notifyListeners();
+    } catch (e) {
+      print("Error fetching client data: $e");
+      client = null;
     }
+
+    isLoading = false;
+    notifyListeners();
   }
 
   Future<void> updateClientProfile(

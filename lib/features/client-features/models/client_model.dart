@@ -9,8 +9,7 @@ class Client {
   final String firstName;
   final String lastName;
   final String username;
-  final String location;
-  
+  final Map<String, dynamic> location;
 
   Client({
     required this.id,
@@ -22,7 +21,6 @@ class Client {
     required this.lastName,
     required this.username,
     required this.location,
-
   });
 
   // Convert client instance to Map<String, dynamic>
@@ -52,7 +50,7 @@ class Client {
       firstName: data['firstName'],
       lastName: data['lastName'],
       username: data['username'],
-      location: data['location'],
+      location: data['location'] as Map<String, dynamic>,
     );
   }
 }

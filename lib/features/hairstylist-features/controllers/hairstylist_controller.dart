@@ -8,7 +8,7 @@ class HairstylistController extends ChangeNotifier {
   String? email;
   Hairstylist? hairstylist;
 
-  String _selectedStatus = 'SHOP OPEN'; // Default value
+  String _selectedStatus = 'AVAILABLE'; // Default value
 
   // Getter for selectedStatus
   String get selectedStatus => _selectedStatus;
@@ -25,12 +25,15 @@ class HairstylistController extends ChangeNotifier {
   Future<void> loadStatus() async {
     final prefs = await SharedPreferences.getInstance();
     _selectedStatus = prefs.getString('hairstylist_status') ??
-        'SHOP CLOSED'; // Default to 'OPEN NOW'
+        'NOT AVAILABLE'; // Default to 'OPEN NOW'
     notifyListeners();
   }
 
   // Method to fetch hairstylist data from Firestore
-  void getHairstylist(String email) async {
+  Future<void> getHairstylist(String email) async {
+    isLoading = true;
+    notifyListeners();
+
     try {
       // Query the Firestore collection
       final querySnapshot = await FirebaseFirestore.instance
@@ -46,14 +49,16 @@ class HairstylistController extends ChangeNotifier {
         for (var documentSnapshot in querySnapshot.docs) {
           print(
               "Document ID: ${documentSnapshot.id}, Data: ${documentSnapshot.data()}");
-          documentSnapshot.data();
-
           hairstylist = Hairstylist.fromDocument(documentSnapshot);
         }
       }
     } catch (e) {
       // Handle any errors
       print('Error fetching hairstylist: $e');
+      throw Exception('Error fetching hairstylist');
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
   }
 }
