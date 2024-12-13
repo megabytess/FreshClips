@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_working_hours_controller.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/settings_drawer/manage_availability/bs_edit_availability_date_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/working_hours_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/models/working_hours_model.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/settings_drawer/manage_availability/add_availability_date_page.dart';
@@ -141,19 +142,23 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
           SizedBox(
             width: screenWidth * 0.15,
             height: screenHeight * 0.03,
-            child: ElevatedButton(
+            child: OutlinedButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (context) {
-                    return AvailabilityDatePage(
-                      email: widget.email,
-                    );
-                  },
-                ));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return BSEditAvailabilityDatePage(
+                        email: widget.email,
+                      );
+                    },
+                  ),
+                );
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 189, 49, 71),
-                foregroundColor: Colors.white,
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(
+                  color: Color.fromARGB(255, 48, 65, 69),
+                ),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
               ),
@@ -162,6 +167,7 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
                 style: GoogleFonts.poppins(
                   fontSize: screenWidth * 0.025,
                   fontWeight: FontWeight.w500,
+                  color: const Color.fromARGB(255, 48, 65, 69),
                 ),
               ),
             ),
@@ -206,55 +212,105 @@ class _ManageAvailabilityPageState extends State<BSManageAvailabilityPage> {
                                       formatTime(dayData['closingTime']);
 
                                   return ListTile(
-                                      title: Text(
-                                        dayData['day'],
-                                        style: GoogleFonts.poppins(
-                                          fontSize: screenWidth * 0.045,
-                                          fontWeight: FontWeight.w600,
+                                    title: Text(
+                                      dayData['day'],
+                                      style: GoogleFonts.poppins(
+                                        fontSize: screenWidth * 0.04,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Gap(screenHeight * 0.015),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Status: ',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: screenWidth * 0.035,
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color.fromARGB(
+                                                    255, 18, 18, 18),
+                                              ),
+                                            ),
+                                            Text(
+                                              ' ${dayData['status'] == true ? 'SHOP OPEN' : 'SHOP CLOSED'}',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: screenWidth * 0.04,
+                                                fontWeight: FontWeight.w700,
+                                                color: const Color.fromARGB(
+                                                    255, 18, 18, 18),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                      subtitle: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Status: ${dayData['status'] == true ? 'Shop Open' : 'Shop Closed'}',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: screenWidth * 0.04,
-                                              fontWeight: FontWeight.w500,
-                                              color: const Color.fromARGB(
-                                                  255, 18, 18, 18),
+                                        Gap(screenHeight * 0.01),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Opening Time: ',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: screenWidth * 0.035,
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color.fromARGB(
+                                                    255, 18, 18, 18),
+                                              ),
                                             ),
-                                          ),
-                                          Text(
-                                            'Opening Time: $openingTime',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: screenWidth * 0.04,
-                                              fontWeight: FontWeight.w500,
-                                              color: const Color.fromARGB(
-                                                  255, 18, 18, 18),
+                                            Text(
+                                              ' $openingTime',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: screenWidth * 0.035,
+                                                fontWeight: FontWeight.w700,
+                                                color: const Color.fromARGB(
+                                                    255, 18, 18, 18),
+                                              ),
                                             ),
-                                          ),
-                                          Text(
-                                            'Closing Time: $closingTime',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: screenWidth * 0.04,
-                                              fontWeight: FontWeight.w500,
-                                              color: const Color.fromARGB(
-                                                  255, 18, 18, 18),
+                                          ],
+                                        ),
+                                        Gap(screenHeight * 0.01),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Closing Time: ',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: screenWidth * 0.035,
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color.fromARGB(
+                                                    255, 18, 18, 18),
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      trailing: IconButton(
+                                            Text(
+                                              ' $closingTime',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: screenWidth * 0.035,
+                                                fontWeight: FontWeight.w700,
+                                                color: const Color.fromARGB(
+                                                    255, 18, 18, 18),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    trailing: CircleAvatar(
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 186, 199, 206),
+                                      radius: 20,
+                                      child: IconButton(
                                         icon: const Icon(
-                                          Icons.delete,
-                                          size: 30,
+                                          Icons.delete_rounded,
+                                          size: 20,
+                                          color:
+                                              Color.fromARGB(255, 49, 65, 69),
                                         ),
                                         onPressed: () {
                                           deleteAvailability(dayData['day']);
                                         },
-                                      ));
+                                      ),
+                                    ),
+                                  );
                                 },
                               ),
                   ),

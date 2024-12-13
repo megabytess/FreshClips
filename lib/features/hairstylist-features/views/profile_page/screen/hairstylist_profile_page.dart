@@ -132,9 +132,6 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
               workingHoursData.containsKey(formattedDate)) {
             final dayData = workingHoursData[formattedDate];
 
-            // Check if 'status' is true or false for the current day
-            // final status = dayData['status'];
-
             // Retrieve openingTime and closingTime as timestamps
             final openingTimeTimestamp = dayData['openingTime'] as Timestamp;
             final closingTimeTimestamp = dayData['closingTime'] as Timestamp;
@@ -150,86 +147,16 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
             } else {
               return 'NOT AVAILABLE';
             }
-
-            // if (status != null) {
-            //   return status ? 'SHOP OPEN' : 'SHOP CLOSED';
-            // } else {
-            //   return 'Status not available for today';
-            // }
           }
         }
 
         return 'No working hours for today';
-
-        //   final workingHoursData = querySnapshot.docs
-        //       .map((doc) => WorkingHours.fromJson(doc.data()))
-        //       .toList();
-        //   print('working hours data: $workingHoursData');
-
-        //   for (final workingHours in workingHoursData) {
-        //     final formattedShopDate = DateFormat('EEEE, MMMM d, yyyy')
-        //         .format(workingHours.day as DateTime);
-
-        //     print(
-        //         "Comparing today's date: $formattedDate with shop's working day: $formattedShopDate");
-
-        //     if (formattedDate == formattedShopDate) {
-        //       // Compare if today matches the shop's working day
-        //       final currentTime = DateTime.now();
-        //       final openingTime = workingHours.openingTime;
-        //       final closingTime = workingHours.closingTime;
-
-        //       if (workingHours.status == true &&
-        //           currentTime.isAfter(openingTime!) &&
-        //           currentTime.isBefore(closingTime!)) {
-        //         return "SHOP OPEN";
-        //       } else {
-        //         return "SHOP CLOSED";
-        //       }
-        //     }
-        //   }
-        // } // Format the shop's working day
-
-        //   print('Working Hours Data: $workingHoursData');
-        //   print('current time: $currentTime');
-        //   print('Opening Time: ${workingHoursData['openingTime']}');
-        //   print('Closing Time: ${workingHoursData['closingTime']}');
-        //   print('Status: ${workingHoursData['status']}');
-
-        //   if (workingHoursData['day'] == null ||
-        //       workingHoursData['openingTime'] == null ||
-        //       workingHoursData['closingTime'] == null ||
-        //       workingHoursData['status'] == null) {
-        //     print('Error: Missing fields in Firestore document.');
-        //     return "SHOP CLOSED";
-        //   }
-
-        //   // Map the Firestore document data to the WorkingHours model
-        //   final workingHours = WorkingHours.fromMap(workingHoursData);
-        //   print('Working Hours: ${workingHours.toMap()}');
-
-        //   if (workingHours.openingTime != null &&
-        //       workingHours.closingTime != null) {
-        //     if (workingHours.status == true &&
-        //         currentTime.isAfter(workingHours.openingTime!) &&
-        //         currentTime.isBefore(workingHours.closingTime!)) {
-        //       return "SHOP OPEN";
-        //     } else {
-        //       return "SHOP CLOSED";
-        //     }
-        //   } else {
-        //     print('Opening or closing time is not set.');
-        //     return "SHOP CLOSED";
-        //   }
-        // } else {
-        //   print('No working hours found for the given email.');
-        //   return "SHOP CLOSED";
       } else {
         print('empty');
       }
     } catch (e) {
       print("Error fetching shop status: $e");
-      return "ERROR";
+      return "No working hours for today";
     }
     return "SHOP CLOSED"; // Default return statement
   }

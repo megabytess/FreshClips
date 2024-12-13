@@ -102,6 +102,39 @@ class BSAvailabilityController extends ChangeNotifier {
     }
   }
 
+// Update working hours BS
+  Future<void> updateWorkingHoursBS(String email, String day, bool status,
+      DateTime newOpeningTime, DateTime newClosingTime) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      // Fetch the document for the given email
+      final querySnapshot = await firestore
+          .collection('availability')
+          .where('email', isEqualTo: email)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final docRef = querySnapshot.docs.first.reference;
+
+        // Update the specific day's data in the workingHours map
+        await docRef.update({
+          'workingHours.$day': {
+            'status': status,
+            'openingTime': Timestamp.fromDate(newOpeningTime),
+            'closingTime': Timestamp.fromDate(newClosingTime),
+          }
+        });
+
+        print('Working hours updated successfully!');
+      } else {
+        print('No matching document found for email: $email');
+      }
+    } catch (e) {
+      print('Error updating working hours: $e');
+    }
+  }
+
 // Shop Status Checker
   // Future<String> getShopStatus(String email) async {
   //   try {

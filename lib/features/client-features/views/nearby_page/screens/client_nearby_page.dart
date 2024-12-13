@@ -80,12 +80,12 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
           ),
           Positioned(
             bottom: 20,
-            left: screenWidth * 0.1,
-            right: screenWidth * 0.1,
+            left: screenWidth * 0.05,
+            right: screenWidth * 0.05,
             child: Column(
               children: [
                 Container(
-                  width: screenHeight * 2,
+                  width: screenWidth * 3,
                   height: screenHeight * 0.07,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -103,7 +103,7 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                   child: Row(
                     children: [
                       SizedBox(
-                        width: screenWidth * 0.61,
+                        width: screenWidth * 0.8,
                         child: TextField(
                           controller: _searchController,
                           style: GoogleFonts.poppins(
@@ -111,26 +111,23 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                             color: const Color.fromARGB(255, 18, 18, 18),
                           ),
                           decoration: InputDecoration(
-                            hintText: 'Search nearby barbers',
+                            hintText: 'Search nearby',
                             hintStyle: GoogleFonts.poppins(
                               color: Colors.grey,
-                              fontSize: screenWidth * 0.035,
+                              fontSize: screenWidth * 0.037,
                             ),
                             border: InputBorder.none,
+                            prefixIcon: Icon(
+                              Icons.search_rounded,
+                              color: const Color.fromARGB(255, 18, 18, 18),
+                              size: screenWidth * 0.06,
+                            ),
                           ),
+                          onSubmitted: (value) {
+                            // Define the search action here
+                            print('Searching for: $value');
+                          },
                         ),
-                      ),
-                      // Optional search button or icon
-                      IconButton(
-                        icon: Icon(
-                          Icons.location_searching_rounded,
-                          color: const Color.fromARGB(255, 18, 18, 18),
-                          size: screenWidth * 0.06,
-                        ),
-                        onPressed: () {
-                          // Define the search action here
-                          print('Searching for: ${_searchController.text}');
-                        },
                       ),
                     ],
                   ),

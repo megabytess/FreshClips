@@ -99,6 +99,7 @@ class _AvailabilityDatePageState extends State<AvailabilityDatePage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
+                  Navigator.of(context).pop();
                 },
               ),
             ],
