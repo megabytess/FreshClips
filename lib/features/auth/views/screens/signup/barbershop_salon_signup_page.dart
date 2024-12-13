@@ -46,7 +46,7 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
         selectedLatLng == null ||
         !emailController.text.contains('@') ||
         !emailController.text.contains('.com') ||
-        !RegExp(r'^[a-zA-Z]+$').hasMatch(shopNameController.text)) {
+        !RegExp(r'^[a-zA-Z\s]+$').hasMatch(shopNameController.text)) {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(

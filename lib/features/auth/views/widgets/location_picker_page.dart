@@ -1,8 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:freshclips_capstone/features/auth/models/autocomplete_predictions.dart';
+import 'package:freshclips_capstone/features/auth/models/place_auto_complete_response.dart';
+import 'package:freshclips_capstone/features/auth/views/widgets/nerwork_utility.dart';
+import 'package:freshclips_capstone/features/auth/views/widgets/search_place_prediction.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+
+const String apikey = 'AIzaSyDdXaMN5htLGHo8BkCfefPpuTauwHGXItU';
 
 class LocationPicker extends StatefulWidget {
   final Function(LatLng) onLocationSelected;
@@ -17,6 +25,7 @@ class LocationPickerState extends State<LocationPicker> {
   LatLng? _selectedLocation;
   late GoogleMapController _mapController;
   final Location _location = Location();
+  List<AutocompletePrediction> PlacePredictions = [];
 
   @override
   void initState() {
@@ -47,7 +56,6 @@ class LocationPickerState extends State<LocationPicker> {
       }
     }
 
-    // Navigate to the user's current location
     navigateToUserLocation();
   }
 
@@ -61,6 +69,45 @@ class LocationPickerState extends State<LocationPicker> {
         ),
       ),
     );
+  }
+
+  void placeAutoComplete(String query) async {
+    Uri uri = Uri.https(
+      'maps.googleapis.com',
+      '/maps/api/place/autocomplete/json',
+      {
+        'input': query,
+        'key': apikey,
+      },
+    );
+    String? response = await NetworkUtility.fetchUrl(uri);
+    if (response != null) {
+      PlaceAutocompleteResponse result =
+          PlaceAutocompleteResponse.parseAutocompleteResult(response);
+      if (result.predictions != null && result.predictions!.isNotEmpty) {
+        setState(() {
+          PlacePredictions = result.predictions!;
+        });
+      }
+    }
+  }
+
+  Future<LatLng> fetchPlaceDetails(String placeId) async {
+    Uri uri = Uri.https(
+      'maps.googleapis.com',
+      '/maps/api/place/details/json',
+      {
+        'place_id': placeId,
+        'key': apikey,
+      },
+    );
+    String? response = await NetworkUtility.fetchUrl(uri);
+    if (response != null) {
+      final json = jsonDecode(response);
+      final location = json['result']['geometry']['location'];
+      return LatLng(location['lat'], location['lng']);
+    }
+    throw Exception('Failed to fetch place details');
   }
 
   @override
@@ -110,39 +157,51 @@ class LocationPickerState extends State<LocationPicker> {
                 : {},
           ),
 
-          // Search Bar at the Top Center
+          // Search Bar and Autocomplete List
           Positioned(
             top: screenHeight * 0.03,
             left: screenWidth * 0.05,
             right: screenWidth * 0.05,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Search Bar
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search location...',
-                  hintStyle: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.04,
-                    color: Colors.grey,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.04,
-                    vertical: screenHeight * 0.01,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  SearchPlacePredictionPage()));
+                    },
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Search location',
+                        hintStyle: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.04,
+                          color: Colors.grey,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: screenWidth * 0.04,
+                          vertical: screenHeight * 0.01,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                onSubmitted: (value) {
-                  // Implement Google Places API to search for location
-                },
-              ),
+              ],
             ),
           ),
 
@@ -210,7 +269,7 @@ class LocationPickerState extends State<LocationPicker> {
             ),
           ),
 
-          // Confirm Button
+          // Confirm Location Button
           Positioned(
             bottom: 16,
             left: 16,

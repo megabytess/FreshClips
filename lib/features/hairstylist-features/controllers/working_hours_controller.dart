@@ -107,26 +107,34 @@ class WorkingHoursController extends ChangeNotifier {
 
   // Method to update working hours in Firestore
   Future<void> updateWorkingHours(String email, String day, bool status,
-      DateTime currentOpeningTime, DateTime currentClosingTime) async {
+      DateTime newOpeningTime, DateTime newClosingTime) async {
     try {
-      // Locate the specific document
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('workingHours')
+      final firestore = FirebaseFirestore.instance;
+
+      // Fetch the document for the given email
+      final querySnapshot = await firestore
+          .collection('availability')
           .where('email', isEqualTo: email)
-          .where('day', isEqualTo: day)
           .get();
 
-      for (var doc in querySnapshot.docs) {
-        await doc.reference.update({
-          'status': status,
-          'openingTime': Timestamp.fromDate(currentOpeningTime),
-          'closingTime': Timestamp.fromDate(currentClosingTime),
-        });
-      }
+      if (querySnapshot.docs.isNotEmpty) {
+        final docRef = querySnapshot.docs.first.reference;
 
-      print("Working hours updated successfully!");
+        // Update the specific day's data in the workingHours map
+        await docRef.update({
+          'workingHours.$day': {
+            'status': status,
+            'openingTime': Timestamp.fromDate(newOpeningTime),
+            'closingTime': Timestamp.fromDate(newClosingTime),
+          }
+        });
+
+        print('Working hours updated successfully!');
+      } else {
+        print('No matching document found for email: $email');
+      }
     } catch (e) {
-      print("Error updating working hours: $e");
+      print('Error updating working hours: $e');
     }
   }
 

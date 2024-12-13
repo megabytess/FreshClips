@@ -1,41 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/controllers/working_hours_controller.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_working_hours_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/models/working_hours_model.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-class EditAvailabilityPage extends StatefulWidget {
-  const EditAvailabilityPage({super.key, required this.email});
-
+class BSEditAvailabilityDatePage extends StatefulWidget {
+  const BSEditAvailabilityDatePage({super.key, required this.email});
   final String email;
-
   @override
-  State<EditAvailabilityPage> createState() => _EditAvailabilityPageState();
+  State<BSEditAvailabilityDatePage> createState() =>
+      _BSEditAvailabilityDatePageState();
 }
 
-class _EditAvailabilityPageState extends State<EditAvailabilityPage> {
+class _BSEditAvailabilityDatePageState
+    extends State<BSEditAvailabilityDatePage> {
   bool isLoading = true;
   Map<DateTime, Map<String, dynamic>> availabilityStatus = {};
   List<Map<String, dynamic>> availabilityData = [];
-  late WorkingHoursController workingHoursController;
-
+  late BSAvailabilityController bsAvailabilityController;
   @override
   void initState() {
     super.initState();
-    workingHoursController =
-        WorkingHoursController(email: widget.email, context: context);
-    fetchWorkingHours();
+    bsAvailabilityController =
+        BSAvailabilityController(email: widget.email, context: context);
+    fetchBSWorkingHours();
   }
 
-  void fetchWorkingHours() async {
+  void fetchBSWorkingHours() async {
     try {
       setState(() {
         isLoading = true;
       });
 
       List<WorkingHours> fetchedData =
-          await workingHoursController.fetchWorkingHours(widget.email);
+          await bsAvailabilityController.fetchWorkingHoursBS(widget.email);
 
       setState(() {
         availabilityData = fetchedData.map((workingHour) {
@@ -93,8 +92,8 @@ class _EditAvailabilityPageState extends State<EditAvailabilityPage> {
         // Initialize with both opening and closing time fields if not present
         availabilityStatus[date] ??= {
           'status': true,
-          'openingTime': null, // Initialize as null
-          'closingTime': null, // Initialize as null
+          'openingTime': null,
+          'closingTime': null,
         };
 
         // Update either opening or closing time based on the boolean flag
@@ -139,7 +138,7 @@ class _EditAvailabilityPageState extends State<EditAvailabilityPage> {
         final DateTime openingTime = dayData['openingTime'];
         final DateTime closingTime = dayData['closingTime'];
 
-        await workingHoursController.updateWorkingHours(
+        await bsAvailabilityController.updateWorkingHoursBS(
           email,
           day,
           status,
@@ -170,14 +169,13 @@ class _EditAvailabilityPageState extends State<EditAvailabilityPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Edit Availability',
+          'Edit availability',
           style: GoogleFonts.poppins(
             fontSize: screenWidth * 0.04,
             fontWeight: FontWeight.w600,
           ),
         ),
         backgroundColor: Colors.transparent,
-        elevation: 0,
       ),
       body: isLoading
           ? const Center(
@@ -227,7 +225,7 @@ class _EditAvailabilityPageState extends State<EditAvailabilityPage> {
                                   items: [
                                     DropdownMenuItem(
                                       value: true,
-                                      child: Text('AVAILABLE',
+                                      child: Text('SHOP OPEN',
                                           style: GoogleFonts.poppins(
                                             fontSize: 17,
                                             fontWeight: FontWeight.w700,
@@ -235,7 +233,7 @@ class _EditAvailabilityPageState extends State<EditAvailabilityPage> {
                                     ),
                                     DropdownMenuItem(
                                       value: false,
-                                      child: Text('NOT AVAILABLE',
+                                      child: Text('SHOP CLOSED',
                                           style: GoogleFonts.poppins(
                                             fontSize: 17,
                                             fontWeight: FontWeight.w700,
