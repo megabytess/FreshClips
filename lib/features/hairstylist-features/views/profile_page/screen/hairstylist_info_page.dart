@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_add_barbers_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/hairstylist_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/services_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/hairstylist_services/add_services_page.dart';
@@ -12,9 +14,11 @@ class HairstylistInfoPage extends StatefulWidget {
     super.key,
     required this.email,
     required this.isClient,
+    required this.userEmail,
   });
   final String email;
   final bool isClient;
+  final String userEmail;
 
   @override
   State<HairstylistInfoPage> createState() => _InfoPageState();
@@ -22,6 +26,7 @@ class HairstylistInfoPage extends StatefulWidget {
 
 final HairstylistController hairstylistController = HairstylistController();
 final ServiceController serviceController = ServiceController();
+BSAddBarberController bsAddBarberController = BSAddBarberController();
 
 class _InfoPageState extends State<HairstylistInfoPage> {
   String? currentUserEmail;
@@ -34,8 +39,8 @@ class _InfoPageState extends State<HairstylistInfoPage> {
     _fetchDataFuture = _fetchData();
   }
 
-  Future<dynamic> _fetchData() async {
-    hairstylistController.getHairstylist(widget.email);
+  Future<void> _fetchData() async {
+    await hairstylistController.getHairstylist(widget.email);
     await serviceController.fetchServicesForUsers(widget.email);
   }
 
@@ -80,22 +85,86 @@ class _InfoPageState extends State<HairstylistInfoPage> {
               );
             }
 
-            // final locationLatLng = LatLng(
-            //   hairstylist.location['latitude'],
-            //   hairstylist.location['longitude'],
-            // );
-            // final locationAddress = hairstylist.location['address'];
-
             return SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.only(
-                  top: screenHeight * 0.01,
-                  left: screenWidth * 0.03,
-                  right: screenWidth * 0.03,
+                  top: screenHeight * 0.02,
+                  left: screenWidth * 0.05,
+                  right: screenWidth * 0.05,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('availableBarbers')
+                          .where('barberEmail', isEqualTo: widget.userEmail)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Color.fromARGB(255, 189, 49, 71),
+                              ),
+                            ),
+                          );
+                        }
+
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text(
+                              "Error loading barbers.",
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.045,
+                                fontWeight: FontWeight.w600,
+                                color: const Color.fromARGB(255, 18, 18, 18),
+                              ),
+                            ),
+                          );
+                        }
+
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return Center(
+                            child: Text(
+                              "No affiliated shop",
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.045,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          );
+                        }
+
+                        final barber = snapshot.data!.docs.first;
+                        final data = barber.data() as Map<String, dynamic>;
+                        final shopName =
+                            data['affiliatedShop'] ?? 'Not available';
+
+                        return Row(
+                          children: [
+                            Text(
+                              "Affiliated shop: ",
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.032,
+                                fontWeight: FontWeight.w500,
+                                color: const Color.fromARGB(100, 18, 18, 18),
+                              ),
+                            ),
+                            Text(
+                              "$shopName",
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.035,
+                                fontWeight: FontWeight.w600,
+                                color: const Color.fromARGB(255, 23, 23, 23),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                     Row(
                       children: [
                         Padding(
@@ -192,24 +261,6 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                         ),
                       ],
                     ),
-                    // Gap(screenHeight * 0.01),
-                    // SizedBox(
-                    //   height: screenHeight * 0.3,
-                    //   width: double.infinity,
-                    //   child: GoogleMap(
-                    //     initialCameraPosition: CameraPosition(
-                    //       target: locationLatLng,
-                    //       zoom: 15,
-                    //     ),
-                    //     markers: {
-                    //       Marker(
-                    //         markerId: MarkerId('location'),
-                    //         position: locationLatLng,
-                    //       ),
-                    //     },
-                    //   ),
-                    // ),
-                    // Gap(screenHeight * 0.01),
                     Row(
                       children: [
                         Padding(
@@ -350,111 +401,150 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                                 itemBuilder: (context, index) {
                                   final service =
                                       serviceController.services[index];
-                                  return ListTile(
-                                      leading: Container(
-                                        width: screenWidth * 0.12,
-                                        height: screenWidth * 0.12,
-                                        decoration: BoxDecoration(
-                                          color: Colors.transparent,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          image: const DecorationImage(
-                                            image: AssetImage(
-                                              'assets/images/icons/for_servicess.jpg',
-                                            ),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                      title: Text(
-                                        service.serviceName,
-                                        style: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: screenWidth * 0.030,
-                                        ),
-                                      ),
-                                      subtitle: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
                                         children: [
-                                          Text(
-                                            service.serviceDescription,
-                                            style: GoogleFonts.poppins(
-                                              fontSize: screenWidth * 0.020,
-                                              fontWeight: FontWeight.w400,
+                                          Container(
+                                            width: screenWidth * 0.12,
+                                            height: screenWidth * 0.12,
+                                            decoration: BoxDecoration(
+                                              color: Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              image: const DecorationImage(
+                                                image: AssetImage(
+                                                    'assets/images/icons/for_servicess.jpg'),
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
                                           ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'P ${service.price.toString()}',
-                                                style: GoogleFonts.poppins(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: screenWidth * 0.030,
-                                                ),
-                                              ),
-                                              Gap(screenWidth * 0.02),
-                                              Text(
-                                                '${service.duration} mins',
-                                                style: GoogleFonts.poppins(
-                                                  fontSize: screenWidth * 0.030,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: const Color.fromARGB(
-                                                      50, 18, 18, 18),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      trailing: currentUserEmail == widget.email
-                                          ? Row(
-                                              mainAxisSize: MainAxisSize.min,
+                                          Gap(screenWidth * 0.03),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                IconButton(
-                                                  icon: const Icon(Icons.edit),
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            EditServicePage(
-                                                          userEmail:
-                                                              widget.email,
-                                                          service: service,
-                                                        ),
-                                                      ),
-                                                    ).then((_) {
-                                                      // Refresh the services after editing a service
-                                                      setState(() {
-                                                        serviceController
-                                                            .fetchServicesForUsers(
-                                                                widget.email);
-                                                      });
-                                                    });
-                                                  },
+                                                Text(
+                                                  service.serviceName,
+                                                  style: GoogleFonts.poppins(
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize:
+                                                        screenWidth * 0.034,
+                                                  ),
                                                 ),
-                                                IconButton(
-                                                  icon:
-                                                      const Icon(Icons.delete),
-                                                  onPressed: () {
-                                                    serviceController
-                                                        .deleteService(
-                                                            service.id,
-                                                            service.userEmail)
-                                                        .then((_) {
-                                                      // Refresh the services after deletion
-                                                      setState(() {
-                                                        serviceController
-                                                            .fetchServicesForUsers(
-                                                                widget.email);
-                                                      });
-                                                    });
-                                                  },
+                                                Text(
+                                                  service.serviceDescription,
+                                                  style: GoogleFonts.poppins(
+                                                    fontSize:
+                                                        screenWidth * 0.025,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      'P ${service.price.toString()}',
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize:
+                                                            screenWidth * 0.030,
+                                                      ),
+                                                    ),
+                                                    Gap(screenWidth * 0.02),
+                                                    Text(
+                                                      '${service.duration} mins',
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                        fontSize:
+                                                            screenWidth * 0.030,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: const Color
+                                                            .fromARGB(
+                                                            100, 18, 18, 18),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ],
-                                            )
-                                          : null);
+                                            ),
+                                          ),
+                                          if (currentUserEmail == widget.email)
+                                            Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 186, 199, 206),
+                                                  child: IconButton(
+                                                    icon: const Icon(
+                                                      Icons.edit,
+                                                      size: 20,
+                                                      color: Color.fromARGB(
+                                                          255, 49, 65, 69),
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              EditServicePage(
+                                                            userEmail:
+                                                                widget.email,
+                                                            service: service,
+                                                          ),
+                                                        ),
+                                                      ).then((_) {
+                                                        // Refresh the services after editing a service
+                                                        setState(() {
+                                                          serviceController
+                                                              .fetchServicesForUsers(
+                                                                  widget.email);
+                                                        });
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
+                                                Gap(screenWidth * 0.05),
+                                                CircleAvatar(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 186, 199, 206),
+                                                  child: IconButton(
+                                                    icon: const Icon(
+                                                      Icons.delete,
+                                                      size: 20,
+                                                      color: Color.fromARGB(
+                                                          255, 49, 65, 69),
+                                                    ),
+                                                    onPressed: () {
+                                                      serviceController
+                                                          .deleteService(
+                                                              service.id,
+                                                              service.userEmail)
+                                                          .then((_) {
+                                                        // Refresh the services after deletion
+                                                        setState(() {
+                                                          serviceController
+                                                              .fetchServicesForUsers(
+                                                                  widget.email);
+                                                        });
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                        ],
+                                      ),
+                                      Gap(screenHeight * 0.02),
+                                    ],
+                                  );
                                 },
                               );
                             },

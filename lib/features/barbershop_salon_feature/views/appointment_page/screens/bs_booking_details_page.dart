@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_appointment_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_controller.dart';
@@ -45,9 +47,33 @@ BarbershopSalonController barbershopsalonController =
     BarbershopSalonController();
 
 class _BookingDetailsPageState extends State<BookingDetailsPage> {
+  final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
   final DateTime date = DateTime.now();
   final String formattedDate =
       DateFormat('MMMM dd, yyyy').format(DateTime.now());
+  String declineReason = '';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDeclineReason();
+  }
+
+  Future<void> fetchDeclineReason() async {
+    QuerySnapshot appointmentSnapshot = await FirebaseFirestore.instance
+        .collection('appointments')
+        .where('bookedUser', isEqualTo: widget.userEmail)
+        .get();
+
+    setState(() {
+      if (appointmentSnapshot.docs.isNotEmpty) {
+        declineReason = appointmentSnapshot.docs.first['declinedReason'] ??
+            'No reason provided';
+      } else {
+        declineReason = 'No reason provided';
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -328,6 +354,45 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   ],
                 ),
               ),
+              Gap(screenHeight * 0.01),
+              if (widget.status == 'Declined')
+                SizedBox(
+                  width: screenWidth * 0.9,
+                  child: Card(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: screenWidth * 0.04,
+                        top: screenHeight * 0.02,
+                        right: screenWidth * 0.04,
+                        bottom: screenHeight * 0.02,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: Text(
+                              'Declined Reason:',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.04,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          Gap(screenHeight * 0.01),
+                          Center(
+                            child: Text(
+                              declineReason,
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.035,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               Gap(screenHeight * 0.04),
               if (widget.status != 'Completed' &&
                   widget.status != 'Pending' &&
@@ -401,10 +466,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   ),
                 ),
               Gap(screenHeight * 0.02),
-              if (widget.status == 'Approved' ||
-                  widget.status != 'Declined' &&
-                      widget.status != 'Pending' &&
-                      widget.status != 'Completed')
+              if (widget.status == 'Declined' || widget.status == 'Approved')
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -534,7 +596,6 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                             widget.appointmentId,
                             widget.userEmail,
                           );
-                          Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -556,7 +617,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                           ),
                         ),
                       ),
-                    ),
+                    )
                   ],
                 ),
             ],

@@ -466,9 +466,11 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
                                 });
                               }
                             } catch (e) {
-                              setState(() {
-                                selectedAddress = "Error fetching address";
-                              });
+                              setState(
+                                () {
+                                  selectedAddress = "Error fetching address";
+                                },
+                              );
                             }
                           },
                         ),

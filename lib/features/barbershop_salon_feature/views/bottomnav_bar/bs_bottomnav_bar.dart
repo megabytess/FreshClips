@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appointment_page/screens/bs_appointment_page.dart';
-import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/settings_drawer/bs_settings_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/settings_drawer/manage_availability/bs_manage_availability_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/bottomnav_bar/settings_drawer/profile_details/bs_profile_details_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/home_page/screens/bs_home_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/message_page/screens/bs_message_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_profile_page.dart';
@@ -129,128 +130,15 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
                 ],
               ),
             ),
-            ListTile(
-              leading: SvgPicture.asset(
-                'assets/images/bottomnav_bar_page/home_fill.svg',
-                width: screenWidth * 0.06,
-                colorFilter: const ColorFilter.mode(
-                    Color.fromARGB(255, 48, 65, 69), BlendMode.srcIn),
-              ),
-              title: Text(
-                'Home',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 0;
-                });
-              },
-            ),
-            ListTile(
-              leading: SvgPicture.asset(
-                'assets/images/bottomnav_bar_page/calendar_fill.svg',
-                width: screenWidth * 0.06,
-                colorFilter: const ColorFilter.mode(
-                    Color.fromARGB(255, 48, 65, 69), BlendMode.srcIn),
-              ),
-              title: Text(
-                'Calendar',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 1;
-                });
-              },
-            ),
-            ListTile(
-              leading: SvgPicture.asset(
-                'assets/images/bottomnav_bar_page/message_fill.svg',
-                width: screenWidth * 0.06,
-                colorFilter: const ColorFilter.mode(
-                    Color.fromARGB(255, 48, 65, 69), BlendMode.srcIn),
-              ),
-              title: Text(
-                'Message',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 2;
-                });
-              },
-            ),
-            ListTile(
-              leading: SvgPicture.asset(
-                'assets/images/bottomnav_bar_page/user_fill.svg',
-                width: screenWidth * 0.06,
-                colorFilter: const ColorFilter.mode(
-                    Color.fromARGB(255, 48, 65, 69), BlendMode.srcIn),
-              ),
-              title: Text(
-                'Profile',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 3;
-                });
-              },
-            ),
-            const Divider(
-              color: Color.fromARGB(255, 189, 189, 189),
-              thickness: 1.0,
-              indent: 20.0,
-              endIndent: 20.0,
-            ),
+            Gap(screenHeight * 0.01),
             ListTile(
               leading: Icon(
-                Icons.settings_rounded,
+                Icons.person_rounded,
                 color: const Color.fromARGB(255, 48, 65, 69),
                 size: screenWidth * 0.07,
               ),
               title: Text(
-                'Settings',
+                'Profile details',
                 style: GoogleFonts.poppins(
                   fontSize: screenWidth * 0.035,
                   fontWeight: FontWeight.w500,
@@ -266,14 +154,44 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => BSSettingsPage(
+                    builder: (context) => BSProfileDetailsPage(
                       email: widget.email,
                     ),
                   ),
                 );
               },
             ),
-            Gap(screenHeight * 0.45),
+            Gap(screenHeight * 0.01),
+            ListTile(
+              leading: Icon(
+                Icons.calendar_month_rounded,
+                color: const Color.fromARGB(255, 48, 65, 69),
+                size: screenWidth * 0.07,
+              ),
+              title: Text(
+                'Manage availability',
+                style: GoogleFonts.poppins(
+                  fontSize: screenWidth * 0.035,
+                  fontWeight: FontWeight.w500,
+                  color: const Color.fromARGB(255, 18, 18, 18),
+                ),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: screenWidth * 0.04,
+                color: const Color.fromARGB(255, 18, 18, 18),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        BSManageAvailabilityPage(email: widget.email),
+                  ),
+                );
+              },
+            ),
+            Gap(screenHeight * 0.62),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
               child: ElevatedButton(

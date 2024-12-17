@@ -33,12 +33,13 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
     super.initState();
 
     _pages = [
-      const ClientHomePage(),
+      ClientHomePage(email: widget.email),
       const ClientNearbyPage(),
       ClientMessagePage(email: widget.email),
       ClientProfilePage(
         clientEmail: widget.clientEmail,
         email: widget.email,
+        isClient: true,
       ),
     ];
   }
@@ -124,120 +125,7 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
                 ],
               ),
             ),
-            ListTile(
-              leading: SvgPicture.asset(
-                'assets/images/bottomnav_bar_page/home_fill.svg',
-                width: screenWidth * 0.06,
-                colorFilter: const ColorFilter.mode(
-                    Color.fromARGB(255, 48, 65, 69), BlendMode.srcIn),
-              ),
-              title: Text(
-                'Home',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 0;
-                });
-              },
-            ),
-            ListTile(
-              leading: SvgPicture.asset(
-                'assets/images/bottomnav_bar_page/nearby.svg',
-                width: screenWidth * 0.06,
-                colorFilter: const ColorFilter.mode(
-                    Color.fromARGB(255, 48, 65, 69), BlendMode.srcIn),
-              ),
-              title: Text(
-                'Nearby',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 1;
-                });
-              },
-            ),
-            ListTile(
-              leading: SvgPicture.asset(
-                'assets/images/bottomnav_bar_page/message_fill.svg',
-                width: screenWidth * 0.06,
-                colorFilter: const ColorFilter.mode(
-                    Color.fromARGB(255, 48, 65, 69), BlendMode.srcIn),
-              ),
-              title: Text(
-                'Message',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 2;
-                });
-              },
-            ),
-            ListTile(
-              leading: SvgPicture.asset(
-                'assets/images/bottomnav_bar_page/user_fill.svg',
-                width: screenWidth * 0.06,
-                colorFilter: const ColorFilter.mode(
-                    Color.fromARGB(255, 48, 65, 69), BlendMode.srcIn),
-              ),
-              title: Text(
-                'Profile',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 3;
-                });
-              },
-            ),
-            const Divider(
-              color: Color.fromARGB(255, 189, 189, 189),
-              thickness: 1.0,
-              indent: 20.0,
-              endIndent: 20.0,
-            ),
+            Gap(screenHeight * 0.01),
             ListTile(
               leading: Icon(
                 Icons.notifications_active_rounded,
@@ -268,35 +156,7 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
                 );
               },
             ),
-            ListTile(
-              leading: Icon(
-                Icons.settings_rounded,
-                color: const Color.fromARGB(255, 48, 65, 69),
-                size: screenWidth * 0.07,
-              ),
-              title: Text(
-                'Settings',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                //   Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //       builder: (context) => const BSSettingsPage(),
-                //     ),
-                //   );
-              },
-            ),
-            Gap(screenHeight * 0.38),
+            Gap(screenHeight * 0.7),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
               child: ElevatedButton(

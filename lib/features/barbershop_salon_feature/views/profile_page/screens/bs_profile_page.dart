@@ -86,6 +86,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
         page: BSBarbersPage(
           userEmail: widget.email,
           isClient: true,
+          clientEmail: widget.clientEmail,
         ),
       ),
     );
@@ -288,7 +289,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
       }
     } catch (e) {
       print("Error fetching shop status: $e");
-      return "ERROR";
+      return "No available working hours";
     }
     return "SHOP CLOSED"; // Default return statement
   }
@@ -376,9 +377,10 @@ class _BSProfilePageState extends State<BSProfilePage> {
                             height: screenWidth * 0.045,
                           ),
                           Gap(screenHeight * 0.004),
-                          FutureBuilder<double>(
-                            future: ratingsReviewController
-                                .computeAverageRating(widget.email),
+                          StreamBuilder<double>(
+                            stream: ratingsReviewController
+                                .computeAverageRating(widget.email)
+                                .asStream(),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {

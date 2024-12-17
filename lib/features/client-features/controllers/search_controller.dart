@@ -26,4 +26,28 @@ class SearchController {
       return [];
     }
   }
+
+  Future<List<Map<String, dynamic>>> searchHairstylistUser(
+      String username) async {
+    if (username.isEmpty) {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
+          .collection('user')
+          .where('userType', whereIn: ['Hairstylist']).get();
+
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    }
+
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
+          .collection('user')
+          .where('username', isGreaterThanOrEqualTo: username)
+          .where('username', isLessThanOrEqualTo: '$username\uf8ff')
+          .get();
+
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    } catch (e) {
+      print("Error during search: $e");
+      return [];
+    }
+  }
 }

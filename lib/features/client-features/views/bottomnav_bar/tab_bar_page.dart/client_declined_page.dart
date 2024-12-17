@@ -134,7 +134,7 @@ class ClientDeclinedPage extends StatelessWidget {
                                 color: const Color.fromARGB(255, 18, 18, 18),
                               ),
                             ),
-                            Gap(screenWidth * 0.14),
+                            Gap(screenWidth * 0.12),
                             Text(
                               'Declined',
                               style: GoogleFonts.poppins(

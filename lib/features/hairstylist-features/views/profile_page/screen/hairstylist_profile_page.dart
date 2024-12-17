@@ -57,6 +57,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
       page: HairstylistInfoPage(
         email: widget.email,
         isClient: true,
+        userEmail: widget.email,
       ),
     ));
     listPages.add(PageTabItemModel(

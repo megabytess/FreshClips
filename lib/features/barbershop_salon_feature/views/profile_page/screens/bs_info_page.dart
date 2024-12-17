@@ -62,8 +62,8 @@ class _BSInfoPageState extends State<BSInfoPage> {
             child: Padding(
               padding: EdgeInsets.only(
                 top: screenHeight * 0.01,
-                left: screenWidth * 0.03,
-                right: screenWidth * 0.03,
+                left: screenWidth * 0.05,
+                right: screenWidth * 0.05,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,105 +273,143 @@ class _BSInfoPageState extends State<BSInfoPage> {
                               itemBuilder: (context, index) {
                                 final service =
                                     serviceController.services[index];
-                                return ListTile(
-                                  leading: Container(
-                                    width: screenWidth * 0.12,
-                                    height: screenWidth * 0.12,
-                                    decoration: BoxDecoration(
-                                      color: Colors.transparent,
-                                      borderRadius: BorderRadius.circular(8),
-                                      image: const DecorationImage(
-                                        image: AssetImage(
-                                          'assets/images/icons/for_servicess.jpg',
-                                        ),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  title: Text(
-                                    service.serviceName,
-                                    style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: screenWidth * 0.030,
-                                    ),
-                                  ),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        service.serviceDescription,
-                                        style: GoogleFonts.poppins(
-                                          fontSize: screenWidth * 0.023,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'P ${service.price.toString()}',
-                                            style: GoogleFonts.poppins(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: screenWidth * 0.030,
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: screenWidth * 0.12,
+                                          height: screenWidth * 0.12,
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            image: const DecorationImage(
+                                              image: AssetImage(
+                                                  'assets/images/icons/for_servicess.jpg'),
+                                              fit: BoxFit.cover,
                                             ),
                                           ),
-                                          Gap(screenWidth * 0.02),
-                                          Text(
-                                            '${service.duration} mins',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: screenWidth * 0.030,
-                                              fontWeight: FontWeight.w500,
-                                              color: const Color.fromARGB(
-                                                  50, 18, 18, 18),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  trailing: currentUserEmail == widget.email
-                                      ? Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            IconButton(
-                                              icon: const Icon(Icons.edit),
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        EditServicePage(
-                                                      userEmail: widget.email,
-                                                      service: service,
+                                        ),
+                                        Gap(screenWidth * 0.03),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                service.serviceName,
+                                                style: GoogleFonts.poppins(
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: screenWidth * 0.034,
+                                                ),
+                                              ),
+                                              Text(
+                                                service.serviceDescription,
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: screenWidth * 0.025,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    'P ${service.price.toString()}',
+                                                    style: GoogleFonts.poppins(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize:
+                                                          screenWidth * 0.030,
                                                     ),
                                                   ),
-                                                ).then((_) {
-                                                  setState(() {
+                                                  Gap(screenWidth * 0.02),
+                                                  Text(
+                                                    '${service.duration} mins',
+                                                    style: GoogleFonts.poppins(
+                                                      fontSize:
+                                                          screenWidth * 0.030,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              100, 18, 18, 18),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        if (currentUserEmail == widget.email)
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              CircleAvatar(
+                                                backgroundColor:
+                                                    const Color.fromARGB(
+                                                        255, 186, 199, 206),
+                                                child: IconButton(
+                                                  icon: const Icon(
+                                                    Icons.edit,
+                                                    size: 20,
+                                                    color: Color.fromARGB(
+                                                        255, 49, 65, 69),
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            EditServicePage(
+                                                          userEmail:
+                                                              widget.email,
+                                                          service: service,
+                                                        ),
+                                                      ),
+                                                    ).then((_) {
+                                                      setState(() {
+                                                        serviceController
+                                                            .fetchServicesForUsers(
+                                                                widget.email);
+                                                      });
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                              Gap(screenWidth * 0.05),
+                                              CircleAvatar(
+                                                backgroundColor:
+                                                    const Color.fromARGB(
+                                                        255, 186, 199, 206),
+                                                child: IconButton(
+                                                  icon: const Icon(
+                                                    Icons.delete,
+                                                    size: 20,
+                                                    color: Color.fromARGB(
+                                                        255, 49, 65, 69),
+                                                  ),
+                                                  onPressed: () {
                                                     serviceController
-                                                        .fetchServicesForUsers(
-                                                            widget.email);
-                                                  });
-                                                });
-                                              },
-                                            ),
-                                            IconButton(
-                                              icon: const Icon(Icons.delete),
-                                              onPressed: () {
-                                                serviceController
-                                                    .deleteService(service.id,
-                                                        service.userEmail)
-                                                    .then((_) {
-                                                  setState(() {
-                                                    serviceController
-                                                        .fetchServicesForUsers(
-                                                            widget.email);
-                                                  });
-                                                });
-                                              },
-                                            ),
-                                          ],
-                                        )
-                                      : null,
+                                                        .deleteService(
+                                                            service.id,
+                                                            service.userEmail)
+                                                        .then((_) {
+                                                      setState(() {
+                                                        serviceController
+                                                            .fetchServicesForUsers(
+                                                                widget.email);
+                                                      });
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                      ],
+                                    ),
+                                    Gap(screenHeight * 0.02),
+                                  ],
                                 );
                               },
                             );
