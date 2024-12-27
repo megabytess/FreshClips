@@ -196,9 +196,7 @@ class _BSBarbersPageState extends State<BSBarbersPage> {
                                       BSAddBarberController()
                                           .deleteBarbers(
                                               widget.userEmail, barber['id'])
-                                          .then((_) {
-                                        // StreamBuilder will auto-update
-                                      });
+                                          .then((_) {});
                                     },
                                   ),
                                 ),

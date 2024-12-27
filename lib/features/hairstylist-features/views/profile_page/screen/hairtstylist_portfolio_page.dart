@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/add_multiple_images_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/widget/add_image_hairstylist_page.dart';
 import 'package:gap/gap.dart';
@@ -17,31 +20,47 @@ class HairstylistPortfolioPage extends StatefulWidget {
 }
 
 class _HairstylistPortfolioPageState extends State<HairstylistPortfolioPage> {
-  List<String> images = [];
-  bool isLoading = true;
-
   late final AddMultipleImagesController controller;
   String? currentUserEmail;
+  List<String> images = [];
 
   @override
   void initState() {
     super.initState();
     controller = AddMultipleImagesController(widget.email, context);
-    fetchImages();
     currentUserEmail = FirebaseAuth.instance.currentUser?.email;
   }
 
-  Future<void> fetchImages() async {
-    setState(() {
-      isLoading = true;
-    });
+  Future<void> deleteImage(String imageUrl, String email) async {
+    try {
+      await FirebaseStorage.instance.refFromURL(imageUrl).delete();
 
-    List<String> fetchedImages = await controller.fetchImages();
+      QuerySnapshot<Map<String, dynamic>> userDoc = await FirebaseFirestore
+          .instance
+          .collection('user')
+          .where('email', isEqualTo: email)
+          .get();
 
-    setState(() {
-      images = fetchedImages;
-      isLoading = false;
-    });
+      // Check if the 'portfolioImages' field exists
+      if (userDoc.docs.isNotEmpty) {
+        Map<String, dynamic> data = userDoc.docs.first.data();
+        if (data.containsKey('portfolioImages')) {
+          DocumentReference userRef = FirebaseFirestore.instance
+              .collection('user')
+              .doc(userDoc.docs.first.id);
+          await userRef.update({
+            'portfolioImages': FieldValue.arrayRemove([imageUrl]),
+          });
+          print('Image deleted successfully.');
+        } else {
+          print('Field "portfolioImages" does not exist.');
+        }
+      } else {
+        print('Document does not exist.');
+      }
+    } catch (e) {
+      print('Failed to delete image: $e');
+    }
   }
 
   @override
@@ -52,94 +71,203 @@ class _HairstylistPortfolioPageState extends State<HairstylistPortfolioPage> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Padding(
-        padding: EdgeInsets.all(screenWidth * 0.03),
+        padding: EdgeInsets.all(screenWidth * 0.01),
         child: Stack(
           children: [
-            // This is the grid of images
             Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(
-                  child: images.isEmpty
-                      ? Center(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'No uploaded images',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: screenWidth * 0.04,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('user')
+                        .where('email', isEqualTo: widget.email)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color.fromARGB(255, 45, 65, 69),
                             ),
                           ),
-                        )
-                      : Column(
-                          children: [
-                            Expanded(
-                              child: GridView.builder(
-                                itemCount: images.length,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 8.0,
-                                  mainAxisSpacing: 8.0,
-                                  childAspectRatio: 1.0,
-                                ),
-                                itemBuilder: (context, index) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          screenHeight * 0.02),
-                                      image: DecorationImage(
-                                        image: NetworkImage(images[index]),
-                                        fit: BoxFit.cover,
+                        );
+                      }
+
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return Center(
+                          child: Text(
+                            'No images available',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        );
+                      }
+
+                      final userDoc = snapshot.data!.docs.first;
+                      final images = List<String>.from((userDoc.data()
+                              as Map<String, dynamic>)['portfolioImages'] ??
+                          []);
+
+                      if (images.isEmpty) {
+                        return Center(
+                          child: Text(
+                            'No uploaded images',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenHeight * 0.02,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        );
+                      }
+
+                      return MasonryGridView.count(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 5,
+                        crossAxisSpacing: 5,
+                        itemCount: images.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: Image.network(
+                                          images[index],
+                                          fit: BoxFit.fill,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return const Center(
+                                              child: Icon(
+                                                Icons.broken_image,
+                                                color: Colors.grey,
+                                                size: 100,
+                                              ),
+                                            );
+                                          },
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                      if (widget.isClient &&
+                                          currentUserEmail == widget.email)
+                                        Positioned(
+                                          top: 20,
+                                          right: 20,
+                                          child: CircleAvatar(
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 248, 248, 248),
+                                            child: IconButton(
+                                              icon: const Icon(
+                                                Icons.delete,
+                                                color: Color.fromARGB(
+                                                    255, 45, 65, 69),
+                                              ),
+                                              onPressed: () async {
+                                                final confirmed =
+                                                    await showDialog(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      AlertDialog(
+                                                    title: Text(
+                                                      'Delete Image',
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              color: const Color
+                                                                  .fromARGB(255,
+                                                                  18, 18, 18),
+                                                              fontSize: 20,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                    ),
+                                                    content: Text(
+                                                      'Are you sure you want to delete this image?',
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              color: const Color
+                                                                  .fromARGB(255,
+                                                                  18, 18, 18),
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400),
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                                context, false),
+                                                        child: const Text(
+                                                          'Cancel',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.grey),
+                                                        ),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                                context, true),
+                                                        child: const Text(
+                                                          'Delete',
+                                                          style: TextStyle(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    18,
+                                                                    18,
+                                                                    18),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+
+                                                if (confirmed) {
+                                                  await deleteImage(
+                                                      images[index],
+                                                      widget.email);
+                                                  Navigator.pop(context);
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                images[index],
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.broken_image,
+                                      color: Colors.grey, size: 50);
                                 },
                               ),
                             ),
-                          ],
-                        ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
-
-            // Positioned Delete Button
-            // Positioned(
-            //     bottom: screenWidth * 0.04,
-            //     right: screenWidth * 0.35,
-            //     child: OutlinedButton(
-            //       onPressed: () {
-            //         // Implement your delete functionality here
-            //         print('Delete action triggered');
-            //       },
-            //       style: OutlinedButton.styleFrom(
-            //         side: const BorderSide(
-            //           color: Color.fromARGB(255, 189, 49, 71),
-            //           width: 2.0,
-            //         ),
-            //         shape: RoundedRectangleBorder(
-            //           borderRadius: BorderRadius.circular(screenWidth * 0.04),
-            //         ),
-            //         padding: EdgeInsets.symmetric(
-            //           horizontal: screenWidth * 0.04,
-            //           vertical: screenWidth * 0.02,
-            //         ),
-            //         shadowColor: Colors.black.withOpacity(0.2),
-            //         elevation: 5,
-            //       ),
-            //       child: Icon(
-            //         Icons.delete,
-            // color: const Color.fromARGB(255, 45, 65, 69),
-            //         color: const Color.fromARGB(255, 189, 49, 71),
-            //         size: screenWidth * 0.06,
-            //       ),
-            //     )),
 
             // Positioned Add Image Button
             if (currentUserEmail == widget.email)
@@ -169,9 +297,7 @@ class _HairstylistPortfolioPageState extends State<HairstylistPortfolioPage> {
                           builder: (context) =>
                               AddImagePage(email: widget.email),
                         ),
-                      ).then((_) {
-                        fetchImages();
-                      });
+                      );
                     },
                     borderRadius: BorderRadius.circular(screenWidth * 0.05),
                     child: Row(

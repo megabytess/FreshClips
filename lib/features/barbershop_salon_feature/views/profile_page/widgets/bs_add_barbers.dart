@@ -78,7 +78,8 @@ class _BSAddBarbersState extends State<BSAddBarbersPage> {
                       searchResults = [];
                     });
                   } else {
-                    final results = await searchController.searchProfile(value);
+                    final results = await searchController.filterByUsertype(
+                        value, widget.clientEmail);
 
                     setState(() {
                       searchResults = results;
@@ -103,6 +104,7 @@ class _BSAddBarbersState extends State<BSAddBarbersPage> {
                         ),
                       );
                     }
+
                     if (snapshot.hasError) {
                       return Center(
                         child: Text(
@@ -234,8 +236,6 @@ class _BSAddBarbersState extends State<BSAddBarbersPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Barber Name Input
-
             Padding(
               padding: EdgeInsets.fromLTRB(
                 screenWidth * 0.04,

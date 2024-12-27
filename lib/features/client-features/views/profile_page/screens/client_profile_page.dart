@@ -288,7 +288,7 @@ class _ClientProfilePageState extends State<ClientProfilePage> {
                                       return Center(
                                         child: Center(
                                           child: Text(
-                                            'No Declined appointments for today.',
+                                            'No Appointments for today.',
                                             style: GoogleFonts.poppins(
                                               fontSize: screenWidth * 0.035,
                                               color: const Color.fromARGB(

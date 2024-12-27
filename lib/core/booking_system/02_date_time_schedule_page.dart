@@ -134,7 +134,7 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
         MaterialPageRoute(
           builder: (context) => InfoDetailsPage(
             bookingData: bookingData, // Pass the data directly
-
+            shopName: widget.userEmail,
             selectedDate: _selectedDay,
             selectedTime: selectedTime!,
             selectedServices: widget.selectedServices,
