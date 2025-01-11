@@ -113,11 +113,15 @@ class _DeclinedAccountPageState extends State<DeclinedAccountPage> {
             ),
             const Gap(20),
             Center(
-              child: RectanglePickerImage(onImagePick: (File pickedImage) {
-                setState(() {
-                  verifyImage = pickedImage;
-                });
-              }),
+              child: RectanglePickerImage(
+                onImagePick: (File pickedImage) {
+                  setState(
+                    () {
+                      verifyImage = pickedImage;
+                    },
+                  );
+                },
+              ),
             ),
             const Gap(40),
             Center(

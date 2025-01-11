@@ -23,7 +23,8 @@ class _PickerImageState extends State<PickerImage> {
   Future getImagePicker() async {
     final pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 80,
+      imageQuality: 100,
+      maxWidth: 600,
     );
     setState(() {
       if (pickedFile != null) {

@@ -61,6 +61,8 @@ dependencies:
   flutter_staggered_grid_view: ^0.7.0
   full_screen_image: ^2.0.0
   insta_image_viewer: ^1.0.4
+  wolt_modal_sheet: ^0.10.0
+  like_button: ^2.0.5
   
 
 dev_dependencies:
@@ -98,13 +100,17 @@ flutter:
     - assets/images/icons/launcher_icon.png
     - assets/images/icons/for_servicess.jpg
     - assets/images/icons/drawer_pic.jpg
+    - assets/images/icons/inspiration_img.jpg
     - assets/images/bottomnav_bar_page/home_fill.svg
     - assets/images/bottomnav_bar_page/calendar_fill.svg
     - assets/images/bottomnav_bar_page/message_fill.svg
     - assets/images/bottomnav_bar_page/user_fill.svg
     - assets/images/profile_page/star.svg
     - assets/images/profile_page/heart.svg
+    - assets/images/profile_page/heart_true.svg
+    - assets/images/profile_page/menu_btn.svg
     - assets/images/profile_page/comment.svg
+    - assets/images/profile_page/report.svg
     - assets/images/bottomnav_bar_page/nearby.svg
     - assets/images/profile_page/sample_pic.jpg
     - assets/images/profile_page/cover_pic.jpg

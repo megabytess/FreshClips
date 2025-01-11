@@ -45,7 +45,9 @@ class _BSAddBarbersState extends State<BSAddBarbersPage> {
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(15),
+        ),
       ),
       builder: (context) {
         return Padding(
@@ -196,11 +198,10 @@ class _BSAddBarbersState extends State<BSAddBarbersPage> {
                           onTap: () {
                             if (!selectedBarbers.contains(profile)) {
                               setState(() {
-                                selectedBarbers
-                                    .add(profile); // Add to selectedBarbers
+                                selectedBarbers.add(profile);
                               });
                             }
-                            Navigator.pop(context); // Close the modal sheet
+                            Navigator.pop(context);
                           },
                         );
                       },
@@ -472,7 +473,15 @@ class _BSAddBarbersState extends State<BSAddBarbersPage> {
                   Gap(screenHeight * 0.01),
                   Wrap(
                     spacing: screenWidth * 0.02,
-                    children: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                    children: [
+                      'Monday',
+                      'Tuesday',
+                      'Wednesday',
+                      'Thursday',
+                      'Friday',
+                      'Saturday',
+                      'Sunday'
+                    ]
                         .map((day) => ChoiceChip(
                               label: Text(
                                 day,
@@ -708,3 +717,44 @@ class _BSAddBarbersState extends State<BSAddBarbersPage> {
     );
   }
 }
+
+
+// Padding(
+          //   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       WoltModalSheet.show(
+          //         context: context,
+          //         pageListBuilder: (bottomSheetContext) => [
+          //           SliverWoltModalSheetPage(
+          //             mainContentSliversBuilder: (context) => [
+          //               SliverList.builder(
+          //                 itemBuilder: (context, index) {
+          //                   return ListTile(
+          //                     title: Text('Index is $index'),
+          //                     onTap: Navigator.of(bottomSheetContext).pop,
+          //                   );
+          //                 },
+          //               ),
+          //             ],
+          //           )
+          //         ],
+          //       );
+          //     },
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: const Color.fromARGB(255, 186, 199, 206),
+          //       padding:
+          //           const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          //       shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.circular(20),
+          //       ),
+          //     ),
+          //     child: Text(
+          //       'Select Hairstyle Tags',
+          //       style: GoogleFonts.poppins(
+          //         fontSize: screenWidth * 0.028,
+          //         color: const Color.fromARGB(255, 48, 65, 69),
+          //       ),
+          //     ),
+          //   ),
+          // ),

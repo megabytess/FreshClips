@@ -208,7 +208,6 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 248, 248, 248),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,

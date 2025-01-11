@@ -291,7 +291,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
       print("Error fetching shop status: $e");
       return "No available working hours";
     }
-    return "SHOP CLOSED"; // Default return statement
+    return "SHOP CLOSED"; // Default return
   }
 
   @override

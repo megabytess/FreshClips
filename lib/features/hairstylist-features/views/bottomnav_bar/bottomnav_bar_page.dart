@@ -35,7 +35,9 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
   void initState() {
     super.initState();
     _pages = [
-      HairstylistHomePage(),
+      HairstylistHomePage(
+        email: widget.email,
+      ),
       HairstylistAppointmentPage(
         userEmail: widget.email,
         clientEmail: widget.clientEmail,

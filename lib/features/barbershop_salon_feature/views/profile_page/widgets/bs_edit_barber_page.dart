@@ -28,13 +28,13 @@ class _BSEditBarberPageState extends State<BSEditBarberPage> {
   List<String> availability = []; // Tracks availability text
 
   final List<String> allDays = [
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat',
-    'Sun',
+    'Monday',
+    'Tueday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
   ];
   final List<String> statusOptions = ['Working', 'Dayoff'];
   BSAddBarberController addBarberController = BSAddBarberController();

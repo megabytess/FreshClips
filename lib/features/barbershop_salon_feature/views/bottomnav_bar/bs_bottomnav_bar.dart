@@ -34,7 +34,9 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
   void initState() {
     super.initState();
     _pages = [
-      const BSHomePage(),
+      BSHomePage(
+        email: widget.email,
+      ),
       BSAppointmentPage(
         userEmail: widget.userEmail,
         clientEmail: widget.email,
