@@ -349,6 +349,13 @@ class _ClientProfilePageState extends State<ClientProfilePage> {
                                                   clientEmail:
                                                       widget.clientEmail,
                                                   isClient: widget.isClient,
+                                                  selectedAffiliateBarber:
+                                                      appointment[
+                                                              'selectedAffiliateBarber'] ??
+                                                          'N/A',
+                                                  shopName:
+                                                      appointment['shopName'] ??
+                                                          'N/A',
                                                 ),
                                               ),
                                             );
@@ -383,7 +390,7 @@ class _ClientProfilePageState extends State<ClientProfilePage> {
                                                         MainAxisAlignment.start,
                                                     children: [
                                                       Text(
-                                                        ' ${appointment['selectedDate']} ',
+                                                        '${appointment['selectedDate']} ',
                                                         style:
                                                             GoogleFonts.poppins(
                                                           fontSize:
@@ -420,7 +427,7 @@ class _ClientProfilePageState extends State<ClientProfilePage> {
                                                               255, 18, 18, 18),
                                                         ),
                                                       ),
-                                                      Gap(screenWidth * 0.10),
+                                                      const Spacer(),
                                                       Text(
                                                         'Completed',
                                                         style:

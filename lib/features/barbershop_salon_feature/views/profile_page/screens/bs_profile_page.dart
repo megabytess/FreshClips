@@ -7,6 +7,7 @@ import 'package:freshclips_capstone/core/booking_system/01_booking_template_page
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_ratings_review_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_working_hours_controller.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/message_page/screens/bs_chatroom_mesage_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_barbers_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_info_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_reviews_page.dart';
@@ -294,6 +295,12 @@ class _BSProfilePageState extends State<BSProfilePage> {
     return "SHOP CLOSED"; // Default return
   }
 
+  String generateChatRoomId(String senderEmail, String receiverEmail) {
+    List<String> emails = [senderEmail, receiverEmail];
+    emails.sort();
+    return emails.join('_');
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -510,7 +517,21 @@ class _BSProfilePageState extends State<BSProfilePage> {
                               height: screenHeight * 0.05,
                               child: OutlinedButton(
                                 onPressed: () {
-                                  // Add your button action here
+                                  String chatRoomId = generateChatRoomId(
+                                      widget.clientEmail, widget.email);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return BSChatroomMessagePage(
+                                          clientEmail: widget.clientEmail,
+                                          userEmail: widget.email,
+                                          chatRoomId: chatRoomId,
+                                          receiverEmail: widget.email,
+                                        );
+                                      },
+                                    ),
+                                  );
                                 },
                                 style: OutlinedButton.styleFrom(
                                   side: const BorderSide(
@@ -543,6 +564,8 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                     builder: (context) => BookingTemplatePage(
                                       clientEmail: widget.email,
                                       userEmail: widget.email,
+                                      shopName: barbershopsalonController
+                                          .barbershopsalon!.shopName,
                                     ),
                                   ),
                                 );

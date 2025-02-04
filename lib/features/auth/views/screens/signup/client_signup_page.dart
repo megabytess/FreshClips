@@ -126,6 +126,7 @@ class _ClientSignupPageState extends State<ClientSignupPage> {
 
           // Set the user data in Firestore
           await FirebaseFirestore.instance.collection('user').doc(userId).set({
+            'userId': userId,
             'lastName': lastNameController.text.trim(),
             'firstName': firstNameController.text.trim(),
             'username': usernameController.text.trim(),

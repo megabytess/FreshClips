@@ -85,6 +85,9 @@ class ClientDeclinedPage extends StatelessWidget {
                         price: totalPrice,
                         clientEmail: clientEmail,
                         isClient: isClient,
+                        selectedAffiliateBarber:
+                            appointment['selectedAffiliateBarber'] ?? 'N/A',
+                        shopName: appointment['shopName'] ?? 'N/A',
                       ),
                     ),
                   );
@@ -112,7 +115,7 @@ class ClientDeclinedPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              ' ${appointment['selectedDate']} ',
+                              '${appointment['selectedDate']} ',
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.028,
                                 fontWeight: FontWeight.w500,
@@ -134,7 +137,7 @@ class ClientDeclinedPage extends StatelessWidget {
                                 color: const Color.fromARGB(255, 18, 18, 18),
                               ),
                             ),
-                            Gap(screenWidth * 0.12),
+                            const Spacer(),
                             Text(
                               'Declined',
                               style: GoogleFonts.poppins(

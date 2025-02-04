@@ -15,7 +15,10 @@ class BookingTemplatePage extends StatefulWidget {
     // required this.accountName,
     required this.userEmail,
     required this.clientEmail,
+    required this.shopName,
   });
+
+  final String shopName;
   // final String userType;
   // final String accountName;
   final String userEmail;
@@ -239,9 +242,10 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DateTimeSchedulePage(
-                                      selectedServices: selectedServices,
+                                      shopName: widget.shopName,
                                       userEmail: widget.userEmail,
                                       clientEmail: currentUserEmail ?? '',
+                                      selectedServices: selectedServices,
                                     ),
                                   ),
                                 );

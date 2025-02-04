@@ -149,7 +149,6 @@ class _HairstylistAppointmentPageState
                     final selectedTime = appointment['selectedTime'] ?? '';
                     // final selectedDate = appointment['selectedDate'] ?? '';
                     final totalPrice = appointment['selectedServices']
-                        // ignore: avoid_types_as_parameter_names
                         .fold(
                             0, (sum, service) => sum + (service['price'] ?? 0))
                         .toInt();
@@ -178,6 +177,10 @@ class _HairstylistAppointmentPageState
                               price: totalPrice,
                               clientEmail: widget.userEmail,
                               isClient: widget.isClient,
+                              selectedAffiliateBarber:
+                                  appointment['selectedAffiliateBarber'] ??
+                                      'N/A',
+                              shopName: appointment['shopName'] ?? 'N/A',
                             ),
                           ),
                         );

@@ -21,7 +21,8 @@ class BookingSummaryPage extends StatelessWidget {
   final String description;
   final double price;
   final String profileEmail;
-  // final bool isClient;
+  final String shopName;
+  final Map<String, dynamic>? selectedAffiliatedBarber;
 
   const BookingSummaryPage({
     super.key,
@@ -41,6 +42,8 @@ class BookingSummaryPage extends StatelessWidget {
     // required this.isClient,
     // required this.username,
     required this.clientEmail,
+    required this.selectedAffiliatedBarber,
+    required this.shopName,
   });
 
   @override
@@ -50,6 +53,9 @@ class BookingSummaryPage extends StatelessWidget {
 
     String formattedDate = DateFormat('MMMM d, yyyy').format(selectedDate);
     String time = selectedTime.format(context);
+
+    final barberName = selectedAffiliatedBarber?['barberName'] ?? '';
+    final barberRole = selectedAffiliatedBarber?['role'] ?? '';
 
     return Scaffold(
       appBar: AppBar(
@@ -67,7 +73,7 @@ class BookingSummaryPage extends StatelessWidget {
         padding: EdgeInsets.only(
           left: screenWidth * 0.05,
           right: screenWidth * 0.05,
-          top: screenHeight * 0.02,
+          // top: screenHeight * 0.02,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,6 +214,86 @@ class BookingSummaryPage extends StatelessWidget {
                 ),
               ),
             ),
+            Text(
+              'Selected Barber',
+              style: GoogleFonts.poppins(
+                fontSize: screenWidth * 0.045,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Gap(screenHeight * 0.01),
+            // add image of the barber
+            Card(
+              color: Colors.white,
+              elevation: 1,
+              shadowColor: Colors.grey,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(screenWidth * 0.03),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(screenWidth * 0.05),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Affiliated shop: ',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.04,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          selectedAffiliatedBarber?['affiliatedShop'] ?? '',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.04,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Gap(screenHeight * 0.01),
+                    Row(
+                      children: [
+                        selectedAffiliatedBarber != null
+                            ? ClipOval(
+                                child: selectedAffiliatedBarber?[
+                                            'barberImageUrl'] !=
+                                        null
+                                    ? Image.network(
+                                        selectedAffiliatedBarber?[
+                                            'barberImageUrl'],
+                                        width: screenWidth * 0.15,
+                                        height: screenWidth * 0.15,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : const Text(''),
+                              )
+                            : const Text(''),
+                        Gap(screenWidth * 0.02),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              barberName,
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.035,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              barberRole,
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.035,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Gap(screenHeight * 0.02),
             Text(
               'Selected Services',
@@ -255,6 +341,7 @@ class BookingSummaryPage extends StatelessWidget {
                 },
               ),
             ),
+            Gap(screenHeight * 0.01),
             Padding(
               padding: EdgeInsets.only(bottom: screenHeight * 0.02),
               child: SizedBox(
@@ -262,13 +349,16 @@ class BookingSummaryPage extends StatelessWidget {
                 height: screenHeight * 0.07,
                 child: ElevatedButton(
                   onPressed: () async {
-                    // final formattedDate =
-                    //     DateFormat('MMMM d, yyyy').format(selectedDate);
-
                     final formattedTime = selectedTime.format(context);
 
-                    // Proceed with booking
+                    // Generate a new document reference with a unique ID
+                    final docRef = FirebaseFirestore.instance
+                        .collection('appointments')
+                        .doc();
+                    final id = docRef.id;
+
                     final appointmentData = {
+                      'id': id,
                       'bookedUser': userEmail,
                       'clientName': clientName,
                       'phoneNumber': phoneNumber,
@@ -284,12 +374,15 @@ class BookingSummaryPage extends StatelessWidget {
                       'note': note,
                       'status': 'Pending',
                       'clientEmail': clientEmail,
+                      'selectedAffiliateBarber':
+                          selectedAffiliatedBarber?['barberName'] ?? '',
+                      'shopName': shopName,
                     };
 
                     try {
-                      await FirebaseFirestore.instance
-                          .collection('appointments')
-                          .add(appointmentData);
+                      // Add the appointment data to Firestore using the generated document reference
+                      await docRef.set(appointmentData);
+
                       Navigator.pop(context);
                       Navigator.pop(context);
                       Navigator.pop(context);

@@ -13,6 +13,7 @@ class DateTimeSchedulePage extends StatefulWidget {
 
     required this.userEmail,
     required this.clientEmail,
+    required this.shopName,
   });
 
   final List<Service> selectedServices;
@@ -20,6 +21,8 @@ class DateTimeSchedulePage extends StatefulWidget {
 
   final String userEmail;
   final String clientEmail;
+  final String userType = 'Barbershop/Salon';
+  final String shopName;
 
   @override
   State<DateTimeSchedulePage> createState() => _DateTimeSchedulePageState();
@@ -133,12 +136,13 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
         context,
         MaterialPageRoute(
           builder: (context) => InfoDetailsPage(
-            bookingData: bookingData, // Pass the data directly
-            shopName: widget.userEmail,
+            bookingData: bookingData,
+            bookedUser: widget.userEmail,
+            shopName: widget.shopName,
             selectedDate: _selectedDay,
             selectedTime: selectedTime!,
             selectedServices: widget.selectedServices,
-            // userType: widget.userType,
+            userType: widget.userType,
             userEmail: widget.userEmail,
             clientEmail: widget.clientEmail,
           ),
@@ -250,7 +254,7 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
               padding: EdgeInsets.only(bottom: screenHeight * 0.02),
               child: SizedBox(
                 width: double.infinity,
-                height: screenHeight * 0.07,
+                // height: screenHeight * 0.07,
                 child: ElevatedButton(
                   onPressed: confirmBooking,
                   style: ElevatedButton.styleFrom(
@@ -258,6 +262,8 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(screenWidth * 0.05),
                     ),
+                    padding:
+                        EdgeInsets.symmetric(vertical: screenHeight * 0.02),
                   ),
                   child: Text(
                     'Continue',

@@ -36,7 +36,10 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
       ClientHomePage(
           email: widget.email, clientEmail: widget.clientEmail, isClient: true),
       const ClientNearbyPage(),
-      ClientMessagePage(email: widget.email),
+      ClientMessagePage(
+        userEmail: widget.email,
+        clientEmail: widget.clientEmail,
+      ),
       ClientProfilePage(
         clientEmail: widget.clientEmail,
         email: widget.email,

@@ -40,10 +40,11 @@ class BSCompletedAppointmentPage extends StatelessWidget {
             return Center(
               child: Center(
                 child: Text(
-                  'No Completed appointments for today.',
+                  'No Completed Appointments',
                   style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.035,
-                    color: const Color.fromARGB(255, 120, 120, 120),
+                    fontSize: screenWidth * 0.04,
+                    fontWeight: FontWeight.w600,
+                    color: const Color.fromARGB(255, 18, 18, 18),
                   ),
                 ),
               ),
@@ -86,6 +87,9 @@ class BSCompletedAppointmentPage extends StatelessWidget {
                         price: totalPrice,
                         clientEmail: clientEmail,
                         isClient: isClient,
+                        selectedAffiliateBarber:
+                            appointment['selectedAffiliateBarber'] ?? 'N/A',
+                        shopName: appointment['shopName'] ?? 'N/A',
                       ),
                     ),
                   );
@@ -113,7 +117,7 @@ class BSCompletedAppointmentPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              ' ${appointment['selectedDate']} ',
+                              '${appointment['selectedDate']} ',
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.028,
                                 fontWeight: FontWeight.w500,
@@ -135,7 +139,7 @@ class BSCompletedAppointmentPage extends StatelessWidget {
                                 color: const Color.fromARGB(255, 18, 18, 18),
                               ),
                             ),
-                            Gap(screenWidth * 0.11),
+                            const Spacer(),
                             Text(
                               'Completed',
                               style: GoogleFonts.poppins(

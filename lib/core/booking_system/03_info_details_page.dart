@@ -17,6 +17,8 @@ class InfoDetailsPage extends StatefulWidget {
     required this.selectedDate,
     required Map<String, Object> bookingData,
     required this.clientEmail,
+    required this.userType,
+    required this.bookedUser,
   });
 
   final String clientEmail;
@@ -25,6 +27,8 @@ class InfoDetailsPage extends StatefulWidget {
   final TimeOfDay selectedTime;
   final List<Service> selectedServices;
   final DateTime selectedDate;
+  final String userType;
+  final String bookedUser;
 
   @override
   State<InfoDetailsPage> createState() => _InfoDetailsPageState();
@@ -41,15 +45,17 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
   List<Map<String, dynamic>> searchResults = [];
   final List<Map<String, dynamic>> selectedBarbers = [];
   final TextEditingController reviewController = TextEditingController();
+  Map<String, dynamic>? selectedAffiliatedBarber;
+
   late final RatingsReviewController ratingsReviewController =
       RatingsReviewController(
     clientEmail: widget.clientEmail,
     reviewController: reviewController,
   );
 
-  void showSearchModal(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+  void showAffiliatedBarbersModal(BuildContext context, String email) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     showModalBottomSheet(
       context: context,
@@ -59,114 +65,95 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            top: screenHeight * 0.08,
-            left: screenWidth * 0.03,
-            right: screenWidth * 0.03,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: searchInputController,
-                decoration: InputDecoration(
-                  hintText: 'Search user',
-                  hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
-                  prefixIcon: const Icon(Icons.search_rounded),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide.none,
+        return FutureBuilder<List<Map<String, dynamic>>>(
+          future: searchController.fetchAffiliatedBarbers(email),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Color.fromARGB(255, 189, 48, 71),
                   ),
-                  filled: true,
-                  fillColor: Colors.grey[200],
                 ),
-                style: GoogleFonts.poppins(
-                    color: const Color.fromARGB(255, 18, 18, 18)),
-                onChanged: (value) {
-                  setState(() async {
-                    if (value.trim().isNotEmpty) {
-                      final results = await searchController
-                          .fetchAffiliatedBarbers(value.trim());
-                      setState(() {
-                        searchResults = results;
-                      });
-                    } else {
-                      setState(() {
-                        searchResults = [];
-                      });
-                    }
-                  });
-                },
-              ),
-              Gap(screenHeight * 0.02),
-              Flexible(
-                child: searchResults.isEmpty
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.search_off,
-                              size: screenWidth * 0.2, color: Colors.grey),
-                          Text(
-                            'No results found',
-                            style: GoogleFonts.poppins(color: Colors.grey),
-                          ),
-                        ],
-                      )
-                    : ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: searchResults.length,
-                        itemBuilder: (context, index) {
-                          final barber = searchResults[index];
-                          return InkWell(
-                            onTap: () {
-                              // Navigate or show details for the selected barber
-                              Navigator.pop(context, barber);
-                            },
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                  barber['barberImageUrl'] ?? '',
-                                ),
-                                backgroundColor: Colors.grey[200],
-                                onBackgroundImageError: (_, __) {
-                                  // Show placeholder image
-                                },
-                              ),
-                              title: Text(
-                                barber['barberName'] ?? 'Unknown Barber',
-                                style: GoogleFonts.poppins(
-                                  fontSize: screenWidth * 0.04,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color.fromARGB(255, 18, 18, 18),
-                                ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Email: ${barber['barberEmail'] ?? 'No email'}',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.035,
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-                                  Text(
-                                    'Status: ${barber['status'] ?? 'N/A'}',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.032,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  'Error: ${snapshot.error}',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(
+                child: Text(
+                  'Affiliated Barbers are displayed here.',
+                  style: GoogleFonts.poppins(
+                    fontSize: screenWidth * 0.04,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey,
+                  ),
+                ),
+              );
+            } else {
+              final barbers = snapshot.data!;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: screenWidth * 0.03,
+                      top: screenHeight * 0.08,
+                      bottom: screenHeight * 0.02,
+                    ),
+                    child: Text(
+                      'Available Barbers',
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.04,
+                        fontWeight: FontWeight.w500,
+                        color: const Color.fromARGB(255, 18, 18, 18),
                       ),
-              ),
-            ],
-          ),
+                    ),
+                  ),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: barbers.length,
+                    itemBuilder: (context, index) {
+                      final barber = barbers[index];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            barber['barberImageUrl'] ?? '',
+                          ),
+                          backgroundColor: Colors.grey[200],
+                          onBackgroundImageError: (_, __) {
+                            // Fallback avatar
+                          },
+                        ),
+                        title: Text(
+                          barber['barberName'] ?? 'Unknown Barber',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.035,
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromARGB(255, 18, 18, 18),
+                          ),
+                        ),
+                        subtitle: Text(
+                          barber['status'] ?? 'Status not available',
+                          style: GoogleFonts.poppins(color: Colors.grey),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            selectedAffiliatedBarber = barber;
+                          });
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+                ],
+              );
+            }
+          },
         );
       },
     );
@@ -283,44 +270,74 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                         ),
                       ),
                       Gap(screenHeight * 0.03),
-                      Text(
-                        'You may choose your desired barber.',
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.w600,
-                          color: const Color.fromARGB(255, 48, 65, 69),
+                      if (widget.userType == 'Barbershop/Salon')
+                        Text(
+                          'You may choose your desired barber.',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.04,
+                            fontWeight: FontWeight.w600,
+                            color: const Color.fromARGB(255, 48, 65, 69),
+                          ),
                         ),
-                      ),
                       Gap(screenHeight * 0.02),
-                      SizedBox(
-                        height: screenHeight * 0.05,
-                        child: OutlinedButton(
-                          onPressed: () => showSearchModal(context),
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: Colors.grey[600]!),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                      if (widget.userType == 'Barbershop/Salon')
+                        SizedBox(
+                          height: screenHeight * 0.05,
+                          child: OutlinedButton(
+                            onPressed: () {
+                              showAffiliatedBarbersModal(
+                                  context, widget.userEmail);
+                            },
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Colors.grey[600]!),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.search_rounded,
+                                  color: Colors.grey,
+                                  size: 20,
+                                ),
+                                const Gap(5),
+                                Text(
+                                  'Search hairstylist',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: screenWidth * 0.035,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.search_rounded,
-                                color: Colors.grey,
-                                size: 20,
-                              ),
-                              const Gap(5),
-                              Text(
-                                'Search hairstylist',
-                                style: GoogleFonts.poppins(
-                                  fontSize: screenWidth * 0.035,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
+                        ),
+                      if (selectedAffiliatedBarber != null) ...[
+                        const SizedBox(height: 10),
+                        ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              selectedAffiliatedBarber!['barberImageUrl'] ?? '',
+                            ),
+                            backgroundColor: Colors.grey[200],
+                          ),
+                          title: Text(
+                            selectedAffiliatedBarber!['barberName'] ??
+                                'Unknown Barber',
+                            style: GoogleFonts.poppins(
+                              fontSize: screenWidth * 0.035,
+                              fontWeight: FontWeight.w500,
+                              color: const Color.fromARGB(255, 18, 18, 18),
+                            ),
+                          ),
+                          subtitle: Text(
+                            selectedAffiliatedBarber!['status'] ??
+                                'Status not available',
+                            style: GoogleFonts.poppins(color: Colors.grey),
                           ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                 ),
@@ -345,12 +362,19 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                             clientName: clientNameController.text,
                             phoneNumber: phoneNumberController.text,
                             note: noteController.text,
-                            title: widget.selectedServices[0].serviceName,
-                            description:
-                                widget.selectedServices[0].serviceDescription,
-                            price: widget.selectedServices[0].price,
+                            title: widget.selectedServices.isNotEmpty
+                                ? widget.selectedServices[0].serviceName
+                                : 'No service selected',
+                            description: widget.selectedServices.isNotEmpty
+                                ? widget.selectedServices[0].serviceDescription
+                                : 'No description available',
+                            price: widget.selectedServices.isNotEmpty
+                                ? widget.selectedServices[0].price
+                                : 0,
                             clientEmail: widget.clientEmail,
                             profileEmail: widget.clientEmail,
+                            selectedAffiliatedBarber: selectedAffiliatedBarber,
+                            shopName: widget.shopName,
                           ),
                         ),
                       );

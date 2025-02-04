@@ -35,6 +35,7 @@ class _BSTabBarPageState extends State<BSTabBarPage> {
           userEmail: widget.userEmail,
           clientEmail: widget.clientEmail,
           // userType: widget.userType,
+          isClient: true,
         ),
       ),
     );
@@ -77,59 +78,69 @@ class _BSTabBarPageState extends State<BSTabBarPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     // final screenHeight = MediaQuery.of(context).size.height;
 
-    return TabBarPage(
-      controller: _controller,
-      pages: listPages,
-      isSwipable: true,
-      tabBackgroundColor: Colors.transparent,
-      tabitemBuilder: (context, index) {
-        return InkWell(
-          onTap: () {
-            _controller.onTabTap(index);
-          },
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width / listPages.length,
-            child: Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                Center(
-                  child: Text(
-                    listPages[index].title ?? "",
-                    style: GoogleFonts.poppins(
-                        fontWeight: _controller.currentIndex == index
-                            ? FontWeight.w700
-                            : FontWeight.w500,
-                        color: _controller.currentIndex == index
-                            ? const Color.fromARGB(255, 18, 18, 18)
-                            : const Color.fromARGB(30, 18, 18, 18),
-                        fontSize: screenWidth * 0.033),
+    return Scaffold(
+      body: Column(
+        children: [
+          TabBarPage(
+            controller: _controller,
+            pages: listPages,
+            isSwipable: true,
+            tabBackgroundColor: Colors.transparent,
+            tabitemBuilder: (context, index) {
+              return InkWell(
+                onTap: () {
+                  _controller.onTabTap(index);
+                },
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width / listPages.length,
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Center(
+                        child: Text(
+                          listPages[index].title ?? "",
+                          style: GoogleFonts.poppins(
+                              fontWeight: _controller.currentIndex == index
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                              color: _controller.currentIndex == index
+                                  ? const Color.fromARGB(255, 18, 18, 18)
+                                  : const Color.fromARGB(30, 18, 18, 18),
+                              fontSize: screenWidth * 0.033),
+                        ),
+                      ),
+                      Container(
+                        // Tab Indicator
+                        height: 4,
+                        width: screenWidth * 0.18,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(screenWidth * 0.10),
+                          gradient: _controller.currentIndex == index
+                              ? const LinearGradient(
+                                  colors: [
+                                    Color.fromARGB(255, 189, 49, 71),
+                                    Color.fromARGB(255, 255, 106, 0),
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                )
+                              : const LinearGradient(
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.transparent
+                                  ],
+                                ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Container(
-                  // Tab Indicator
-                  height: 4,
-                  width: screenWidth * 0.18,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(screenWidth * 0.10),
-                    gradient: _controller.currentIndex == index
-                        ? const LinearGradient(
-                            colors: [
-                              Color.fromARGB(255, 189, 49, 71),
-                              Color.fromARGB(255, 255, 106, 0),
-                            ],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          )
-                        : const LinearGradient(
-                            colors: [Colors.transparent, Colors.transparent],
-                          ),
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }

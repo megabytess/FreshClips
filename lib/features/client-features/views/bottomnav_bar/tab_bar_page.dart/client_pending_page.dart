@@ -5,16 +5,10 @@ import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appo
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class BSPendingPage extends StatelessWidget {
-  final String userEmail;
+class ClientPendingPage extends StatelessWidget {
+  ClientPendingPage({super.key, required this.clientEmail});
   final String clientEmail;
-  final bool isClient;
-  BSPendingPage({
-    super.key,
-    required this.userEmail,
-    required this.clientEmail,
-    required this.isClient,
-  });
+  final bool isClient = true;
 
   final AppointmentsController appointmentsController =
       AppointmentsController();
@@ -25,9 +19,12 @@ class BSPendingPage extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
       body: StreamBuilder<QuerySnapshot>(
-        stream: appointmentsController.getPendingAppointments(userEmail),
+        stream: FirebaseFirestore.instance
+            .collection('appointments')
+            .where('clientEmail', isEqualTo: clientEmail)
+            .where('status', isEqualTo: 'Pending')
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -39,15 +36,13 @@ class BSPendingPage extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            print('No appointments found for userId: $userEmail');
-
+            print('No appointments found for userId: $clientEmail');
             return Center(
               child: Text(
-                'No Pending Appointments',
+                'No pending appointments for today.',
                 style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.04,
-                  fontWeight: FontWeight.w600,
-                  color: const Color.fromARGB(255, 18, 18, 18),
+                  fontSize: screenWidth * 0.035,
+                  color: const Color.fromARGB(255, 120, 120, 120),
                 ),
               ),
             );
@@ -58,13 +53,20 @@ class BSPendingPage extends StatelessWidget {
           return ListView.builder(
             itemCount: appointments.length,
             itemBuilder: (context, index) {
-              final appointment = appointments[index];
-              final clientName = appointment['clientName'];
-              final totalPrice = appointment['selectedServices']
-                  .fold(0, (sum, service) => sum + (service['price'] ?? 0))
-                  .toInt();
+              final appointment =
+                  appointments[index].data() as Map<String, dynamic>;
 
-              final selectedTime = appointment['selectedTime'];
+              final clientName = appointment['clientName'] ?? 'Unknown';
+
+              final selectedServices = appointment['selectedServices'] ?? [];
+              final totalPrice = (selectedServices is List)
+                  ? selectedServices.fold<double>(
+                      0,
+                      // ignore: avoid_types_as_parameter_names
+                      (sum, service) =>
+                          sum + ((service['price'] ?? 0) as double))
+                  : 0.0;
+              final selectedTime = appointment['selectedTime'] ?? 'N/A';
 
               return InkWell(
                 onTap: () {
@@ -72,18 +74,18 @@ class BSPendingPage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => BookingDetailsPage(
-                        clientName: appointment['clientName'],
-                        phoneNumber: appointment['phoneNumber'],
-                        selectedDate: appointment['selectedDate'],
-                        selectedTime: appointment['selectedTime'],
-                        status: appointment['status'],
-                        userEmail: appointment['bookedUser'],
-                        appointmentId: appointment.id,
-                        selectedServices: appointment['selectedServices'],
-                        note: appointment['note'],
-                        price: totalPrice,
+                        clientName: clientName,
+                        phoneNumber: appointment['phoneNumber'] ?? 'N/A',
+                        selectedDate: appointment['selectedDate'] ?? 'N/A',
+                        selectedTime: selectedTime,
+                        status: appointment['status'] ?? 'N/A',
+                        userEmail: appointment['bookedUser'] ?? 'N/A',
+                        appointmentId: appointment['id'] ?? 'N/A',
+                        selectedServices: selectedServices,
+                        note: appointment['note'] ?? '',
+                        price: totalPrice.toInt(),
                         clientEmail: clientEmail,
-                        isClient: isClient == true,
+                        isClient: isClient,
                         selectedAffiliateBarber:
                             appointment['selectedAffiliateBarber'] ?? 'N/A',
                         shopName: appointment['shopName'] ?? 'N/A',
@@ -95,7 +97,7 @@ class BSPendingPage extends StatelessWidget {
                   color: const Color.fromARGB(255, 186, 199, 206),
                   margin: EdgeInsets.symmetric(
                       vertical: screenHeight * 0.01,
-                      horizontal: screenWidth * 0.04),
+                      horizontal: screenWidth * 0.02),
                   child: Padding(
                     padding: EdgeInsets.all(screenWidth * 0.03),
                     child: Column(
@@ -115,7 +117,7 @@ class BSPendingPage extends StatelessWidget {
                             Row(
                               children: [
                                 Text(
-                                  ' ${appointment['selectedDate']} ',
+                                  '${appointment['selectedDate'] ?? 'N/A'} ',
                                   style: GoogleFonts.poppins(
                                     fontSize: screenWidth * 0.028,
                                     fontWeight: FontWeight.w500,

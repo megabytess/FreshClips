@@ -29,7 +29,9 @@ class _AdmingBottomNavbarState extends State<AdmingBottomNavbar> {
       AdminUsersPage(
         email: widget.email,
       ),
-      AdminReportsPage(),
+      AdminReportsPage(
+        email: widget.email,
+      ),
     ];
   }
 

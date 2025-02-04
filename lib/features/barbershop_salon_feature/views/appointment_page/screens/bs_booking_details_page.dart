@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_appointment_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_controller.dart';
 import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/tab_bar_page.dart/rescheduled_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/profile_page/widgets/client_add_review_booking_details.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -20,7 +20,9 @@ class BookingDetailsPage extends StatefulWidget {
   final String userEmail;
   final String appointmentId;
   final String clientEmail;
+  final String shopName;
   final bool isClient;
+  final dynamic selectedAffiliateBarber;
 
   const BookingDetailsPage({
     super.key,
@@ -36,6 +38,8 @@ class BookingDetailsPage extends StatefulWidget {
     required this.appointmentId,
     required this.clientEmail,
     required this.isClient,
+    required this.selectedAffiliateBarber,
+    required this.shopName,
   });
 
   @override
@@ -47,7 +51,7 @@ BarbershopSalonController barbershopsalonController =
     BarbershopSalonController();
 
 class _BookingDetailsPageState extends State<BookingDetailsPage> {
-  final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+  // final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
   final DateTime date = DateTime.now();
   final String formattedDate =
       DateFormat('MMMM dd, yyyy').format(DateTime.now());
@@ -67,8 +71,11 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
 
     setState(() {
       if (appointmentSnapshot.docs.isNotEmpty) {
-        declineReason = appointmentSnapshot.docs.first['declinedReason'] ??
-            'No reason provided';
+        final doc = appointmentSnapshot.docs.first;
+        final data = doc.data() as Map<String, dynamic>?;
+        declineReason = data!.containsKey('declinedReason')
+            ? doc['declinedReason'] ?? 'No reason provided'
+            : 'No reason provided';
       } else {
         declineReason = 'No reason provided';
       }
@@ -150,6 +157,62 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                         ),
                       ),
                     ],
+                  ),
+                ],
+              ),
+              const Gap(40),
+              Text(
+                'Affiliated Shop',
+                style: GoogleFonts.poppins(
+                  fontSize: screenWidth * 0.035,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Gap(20),
+              Row(
+                children: [
+                  Text(
+                    'Barbershop name: ',
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.04,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                  Text(
+                    widget.shopName,
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.04,
+                      fontWeight: FontWeight.w600,
+                      color: const Color.fromARGB(255, 18, 18, 18),
+                    ),
+                  ),
+                ],
+              ),
+              const Gap(10),
+              Row(
+                children: [
+                  Text(
+                    'Selected barber: ',
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.04,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                  Text(
+                    widget.selectedAffiliateBarber is Map<String, dynamic>
+                        ? widget.selectedAffiliateBarber[
+                                ' selectedAffiliateBarber'] ??
+                            'No barber selected'
+                        : widget.selectedAffiliateBarber is String
+                            ? widget.selectedAffiliateBarber
+                            : 'No barber selected',
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.04,
+                      fontWeight: FontWeight.w600,
+                      color: const Color.fromARGB(255, 18, 18, 18),
+                    ),
                   ),
                 ],
               ),
@@ -394,20 +457,21 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   ),
                 ),
               Gap(screenHeight * 0.04),
-              if (widget.status != 'Completed' &&
-                  widget.status != 'Pending' &&
-                  widget.status != 'Approved' &&
-                  widget.status != 'Declined')
+              if (widget.status == 'Completed' &&
+                  widget.clientEmail != widget.userEmail)
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      appointmentsController.completeAppointment(
+                      Navigator.push(
                         context,
-                        widget.appointmentId,
-                        widget.userEmail,
+                        MaterialPageRoute(
+                          builder: (context) => ClientRatingsReviewPage(
+                            clientEmail: widget.clientEmail,
+                            userEmail: widget.userEmail,
+                          ),
+                        ),
                       );
-                      Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 48, 65, 69),
@@ -430,10 +494,8 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   ),
                 ),
               Gap(screenHeight * 0.04),
-              if (widget.status == 'Approved' ||
-                  widget.status != 'Declined' &&
-                      widget.status != 'Pending' &&
-                      widget.status != 'Completed')
+              if (widget.status == 'Approved' &&
+                  widget.userEmail == widget.clientEmail)
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -466,7 +528,9 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   ),
                 ),
               Gap(screenHeight * 0.02),
-              if (widget.status == 'Declined' || widget.status == 'Approved')
+              if ((widget.status == 'Declined' ||
+                      widget.status == 'Approved') &&
+                  widget.clientEmail != widget.userEmail)
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -524,20 +588,15 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                         widget.appointmentId,
                         widget.userEmail,
                       );
-                      Navigator.pop(context);
                     },
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.symmetric(
                         horizontal: screenWidth * 0.01,
                         vertical: screenHeight * 0.024,
                       ),
-                      // shape: RoundedRectangleBorder(
-                      //   borderRadius: BorderRadius.circular(20),
-                      //   side: const BorderSide(
-                      //     color: Color.fromARGB(255, 48, 65, 69),
-                      //     width: 2,
-                      //   ),
-                      // ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                     ),
                     child: Text(
                       'Cancel appointment',
@@ -549,7 +608,8 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                     ),
                   ),
                 ),
-              if (widget.status == 'Pending')
+              if (widget.status == 'Pending' &&
+                  widget.clientEmail == widget.userEmail)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [

@@ -82,7 +82,7 @@ class _ClientApprovedPageState extends State<ClientApprovedPage> {
 
           return ListView.builder(
             shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             itemCount: appointments.length,
             itemBuilder: (context, index) {
               final appointment = appointments[index];
@@ -92,9 +92,6 @@ class _ClientApprovedPageState extends State<ClientApprovedPage> {
                   // ignore: avoid_types_as_parameter_names
                   .fold(0, (sum, service) => sum + (service['price'] ?? 0))
                   .toInt();
-
-              //            final DateTime selectedDate = DateTime.now(); // Replace with the actual selected date if available.
-              // final String formattedDate = DateFormat('MMMM dd, yyyy').format(selectedDate);
 
               return InkWell(
                 onTap: () {
@@ -114,6 +111,9 @@ class _ClientApprovedPageState extends State<ClientApprovedPage> {
                         price: totalPrice,
                         clientEmail: widget.clientEmail,
                         isClient: widget.isClient,
+                        selectedAffiliateBarber:
+                            appointment['selectedAffiliateBarber'] ?? 'N/A',
+                        shopName: appointment['shopName'] ?? 'N/A',
                       ),
                     ),
                   );
@@ -122,7 +122,7 @@ class _ClientApprovedPageState extends State<ClientApprovedPage> {
                   color: const Color.fromARGB(255, 186, 199, 206),
                   margin: EdgeInsets.symmetric(
                     vertical: screenHeight * 0.01,
-                    horizontal: screenWidth * 0.02,
+                    horizontal: screenWidth * 0.04,
                   ),
                   child: Padding(
                     padding: EdgeInsets.all(screenWidth * 0.03),
@@ -141,14 +141,13 @@ class _ClientApprovedPageState extends State<ClientApprovedPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              ' ${appointment['selectedDate']} ',
+                              '${appointment['selectedDate']} ',
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.028,
                                 fontWeight: FontWeight.w500,
                                 color: const Color.fromARGB(255, 18, 18, 18),
                               ),
                             ),
-                            Gap(screenWidth * 0.01),
                             Icon(
                               Icons.circle,
                               size: screenWidth * 0.01,
@@ -161,6 +160,15 @@ class _ClientApprovedPageState extends State<ClientApprovedPage> {
                                 fontSize: screenWidth * 0.028,
                                 fontWeight: FontWeight.w500,
                                 color: const Color.fromARGB(255, 18, 18, 18),
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              'Approved',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.04,
+                                fontWeight: FontWeight.w700,
+                                color: const Color.fromARGB(255, 48, 65, 69),
                               ),
                             ),
                           ],

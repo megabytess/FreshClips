@@ -147,8 +147,8 @@ class _BSBarbersPageState extends State<BSBarbersPage> {
                           Text(
                             "${barber['availability'] ?? 'Not available'}",
                             style: GoogleFonts.poppins(
-                              fontSize: screenWidth * 0.028,
-                              fontWeight: FontWeight.w600,
+                              fontSize: screenWidth * 0.025,
+                              fontWeight: FontWeight.w500,
                               color: const Color.fromARGB(255, 100, 100, 100),
                             ),
                           ),

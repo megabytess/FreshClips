@@ -112,6 +112,7 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
 
         // Save user data in Firestore
         await FirebaseFirestore.instance.collection('user').doc(userId).set({
+          'userId': userId,
           'lastName': lastNameController.text,
           'firstName': firstNameController.text,
           'username': usernameController.text,

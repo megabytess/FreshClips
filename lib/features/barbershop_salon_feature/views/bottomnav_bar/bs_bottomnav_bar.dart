@@ -19,7 +19,7 @@ class BSBottomNavBarPage extends StatefulWidget {
 
   final String email;
   final String userEmail;
-  final bool isClient = false;
+  final bool isClient = true;
 
   @override
   State<BSBottomNavBarPage> createState() => _BottomNavBarPageState();
@@ -42,7 +42,10 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
         clientEmail: widget.email,
         isClient: widget.isClient,
       ),
-      const BSMessagePage(),
+      BSMessagePage(
+        userEmail: widget.userEmail,
+        clientEmail: widget.email,
+      ),
       BSProfilePage(
         isClient: false,
         email: widget.email,

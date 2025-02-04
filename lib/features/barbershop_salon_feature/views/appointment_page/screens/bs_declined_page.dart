@@ -25,7 +25,6 @@ class BSDeclinedPage extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('appointments')
@@ -91,6 +90,9 @@ class BSDeclinedPage extends StatelessWidget {
                         price: totalPrice,
                         clientEmail: clientEmail,
                         isClient: isClient,
+                        selectedAffiliateBarber:
+                            appointment['selectedAffiliateBarber'] ?? 'N/A',
+                        shopName: appointment['shopName'] ?? 'N/A',
                       ),
                     ),
                   );
@@ -139,7 +141,7 @@ class BSDeclinedPage extends StatelessWidget {
                                 color: const Color.fromARGB(255, 18, 18, 18),
                               ),
                             ),
-                            Gap(screenWidth * 0.18),
+                            const Spacer(),
                             Text(
                               'Declined',
                               style: GoogleFonts.poppins(

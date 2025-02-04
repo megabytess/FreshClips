@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:freshclips_capstone/features/client-features/controllers/client_controller.dart';
 import 'package:gap/gap.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 
 class ClientNearbyPage extends StatefulWidget {
   const ClientNearbyPage({super.key});
@@ -12,51 +14,79 @@ class ClientNearbyPage extends StatefulWidget {
 }
 
 class _ClientNearbyPageState extends State<ClientNearbyPage> {
-  late GoogleMapController mapController;
-  final Location _location = Location();
   final TextEditingController _searchController = TextEditingController();
+  late GoogleMapController mapController;
+  LatLng? currentLocation;
+  ClientController clientController = ClientController();
 
   @override
   void initState() {
     super.initState();
-    _initializeUserLocation();
+    _determinePosition();
+  }
+
+  Future<void> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled, don't continue
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, don't continue
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, don't continue
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can continue
+    Position position = await Geolocator.getCurrentPosition();
+    currentLocation = LatLng(position.latitude, position.longitude);
+    mapController.animateCamera(
+      CameraUpdate.newLatLng(currentLocation!),
+    );
   }
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
-    _initializeUserLocation();
   }
 
-  Future<void> _initializeUserLocation() async {
-    final userLocation = await _location.getLocation();
-    mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(userLocation.latitude!, userLocation.longitude!),
-          zoom: 15.0,
-        ),
-      ),
-    );
-  }
+  Future<void> _searchLocation(String query) async {
+    try {
+      List<Location> locations = await locationFromAddress(query);
+      if (locations.isNotEmpty) {
+        Location location = locations.first;
+        LatLng searchedLocation = LatLng(location.latitude, location.longitude);
+        mapController.animateCamera(
+          CameraUpdate.newLatLng(searchedLocation),
+        );
 
-  void _navigateToUserLocation() async {
-    final userLocation = await _location.getLocation();
-    mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(userLocation.latitude!, userLocation.longitude!),
-          zoom: 15.0,
-        ),
-      ),
-    );
-  }
-
-  void _zoomIn() {
-    mapController.animateCamera(CameraUpdate.zoomIn());
-  }
-
-  void _zoomOut() {
-    mapController.animateCamera(CameraUpdate.zoomOut());
+        if (currentLocation != null) {
+          double distance = Geolocator.distanceBetween(
+            currentLocation!.latitude,
+            currentLocation!.longitude,
+            searchedLocation.latitude,
+            searchedLocation.longitude,
+          );
+          print('Distance: $distance meters');
+        }
+      }
+      //  const clientController.clientLocation.location[0].latitude = locations[0].latitude;
+    } catch (e) {
+      print('Error occurred while searching location: $e');
+    }
   }
 
   @override
@@ -76,7 +106,7 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
             ),
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
-            zoomControlsEnabled: false, // Disable default zoom controls
+            zoomControlsEnabled: true, // Disable default zoom controls
           ),
           Positioned(
             bottom: 20,
@@ -124,8 +154,7 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                             ),
                           ),
                           onSubmitted: (value) {
-                            // Define the search action here
-                            print('Searching for: $value');
+                            _searchLocation(value);
                           },
                         ),
                       ),
@@ -141,7 +170,7 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
             child: Column(
               children: [
                 OutlinedButton(
-                  onPressed: _zoomIn,
+                  onPressed: () {},
                   style: OutlinedButton.styleFrom(
                     shape: const CircleBorder(),
                     side: const BorderSide(color: Colors.grey, width: 1.5),
@@ -156,7 +185,7 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                 ),
                 Gap(screenHeight * 0.001),
                 OutlinedButton(
-                  onPressed: _zoomOut,
+                  onPressed: () {},
                   style: OutlinedButton.styleFrom(
                     shape: const CircleBorder(),
                     side: const BorderSide(color: Colors.grey, width: 1.5),
@@ -177,7 +206,7 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                     padding: EdgeInsets.all(screenWidth * 0.02),
                     backgroundColor: Colors.transparent,
                   ),
-                  onPressed: _navigateToUserLocation,
+                  onPressed: _determinePosition,
                   child: Icon(
                     Icons.my_location,
                     color: const Color.fromARGB(255, 18, 18, 18),

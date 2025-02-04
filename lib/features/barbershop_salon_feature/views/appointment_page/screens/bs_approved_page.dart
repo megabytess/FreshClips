@@ -37,11 +37,12 @@ class BSApprovedPage extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-                child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(
-                Color.fromARGB(255, 189, 41, 71),
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Color.fromARGB(255, 189, 41, 71),
+                ),
               ),
-            ));
+            );
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -92,6 +93,9 @@ class BSApprovedPage extends StatelessWidget {
                         price: totalPrice,
                         clientEmail: clientEmail,
                         isClient: isClient,
+                        selectedAffiliateBarber:
+                            appointment['selectedAffiliateBarber'] ?? 'N/A',
+                        shopName: appointment['shopName'] ?? 'N/A',
                       ),
                     ),
                   );
@@ -140,7 +144,7 @@ class BSApprovedPage extends StatelessWidget {
                                 color: const Color.fromARGB(255, 18, 18, 18),
                               ),
                             ),
-                            Gap(screenWidth * 0.15),
+                            const Spacer(),
                             Text(
                               'Approved',
                               style: GoogleFonts.poppins(

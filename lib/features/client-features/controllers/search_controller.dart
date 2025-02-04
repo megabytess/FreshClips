@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
-class SearchController {
+class SearchController extends ChangeNotifier {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   // Search for users by username
@@ -67,26 +68,18 @@ class SearchController {
   Future<List<Map<String, dynamic>>> fetchAffiliatedBarbers(
       String userEmail) async {
     try {
-      // Fetching documents where 'userEmail' matches the given parameter
-      final barbersSnapshot = await FirebaseFirestore.instance
+      final QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('availableBarbers')
           .where('userEmail', isEqualTo: userEmail)
           .get();
 
-      // Map each document's data to a list of maps
-      return barbersSnapshot.docs.map((doc) {
-        return {
-          'affiliatedShop':
-              doc['affiliatedShop'] ?? '', // Default to an empty string if null
-          'availability': doc['availability'] ?? '',
-          'barberEmail': doc['barberEmail'] ?? '',
-          'barberImageUrl': doc['barberImageUrl'] ?? '',
-          'barberName': doc['barberName'] ?? '',
-          'role': doc['role'] ?? '',
-          'status': doc['status'] ?? '',
-          'userEmail': doc['userEmail'] ?? '',
-        };
-      }).toList();
+      // Log the query result for debugging
+      print('Fetched Barbers: ${snapshot.docs.length}');
+
+      // Map the results into a list of barbers
+      return snapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
     } catch (e) {
       print('Error fetching affiliated barbers: $e');
       return [];
