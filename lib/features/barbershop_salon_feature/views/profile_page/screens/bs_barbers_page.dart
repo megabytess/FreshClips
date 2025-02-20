@@ -120,7 +120,7 @@ class _BSBarbersPageState extends State<BSBarbersPage> {
                         style: GoogleFonts.poppins(
                           fontSize: screenWidth * 0.035,
                           fontWeight: FontWeight.w600,
-                          color: const Color.fromARGB(255, 23, 23, 23),
+                          color: const Color.fromARGB(255, 45, 65, 69),
                         ),
                       ),
                       subtitle: Column(
@@ -131,7 +131,7 @@ class _BSBarbersPageState extends State<BSBarbersPage> {
                             style: GoogleFonts.poppins(
                               fontSize: screenWidth * 0.029,
                               fontWeight: FontWeight.w600,
-                              color: const Color.fromARGB(255, 100, 100, 100),
+                              color: const Color.fromARGB(100, 45, 65, 69),
                             ),
                           ),
                           Text(
@@ -149,7 +149,7 @@ class _BSBarbersPageState extends State<BSBarbersPage> {
                             style: GoogleFonts.poppins(
                               fontSize: screenWidth * 0.025,
                               fontWeight: FontWeight.w500,
-                              color: const Color.fromARGB(255, 100, 100, 100),
+                              color: const Color.fromARGB(100, 45, 65, 69),
                             ),
                           ),
                         ],

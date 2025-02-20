@@ -86,7 +86,7 @@ class OneStarPage extends StatelessWidget {
                                   username,
                                   style: GoogleFonts.poppins(
                                     color:
-                                        const Color.fromARGB(255, 18, 18, 18),
+                                        const Color.fromARGB(255, 48, 65, 69),
                                     fontSize: screenWidth * 0.035,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -98,7 +98,7 @@ class OneStarPage extends StatelessWidget {
                                     fontSize: screenHeight * 0.014,
                                     fontWeight: FontWeight.w500,
                                     color:
-                                        const Color.fromARGB(255, 18, 18, 18),
+                                        const Color.fromARGB(255, 48, 65, 69),
                                   ),
                                 ),
                                 Padding(
@@ -130,7 +130,7 @@ class OneStarPage extends StatelessWidget {
                               child: Text(
                                 reviewText,
                                 style: GoogleFonts.poppins(
-                                  color: const Color.fromARGB(255, 18, 18, 18),
+                                  color: const Color.fromARGB(255, 48, 65, 69),
                                   fontSize:
                                       MediaQuery.of(context).size.width * 0.030,
                                   fontWeight: FontWeight.w400,

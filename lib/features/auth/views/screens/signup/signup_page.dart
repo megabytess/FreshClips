@@ -39,7 +39,7 @@ class _SignupPageState extends State<SignupPage> {
               style: GoogleFonts.poppins(
                 fontSize: screenWidth * 0.06,
                 fontWeight: FontWeight.w600,
-                color: const Color.fromARGB(255, 23, 23, 23),
+                color: const Color.fromARGB(255, 48, 65, 69),
               ),
               textAlign: TextAlign.left,
             ),
@@ -70,7 +70,7 @@ class _SignupPageState extends State<SignupPage> {
                   style: GoogleFonts.poppins(
                     fontSize: screenWidth * 0.045,
                     fontWeight: FontWeight.w500,
-                    color: const Color.fromARGB(255, 23, 23, 23),
+                    color: const Color.fromARGB(255, 48, 65, 69),
                   ),
                 ),
               ),
@@ -102,7 +102,7 @@ class _SignupPageState extends State<SignupPage> {
                   style: GoogleFonts.poppins(
                     fontSize: screenWidth * 0.045,
                     fontWeight: FontWeight.w500,
-                    color: const Color.fromARGB(255, 23, 23, 23),
+                    color: const Color.fromARGB(255, 48, 65, 69),
                   ),
                 ),
               ),
@@ -134,7 +134,7 @@ class _SignupPageState extends State<SignupPage> {
                   style: GoogleFonts.poppins(
                     fontSize: screenWidth * 0.045,
                     fontWeight: FontWeight.w500,
-                    color: const Color.fromARGB(255, 23, 23, 23),
+                    color: const Color.fromARGB(255, 48, 65, 69),
                   ),
                 ),
               ),

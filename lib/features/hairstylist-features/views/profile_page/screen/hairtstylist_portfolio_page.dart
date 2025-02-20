@@ -7,6 +7,7 @@ import 'package:freshclips_capstone/features/hairstylist-features/controllers/ad
 import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/widget/add_image_hairstylist_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:insta_image_viewer/insta_image_viewer.dart';
 
 class HairstylistPortfolioPage extends StatefulWidget {
   const HairstylistPortfolioPage(
@@ -136,12 +137,12 @@ class _HairstylistPortfolioPageState extends State<HairstylistPortfolioPage> {
                                 context: context,
                                 builder: (context) => Dialog(
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(15),
                                   ),
                                   child: Stack(
                                     children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(20),
+                                      // Use InstaImageViewer for swipeable, zoomable image
+                                      InstaImageViewer(
                                         child: Image.network(
                                           images[index],
                                           fit: BoxFit.fill,
@@ -157,6 +158,7 @@ class _HairstylistPortfolioPageState extends State<HairstylistPortfolioPage> {
                                           },
                                         ),
                                       ),
+                                      // Delete button only visible if the user is a client and matches the email
                                       if (widget.isClient &&
                                           currentUserEmail == widget.email)
                                         Positioned(
@@ -182,25 +184,25 @@ class _HairstylistPortfolioPageState extends State<HairstylistPortfolioPage> {
                                                       'Delete Image',
                                                       style:
                                                           GoogleFonts.poppins(
-                                                              color: const Color
-                                                                  .fromARGB(255,
-                                                                  18, 18, 18),
-                                                              fontSize: 20,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
+                                                        color: const Color
+                                                            .fromARGB(
+                                                            255, 18, 18, 18),
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
                                                     ),
                                                     content: Text(
                                                       'Are you sure you want to delete this image?',
                                                       style:
                                                           GoogleFonts.poppins(
-                                                              color: const Color
-                                                                  .fromARGB(255,
-                                                                  18, 18, 18),
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400),
+                                                        color: const Color
+                                                            .fromARGB(
+                                                            255, 18, 18, 18),
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                      ),
                                                     ),
                                                     actions: [
                                                       TextButton(
@@ -250,10 +252,10 @@ class _HairstylistPortfolioPageState extends State<HairstylistPortfolioPage> {
                               );
                             },
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(5),
                               child: Image.network(
                                 images[index],
-                                fit: BoxFit.cover,
+                                fit: BoxFit.fill,
                                 errorBuilder: (context, error, stackTrace) {
                                   return const Icon(Icons.broken_image,
                                       color: Colors.grey, size: 50);

@@ -91,7 +91,7 @@ class _BSCommentPageState extends State<BSCommentPage> {
                         style: GoogleFonts.poppins(
                           fontSize: screenWidth * 0.05,
                           fontWeight: FontWeight.w600,
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                          color: const Color.fromARGB(255, 48, 65, 69),
                         ),
                       ),
                       content: TextFormField(
@@ -101,7 +101,7 @@ class _BSCommentPageState extends State<BSCommentPage> {
                         style: GoogleFonts.poppins(
                           fontSize: screenWidth * 0.035,
                           fontWeight: FontWeight.w400,
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                          color: const Color.fromARGB(255, 48, 65, 69),
                         ),
                         decoration: InputDecoration(
                           labelText: 'Reason for reporting',
@@ -171,7 +171,7 @@ class _BSCommentPageState extends State<BSCommentPage> {
                             style: GoogleFonts.poppins(
                               fontSize: screenWidth * 0.035,
                               fontWeight: FontWeight.w500,
-                              color: const Color.fromARGB(255, 18, 18, 18),
+                              color: const Color.fromARGB(255, 48, 65, 69),
                             ),
                           ),
                         ),
@@ -197,7 +197,7 @@ class _BSCommentPageState extends State<BSCommentPage> {
                       style: GoogleFonts.poppins(
                         fontSize: 14.0,
                         fontWeight: FontWeight.w500,
-                        color: const Color.fromARGB(255, 18, 18, 18),
+                        color: const Color.fromARGB(255, 48, 65, 69),
                       ),
                     ),
                   ],
@@ -259,7 +259,7 @@ class _BSCommentPageState extends State<BSCommentPage> {
                           style: GoogleFonts.poppins(
                             fontSize: 14.0,
                             fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(255, 18, 18, 18),
+                            color: const Color.fromARGB(255, 48, 65, 69),
                           ),
                         ),
                       ],
@@ -268,8 +268,8 @@ class _BSCommentPageState extends State<BSCommentPage> {
                     Text(
                       postDetails!['content'] ?? 'No Content',
                       style: GoogleFonts.poppins(
-                        fontSize: screenWidth * 0.04,
-                        color: Colors.grey.shade700,
+                        fontSize: screenWidth * 0.035,
+                        color: const Color.fromARGB(255, 48, 65, 69),
                       ),
                     ),
                     Gap(screenHeight * 0.01),
@@ -473,7 +473,7 @@ class _BSCommentPageState extends State<BSCommentPage> {
                                 style: GoogleFonts.poppins(
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.w500,
-                                  color: const Color.fromARGB(255, 18, 18, 18),
+                                  color: const Color.fromARGB(255, 48, 65, 69),
                                 ),
                               ),
                               const Spacer(),
@@ -499,7 +499,7 @@ class _BSCommentPageState extends State<BSCommentPage> {
                                     fontSize: 12.0,
                                     fontWeight: FontWeight.w400,
                                     color:
-                                        const Color.fromARGB(255, 18, 18, 18),
+                                        const Color.fromARGB(255, 48, 65, 69),
                                   ),
                                 ),
                               ],

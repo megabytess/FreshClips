@@ -61,7 +61,7 @@ class BookingSummaryPage extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Booking Summary',
+          'Appointment details',
           style: GoogleFonts.poppins(
             fontSize: screenWidth * 0.035,
             fontWeight: FontWeight.w600,
@@ -73,268 +73,264 @@ class BookingSummaryPage extends StatelessWidget {
         padding: EdgeInsets.only(
           left: screenWidth * 0.05,
           right: screenWidth * 0.05,
-          // top: screenHeight * 0.02,
+          top: screenHeight * 0.03,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Card(
-              color: Colors.white,
-              elevation: 1,
-              shadowColor: Colors.grey,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(screenWidth * 0.03),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(screenWidth * 0.05),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(bottom: screenWidth * 0.02),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Client\'s Name: ',
-                            style: GoogleFonts.poppins(
-                              fontSize: screenWidth * 0.04,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Flexible(
-                            child: Text(
-                              clientName,
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.04,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: screenWidth * 0.02),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Date: ',
-                            style: GoogleFonts.poppins(
-                              fontSize: screenWidth * 0.04,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Flexible(
-                            child: Text(
-                              formattedDate,
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.04,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: screenWidth * 0.02),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Time: ',
-                            style: GoogleFonts.poppins(
-                              fontSize: screenWidth * 0.04,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Flexible(
-                            child: Text(
-                              time,
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.04,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: screenWidth * 0.02),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Phone Number: ',
-                            style: GoogleFonts.poppins(
-                              fontSize: screenWidth * 0.04,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Flexible(
-                            child: Text(
-                              phoneNumber,
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.04,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: screenWidth * 0.02),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Note: ',
-                            style: GoogleFonts.poppins(
-                              fontSize: screenWidth * 0.04,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Flexible(
-                            child: Text(
-                              note,
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.04,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
             Text(
-              'Selected Barber',
+              'Selected barber',
               style: GoogleFonts.poppins(
-                fontSize: screenWidth * 0.045,
+                fontSize: screenWidth * 0.04,
                 fontWeight: FontWeight.w600,
-              ),
-            ),
-            Gap(screenHeight * 0.01),
-            // add image of the barber
-            Card(
-              color: Colors.white,
-              elevation: 1,
-              shadowColor: Colors.grey,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(screenWidth * 0.03),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(screenWidth * 0.05),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Affiliated shop: ',
-                          style: GoogleFonts.poppins(
-                            fontSize: screenWidth * 0.04,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          selectedAffiliatedBarber?['affiliatedShop'] ?? '',
-                          style: GoogleFonts.poppins(
-                            fontSize: screenWidth * 0.04,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Gap(screenHeight * 0.01),
-                    Row(
-                      children: [
-                        selectedAffiliatedBarber != null
-                            ? ClipOval(
-                                child: selectedAffiliatedBarber?[
-                                            'barberImageUrl'] !=
-                                        null
-                                    ? Image.network(
-                                        selectedAffiliatedBarber?[
-                                            'barberImageUrl'],
-                                        width: screenWidth * 0.15,
-                                        height: screenWidth * 0.15,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : const Text(''),
-                              )
-                            : const Text(''),
-                        Gap(screenWidth * 0.02),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              barberName,
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.035,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              barberRole,
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.035,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                color: const Color.fromARGB(255, 48, 65, 69),
               ),
             ),
             Gap(screenHeight * 0.02),
-            Text(
-              'Selected Services',
-              style: GoogleFonts.poppins(
-                fontSize: screenWidth * 0.045,
-                fontWeight: FontWeight.w600,
-              ),
+            Row(
+              children: [
+                Text(
+                  'Affiliated shop: ',
+                  style: GoogleFonts.poppins(
+                    fontSize: screenWidth * 0.035,
+                    fontWeight: FontWeight.w600,
+                    color: const Color.fromARGB(255, 48, 65, 69),
+                  ),
+                ),
+                Gap(screenWidth * 0.02),
+                Text(
+                  selectedAffiliatedBarber?['affiliatedShop'] ?? '',
+                  style: GoogleFonts.poppins(
+                    fontSize: screenWidth * 0.035,
+                    fontWeight: FontWeight.w400,
+                    color: const Color.fromARGB(255, 48, 65, 69),
+                  ),
+                ),
+              ],
             ),
             Gap(screenHeight * 0.01),
+            Row(
+              children: [
+                selectedAffiliatedBarber != null
+                    ? ClipOval(
+                        child:
+                            selectedAffiliatedBarber?['barberImageUrl'] != null
+                                ? Image.network(
+                                    selectedAffiliatedBarber?['barberImageUrl'],
+                                    width: screenWidth * 0.15,
+                                    height: screenWidth * 0.15,
+                                    fit: BoxFit.cover,
+                                  )
+                                : const Text(''),
+                      )
+                    : const Text(''),
+                Gap(screenWidth * 0.02),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      barberName,
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.035,
+                        fontWeight: FontWeight.w500,
+                        color: const Color.fromARGB(255, 48, 65, 69),
+                      ),
+                    ),
+                    Text(
+                      barberRole,
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.03,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            Gap(screenHeight * 0.02),
+            Divider(
+              color: Colors.grey[300],
+              thickness: 2,
+            ),
+            Gap(screenHeight * 0.02),
+            Padding(
+              padding: EdgeInsets.only(bottom: screenWidth * 0.02),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Client\'s name: ',
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.035,
+                      fontWeight: FontWeight.w600,
+                      color: const Color.fromARGB(255, 48, 65, 69),
+                    ),
+                  ),
+                  Gap(screenWidth * 0.02),
+                  Flexible(
+                    child: Text(
+                      clientName,
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.035,
+                        fontWeight: FontWeight.w400,
+                        color: const Color.fromARGB(255, 48, 65, 69),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: screenWidth * 0.02),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Scheduled date: ',
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.035,
+                      fontWeight: FontWeight.w600,
+                      color: const Color.fromARGB(255, 48, 65, 69),
+                    ),
+                  ),
+                  Gap(screenWidth * 0.02),
+                  Flexible(
+                    child: Text(
+                      formattedDate,
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.035,
+                        fontWeight: FontWeight.w400,
+                        color: const Color.fromARGB(255, 48, 65, 69),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: screenWidth * 0.02),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Scheduled time: ',
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.035,
+                      fontWeight: FontWeight.w600,
+                      color: const Color.fromARGB(255, 48, 65, 69),
+                    ),
+                  ),
+                  Gap(screenWidth * 0.02),
+                  Flexible(
+                    child: Text(
+                      time,
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.035,
+                        fontWeight: FontWeight.w400,
+                        color: const Color.fromARGB(255, 48, 65, 69),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: screenWidth * 0.02),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Phone number: ',
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.035,
+                      fontWeight: FontWeight.w600,
+                      color: const Color.fromARGB(255, 48, 65, 69),
+                    ),
+                  ),
+                  Gap(screenWidth * 0.02),
+                  Flexible(
+                    child: Text(
+                      phoneNumber,
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.035,
+                        fontWeight: FontWeight.w400,
+                        color: const Color.fromARGB(255, 48, 65, 69),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: screenWidth * 0.02),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Note: ',
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.035,
+                      fontWeight: FontWeight.w600,
+                      color: const Color.fromARGB(255, 48, 65, 69),
+                    ),
+                  ),
+                  Gap(screenWidth * 0.02),
+                  Flexible(
+                    child: Text(
+                      note,
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.035,
+                        fontWeight: FontWeight.w400,
+                        color: const Color.fromARGB(255, 48, 65, 69),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Gap(screenHeight * 0.02),
+            Divider(
+              color: Colors.grey[300],
+              thickness: 2,
+            ),
+            Gap(screenHeight * 0.02),
+            Text(
+              'Selected services',
+              style: GoogleFonts.poppins(
+                fontSize: screenWidth * 0.04,
+                fontWeight: FontWeight.w600,
+                color: const Color.fromARGB(255, 48, 65, 69),
+              ),
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: selectedServices.length,
                 itemBuilder: (context, index) {
                   final service = selectedServices[index];
-                  return Card(
-                    color: Colors.white,
-                    elevation: 1,
-                    shadowColor: Colors.grey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                  return ListTile(
+                    title: Text(
+                      service.serviceName,
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.035,
+                        fontWeight: FontWeight.w600,
+                        color: const Color.fromARGB(255, 48, 65, 69),
+                      ),
                     ),
-                    child: ListTile(
-                      title: Text(
-                        service.serviceName,
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.035,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    subtitle: Text(
+                      service.serviceDescription,
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.03,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey,
                       ),
-                      subtitle: Text(
-                        service.serviceDescription,
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.035,
-                        ),
-                      ),
-                      trailing: Text(
-                        'P ${service.price.toStringAsFixed(2)}',
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    ),
+                    trailing: Text(
+                      'P ${service.price.toStringAsFixed(2)}',
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.035,
+                        fontWeight: FontWeight.w600,
+                        color: const Color.fromARGB(255, 48, 65, 69),
                       ),
                     ),
                   );
@@ -377,6 +373,9 @@ class BookingSummaryPage extends StatelessWidget {
                       'selectedAffiliateBarber':
                           selectedAffiliatedBarber?['barberName'] ?? '',
                       'shopName': shopName,
+                      'barberImageUrl':
+                          selectedAffiliatedBarber?['barberImageUrl'] ?? '',
+                      'timeStamp': FieldValue.serverTimestamp(),
                     };
 
                     try {
@@ -396,16 +395,15 @@ class BookingSummaryPage extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(screenWidth * 0.05),
                     ),
-                    padding: EdgeInsets.symmetric(
-                      vertical: screenHeight * 0.02,
-                    ),
                   ),
-                  child: Text(
-                    'Book appointment',
-                    style: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.035,
-                      fontWeight: FontWeight.w500,
-                      color: const Color.fromARGB(255, 248, 248, 248),
+                  child: Center(
+                    child: Text(
+                      'Book appointment',
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.035,
+                        fontWeight: FontWeight.w500,
+                        color: const Color.fromARGB(255, 248, 248, 248),
+                      ),
                     ),
                   ),
                 ),

@@ -200,4 +200,21 @@ class BSPostController extends ChangeNotifier {
       throw Exception('Failed to submit report: $e');
     }
   }
+
+  // get all posts
+  Stream<List<Post>> getSpecificPosts(String email) {
+    return FirebaseFirestore.instance
+        .collection('posts')
+        .where('email', isEqualTo: email)
+        .snapshots()
+        .map(
+      (querySnapshot) {
+        return querySnapshot.docs
+            .map(
+              (doc) => Post.fromFirestore(doc.data(), doc.id),
+            )
+            .toList();
+      },
+    );
+  }
 }

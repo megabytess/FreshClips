@@ -147,13 +147,13 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
                 style: GoogleFonts.poppins(
                   fontSize: screenWidth * 0.035,
                   fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
+                  color: const Color.fromARGB(255, 48, 65, 69),
                 ),
               ),
               trailing: Icon(
                 Icons.arrow_forward_ios,
                 size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
+                color: const Color.fromARGB(255, 48, 65, 69),
               ),
               onTap: () {
                 Navigator.push(
@@ -178,13 +178,13 @@ class _BottomNavBarPageState extends State<BSBottomNavBarPage> {
                 style: GoogleFonts.poppins(
                   fontSize: screenWidth * 0.035,
                   fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
+                  color: const Color.fromARGB(255, 48, 65, 69),
                 ),
               ),
               trailing: Icon(
                 Icons.arrow_forward_ios,
                 size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
+                color: const Color.fromARGB(255, 48, 65, 69),
               ),
               onTap: () {
                 Navigator.push(

@@ -84,8 +84,9 @@ class _BSSortRatingPageState extends State<BSSortRatingPage> {
         title: Text(
           'Ratings & Reviews',
           style: GoogleFonts.poppins(
-            fontSize: screenWidth * 0.04,
+            fontSize: screenWidth * 0.035,
             fontWeight: FontWeight.w600,
+            color: const Color.fromARGB(255, 48, 65, 69),
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -116,7 +117,7 @@ class _BSSortRatingPageState extends State<BSSortRatingPage> {
                                 ? FontWeight.w700
                                 : FontWeight.w500,
                             color: tabPageController.currentIndex == index
-                                ? const Color.fromARGB(255, 18, 18, 18)
+                                ? const Color.fromARGB(255, 48, 65, 69)
                                 : const Color.fromARGB(30, 18, 18, 18),
                             fontSize: screenWidth * 0.035,
                           ),

@@ -356,6 +356,9 @@ class _ClientProfilePageState extends State<ClientProfilePage> {
                                                   shopName:
                                                       appointment['shopName'] ??
                                                           'N/A',
+                                                  barberImageUrl: appointment[
+                                                          'barberImageUrl'] ??
+                                                      'N/A',
                                                 ),
                                               ),
                                             );

@@ -211,7 +211,7 @@ class _LoginPageState extends State<LoginPage> {
               style: GoogleFonts.poppins(
                 fontSize: screenWidth * 0.06,
                 fontWeight: FontWeight.w600,
-                color: const Color.fromARGB(255, 23, 23, 23),
+                color: const Color.fromARGB(255, 48, 65, 69),
               ),
             ),
           ),
@@ -224,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
               controller: emailController,
               style: GoogleFonts.poppins(
                 fontSize: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 23, 23, 23),
+                color: const Color.fromARGB(255, 48, 65, 69),
               ),
               decoration: InputDecoration(
                 labelText: 'Email',
@@ -234,7 +234,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: const BorderSide(
-                    color: Color.fromARGB(255, 23, 23, 23),
+                    color: Color.fromARGB(255, 48, 65, 69),
                   ),
                   borderRadius: BorderRadius.all(
                     Radius.circular(
@@ -244,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(
-                    color: Color.fromARGB(255, 23, 23, 23),
+                    color: Color.fromARGB(255, 48, 65, 69),
                   ),
                   borderRadius: BorderRadius.circular(
                     screenWidth * 0.03,
@@ -262,7 +262,7 @@ class _LoginPageState extends State<LoginPage> {
               obscureText: _obscureText,
               style: GoogleFonts.poppins(
                 fontSize: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 23, 23, 23),
+                color: const Color.fromARGB(255, 48, 65, 69),
               ),
               decoration: InputDecoration(
                 labelText: 'Password',
@@ -272,7 +272,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: const BorderSide(
-                    color: Color.fromARGB(255, 23, 23, 23),
+                    color: Color.fromARGB(255, 48, 65, 69),
                   ),
                   borderRadius: BorderRadius.all(
                     Radius.circular(
@@ -282,7 +282,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(
-                    color: Color.fromARGB(255, 23, 23, 23),
+                    color: Color.fromARGB(255, 48, 65, 69),
                   ),
                   borderRadius: BorderRadius.circular(
                     screenWidth * 0.03,
@@ -312,7 +312,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: GoogleFonts.poppins(
                   fontSize: screenWidth * 0.04,
                   fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 23, 23, 23),
+                  color: const Color.fromARGB(255, 48, 65, 69),
                 ),
               ),
             ),

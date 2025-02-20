@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:freshclips_capstone/features/auth/models/autocomplete_predictions.dart';
+import 'autocomplete_predictions.dart';
+// import 'package:freshclips_capstone/features/auth/models/autocomplete_predictions.dart';
 
 /// The Autocomplete response contains place predictions and status
 class PlaceAutocompleteResponse {

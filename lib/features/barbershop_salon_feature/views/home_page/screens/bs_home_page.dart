@@ -9,6 +9,7 @@ import 'package:freshclips_capstone/features/barbershop_salon_feature/views/home
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/home_page/widgets/bs_haircut_ideas_categories_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 
 class BSHomePage extends StatefulWidget {
@@ -60,65 +61,6 @@ class _BSHomePageState extends State<BSHomePage> {
             physics: const BouncingScrollPhysics(),
             child: Column(
               children: [
-                Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: screenWidth * 0.02,
-                      ),
-                      child: ClipOval(
-                        child: Container(
-                          width: screenWidth * 0.14,
-                          height: screenWidth * 0.14,
-                          decoration: const BoxDecoration(
-                            color: Color.fromARGB(255, 186, 199, 206),
-                          ),
-                          child: (barbershopsalonController
-                                          .barbershopsalon?.imageUrl !=
-                                      null &&
-                                  barbershopsalonController
-                                      .barbershopsalon!.imageUrl.isNotEmpty)
-                              ? Image.network(
-                                  barbershopsalonController
-                                      .barbershopsalon!.imageUrl,
-                                  fit: BoxFit.cover,
-                                )
-                              : const Icon(Icons.person, size: 25),
-                        ),
-                      ),
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        height: screenHeight * 0.05,
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          border: Border.all(
-                            color: Colors.grey[300]!,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: TextButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CreatePostPage(),
-                            ),
-                          ),
-                          child: Text(
-                            'Got the fresh cut? Share your experience!',
-                            style: GoogleFonts.poppins(
-                              fontSize: screenWidth * 0.03,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Gap(screenHeight * 0.02),
                 Container(
                   width: screenWidth * 0.96,
                   height: screenHeight * 0.06,
@@ -180,6 +122,70 @@ class _BSHomePageState extends State<BSHomePage> {
                   ),
                 ),
                 Gap(screenHeight * 0.01),
+                Divider(
+                  color: Colors.grey[300],
+                  thickness: 1,
+                ),
+                Gap(screenHeight * 0.01),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.02,
+                      ),
+                      child: ClipOval(
+                        child: Container(
+                          width: screenWidth * 0.14,
+                          height: screenWidth * 0.14,
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 186, 199, 206),
+                          ),
+                          child: (barbershopsalonController
+                                          .barbershopsalon?.imageUrl !=
+                                      null &&
+                                  barbershopsalonController
+                                      .barbershopsalon!.imageUrl.isNotEmpty)
+                              ? Image.network(
+                                  barbershopsalonController
+                                      .barbershopsalon!.imageUrl,
+                                  fit: BoxFit.cover,
+                                )
+                              : const Icon(Icons.person, size: 25),
+                        ),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        height: screenHeight * 0.05,
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          border: Border.all(
+                            color: Colors.grey[300]!,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: TextButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CreatePostPage(),
+                            ),
+                          ),
+                          child: Text(
+                            'Got the fresh cut? Share your experience!',
+                            style: GoogleFonts.poppins(
+                              fontSize: screenWidth * 0.03,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Gap(screenHeight * 0.01),
                 StreamBuilder<List<Post>>(
                   stream: postController.getAllPosts(),
                   builder: (context, snapshot) {
@@ -227,17 +233,17 @@ class _BSHomePageState extends State<BSHomePage> {
                               ),
                             );
                           },
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: screenWidth * 0.03,
-                              vertical: screenHeight * 0.01,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    ClipOval(
+                          child: Column(
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: screenWidth * 0.03,
+                                      vertical: screenHeight * 0.02,
+                                    ),
+                                    child: ClipOval(
                                       child: Container(
                                         width: 35.0,
                                         height: 35.0,
@@ -254,35 +260,76 @@ class _BSHomePageState extends State<BSHomePage> {
                                                 size: 25),
                                       ),
                                     ),
-                                    Gap(screenWidth * 0.02),
-                                    Text(
-                                      post.authorName ?? 'Unknown',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color.fromARGB(
-                                            255, 18, 18, 18),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    left: screenWidth * 0.1,
                                   ),
-                                  child: Column(
+                                  Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        post.content,
-                                        style: GoogleFonts.poppins(
-                                          fontSize: screenWidth * 0.03,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.grey[900],
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                              top: screenHeight * 0.02,
+                                            ),
+                                            child: Text(
+                                              post.authorName ?? 'Unknown',
+                                              style: GoogleFonts.poppins(
+                                                color: const Color.fromARGB(
+                                                    255, 48, 65, 69),
+                                                fontSize: screenWidth * 0.035,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                          Gap(screenWidth * 0.02),
+                                          // Time Icon and Duration
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                              top: screenHeight * 0.02,
+                                            ),
+                                            child: Container(
+                                              width: screenWidth * 0.01,
+                                              height: screenHeight * 0.01,
+                                              decoration: const BoxDecoration(
+                                                color: Color.fromARGB(
+                                                    100, 48, 65, 69),
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                          ),
+                                          Gap(screenWidth * 0.015),
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                              top: screenHeight * 0.02,
+                                            ),
+                                            child: Text(
+                                              DateFormat('h:mm a')
+                                                  .format(post.datePublished),
+                                              style: GoogleFonts.poppins(
+                                                fontSize: screenWidth * 0.025,
+                                                fontWeight: FontWeight.w400,
+                                                color: const Color.fromARGB(
+                                                    100, 48, 65, 69),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          top: screenHeight * 0.005,
+                                          bottom: screenHeight * 0.01,
+                                        ),
+                                        child: Text(
+                                          post.content,
+                                          style: GoogleFonts.poppins(
+                                            color: const Color.fromARGB(
+                                                255, 48, 65, 69),
+                                            fontSize: screenWidth * 0.030,
+                                            fontWeight: FontWeight.w400,
+                                          ),
                                         ),
                                       ),
-                                      Gap(screenHeight * 0.01),
                                       ClipRRect(
                                         borderRadius:
                                             BorderRadius.circular(10.0),
@@ -290,13 +337,13 @@ class _BSHomePageState extends State<BSHomePage> {
                                                 post.postImageUrl!.isNotEmpty
                                             ? Image.network(
                                                 post.postImageUrl!,
-                                                width: screenWidth * 0.9,
+                                                width: screenWidth * 0.82,
                                                 height: screenHeight * 0.3,
-                                                fit: BoxFit.fitWidth,
+                                                fit: BoxFit.cover,
                                               )
                                             : const SizedBox.shrink(),
                                       ),
-                                      Gap(screenHeight * 0.01),
+                                      Gap(screenHeight * 0.008),
                                       post.tags?.isNotEmpty == true
                                           ? Container(
                                               padding: EdgeInsets.symmetric(
@@ -320,81 +367,90 @@ class _BSHomePageState extends State<BSHomePage> {
                                               ),
                                             )
                                           : const SizedBox.shrink(),
-                                      Gap(screenHeight * 0.02),
-                                      Row(
+                                      Gap(screenHeight * 0.01),
+                                      Column(
                                         children: [
-                                          LikeButton(
-                                            size: 20,
-                                            likeCount: post.likedBy.length,
-                                            isLiked: post.likedBy
-                                                .contains(widget.email),
-                                            likeBuilder: (bool isLiked) {
-                                              return SvgPicture.asset(
-                                                isLiked
-                                                    ? 'assets/images/profile_page/heart_true.svg'
-                                                    : 'assets/images/profile_page/heart.svg',
-                                                colorFilter: ColorFilter.mode(
-                                                  isLiked
-                                                      ? Colors.red
-                                                      : const Color.fromARGB(
-                                                          255, 86, 99, 111),
-                                                  BlendMode.srcIn,
-                                                ),
-                                              );
-                                            },
-                                            onTap: (isLiked) async {
-                                              try {
-                                                final postId = post.id;
-                                                if (postId.isNotEmpty) {
-                                                  await postController.likePost(
-                                                      postId, widget.email);
-                                                  return !isLiked;
-                                                } else {
-                                                  print("Invalid post ID");
-                                                  return isLiked;
-                                                }
-                                              } catch (e) {
-                                                print(
-                                                    "Error updating like status: $e");
-                                                return isLiked;
-                                              }
-                                            },
-                                          ),
-                                          Gap(screenHeight * 0.02),
-                                          SvgPicture.asset(
-                                            'assets/images/profile_page/comment.svg',
-                                            width: 20.0,
-                                            height: 20.0,
-                                          ),
-                                          Gap(screenWidth * 0.005),
-                                          StreamBuilder<QuerySnapshot>(
-                                            stream: FirebaseFirestore.instance
-                                                .collection('posts')
-                                                .doc(post.id)
-                                                .collection('comments')
-                                                .snapshots(),
-                                            builder: (context, snapshot) {
-                                              int commentCount = snapshot
-                                                      .hasData
-                                                  ? snapshot.data!.docs.length
-                                                  : 0;
+                                          Row(
+                                            children: [
+                                              LikeButton(
+                                                size: 20,
+                                                likeCount: post.likedBy.length,
+                                                isLiked: post.likedBy
+                                                    .contains(widget.email),
+                                                likeBuilder: (bool isLiked) {
+                                                  return SvgPicture.asset(
+                                                    isLiked
+                                                        ? 'assets/images/profile_page/heart_true.svg'
+                                                        : 'assets/images/profile_page/heart.svg',
+                                                    colorFilter:
+                                                        ColorFilter.mode(
+                                                      isLiked
+                                                          ? Colors.red
+                                                          : const Color
+                                                              .fromARGB(
+                                                              255, 86, 99, 111),
+                                                      BlendMode.srcIn,
+                                                    ),
+                                                  );
+                                                },
+                                                onTap: (isLiked) async {
+                                                  try {
+                                                    final postId = post.id;
+                                                    if (postId.isNotEmpty) {
+                                                      await postController
+                                                          .likePost(postId,
+                                                              widget.email);
+                                                      return !isLiked;
+                                                    } else {
+                                                      print("Invalid post ID");
+                                                      return isLiked;
+                                                    }
+                                                  } catch (e) {
+                                                    print(
+                                                        "Error updating like status: $e");
+                                                    return isLiked;
+                                                  }
+                                                },
+                                              ),
+                                              Gap(screenHeight * 0.02),
+                                              SvgPicture.asset(
+                                                'assets/images/profile_page/comment.svg',
+                                                width: 20.0,
+                                                height: 20.0,
+                                              ),
+                                              Gap(screenWidth * 0.005),
+                                              StreamBuilder<QuerySnapshot>(
+                                                stream: FirebaseFirestore
+                                                    .instance
+                                                    .collection('posts')
+                                                    .doc(post.id)
+                                                    .collection('comments')
+                                                    .snapshots(),
+                                                builder: (context, snapshot) {
+                                                  int commentCount =
+                                                      snapshot.hasData
+                                                          ? snapshot
+                                                              .data!.docs.length
+                                                          : 0;
 
-                                              return Text(
-                                                '$commentCount',
-                                                style: GoogleFonts.poppins(
-                                                  fontSize: 12.0,
-                                                  color: Colors.grey[500],
-                                                ),
-                                              );
-                                            },
+                                                  return Text(
+                                                    '$commentCount',
+                                                    style: GoogleFonts.poppins(
+                                                      fontSize: 12.0,
+                                                      color: Colors.grey[500],
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
                                     ],
                                   ),
-                                ),
-                              ],
-                            ),
+                                ],
+                              ),
+                            ],
                           ),
                         );
                       },

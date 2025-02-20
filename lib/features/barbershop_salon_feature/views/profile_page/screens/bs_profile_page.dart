@@ -68,7 +68,9 @@ class _BSProfilePageState extends State<BSProfilePage> {
     listPages.add(
       PageTabItemModel(
         title: "Timeline",
-        page: const BSTimelinePage(),
+        page: BSTimelinePage(
+          email: widget.email,
+        ),
       ),
     );
     listPages.add(
@@ -371,7 +373,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                       Text(
                         barbershopsalonController.barbershopsalon!.shopName,
                         style: GoogleFonts.poppins(
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                          color: const Color.fromARGB(255, 48, 65, 69),
                           fontSize: screenWidth * 0.045,
                           fontWeight: FontWeight.w600,
                         ),
@@ -400,7 +402,8 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                 return Text(
                                   'Error loading rating',
                                   style: GoogleFonts.poppins(
-                                    color: Colors.black,
+                                    color:
+                                        const Color.fromARGB(255, 48, 65, 69),
                                     fontSize: screenWidth * 0.035,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -411,7 +414,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                   rating.toStringAsFixed(1),
                                   style: GoogleFonts.poppins(
                                     color:
-                                        const Color.fromARGB(255, 18, 18, 18),
+                                        const Color.fromARGB(255, 48, 65, 69),
                                     fontSize: screenWidth * 0.035,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -450,6 +453,8 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                       style: GoogleFonts.poppins(
                                         fontSize: screenWidth * 0.04,
                                         fontWeight: FontWeight.w600,
+                                        color: const Color.fromARGB(
+                                            255, 48, 65, 69),
                                       ),
                                     ),
                                     const Divider(),
@@ -471,7 +476,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                                 fontSize: screenWidth * 0.035,
                                                 fontWeight: FontWeight.w400,
                                                 color: const Color.fromARGB(
-                                                    255, 18, 18, 18),
+                                                    255, 48, 65, 69),
                                               ),
                                             ),
                                             subtitle: Text(
@@ -480,7 +485,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                                 fontSize: screenWidth * 0.035,
                                                 fontWeight: FontWeight.w600,
                                                 color: const Color.fromARGB(
-                                                    255, 18, 18, 18),
+                                                    255, 48, 65, 69),
                                               ),
                                             ),
                                             enabled: false,
@@ -502,7 +507,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.035,
                                 fontWeight: FontWeight.w400,
-                                color: const Color.fromARGB(255, 18, 18, 18),
+                                color: const Color.fromARGB(255, 48, 65, 69),
                               ),
                             ),
                             const Icon(Icons.arrow_drop_down),
@@ -622,7 +627,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                           ? FontWeight.w700
                                           : FontWeight.w500,
                                   color: tabPageController.currentIndex == index
-                                      ? const Color.fromARGB(255, 18, 18, 18)
+                                      ? const Color.fromARGB(255, 48, 65, 69)
                                       : const Color.fromARGB(30, 18, 18, 18),
                                   fontSize: screenWidth * 0.035,
                                 ),

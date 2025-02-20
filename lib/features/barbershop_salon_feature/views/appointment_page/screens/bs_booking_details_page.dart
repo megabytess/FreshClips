@@ -23,6 +23,7 @@ class BookingDetailsPage extends StatefulWidget {
   final String shopName;
   final bool isClient;
   final dynamic selectedAffiliateBarber;
+  final String barberImageUrl;
 
   const BookingDetailsPage({
     super.key,
@@ -40,6 +41,7 @@ class BookingDetailsPage extends StatefulWidget {
     required this.isClient,
     required this.selectedAffiliateBarber,
     required this.shopName,
+    required this.barberImageUrl,
   });
 
   @override
@@ -55,7 +57,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   final DateTime date = DateTime.now();
   final String formattedDate =
       DateFormat('MMMM dd, yyyy').format(DateTime.now());
-  String declineReason = '';
+  String declinedReason = '';
 
   @override
   void initState() {
@@ -64,22 +66,32 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   }
 
   Future<void> fetchDeclineReason() async {
-    QuerySnapshot appointmentSnapshot = await FirebaseFirestore.instance
-        .collection('appointments')
-        .where('bookedUser', isEqualTo: widget.userEmail)
-        .get();
+    try {
+      var snapshot = await FirebaseFirestore.instance
+          .collection('appointments')
+          .where('bookedUser', isEqualTo: widget.userEmail)
+          .limit(1)
+          .get();
 
-    setState(() {
-      if (appointmentSnapshot.docs.isNotEmpty) {
-        final doc = appointmentSnapshot.docs.first;
-        final data = doc.data() as Map<String, dynamic>?;
-        declineReason = data!.containsKey('declinedReason')
-            ? doc['declinedReason'] ?? 'No reason provided'
-            : 'No reason provided';
+      if (snapshot.docs.isNotEmpty) {
+        var data = snapshot.docs.first.data();
+
+        setState(() {
+          declinedReason = data.containsKey('declinedReason')
+              ? data['declinedReason'] ?? 'No reason provided'
+              : 'No reason provided';
+        });
       } else {
-        declineReason = 'No reason provided';
+        setState(() {
+          declinedReason = 'No reason provided';
+        });
       }
-    });
+    } catch (e) {
+      print('Error: $e');
+      setState(() {
+        declinedReason = 'No reason provided';
+      });
+    }
   }
 
   @override
@@ -93,358 +105,475 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         title: Text(
           'Booking details',
           style: GoogleFonts.poppins(
-            fontSize: screenWidth * 0.04,
+            fontSize: screenWidth * 0.035,
             fontWeight: FontWeight.w600,
+            color: const Color.fromARGB(255, 48, 65, 69),
           ),
         ),
         backgroundColor: Colors.transparent,
       ),
       body: Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: 20),
+        padding: EdgeInsets.symmetric(
+          // vertical: screenHeight * 0.01,
+          horizontal: screenWidth * 0.03,
+        ),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Client information',
-                    style: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.035,
-                      fontWeight: FontWeight.w600,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      // Color.fromARGB(255, 248, 248, 248),
+                      borderRadius: BorderRadius.circular(20),
+                      // border: Border.all(
+                      //   width: 1.5,
+                      // ),
                     ),
-                  ),
-                  Gap(screenHeight * 0.01),
-                  Row(
-                    children: [
-                      Text(
-                        'Client name: ',
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                      Text(
-                        widget.clientName,
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.042,
-                          fontWeight: FontWeight.w600,
-                          color: const Color.fromARGB(255, 18, 18, 18),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Gap(screenHeight * 0.01),
-                  Row(
-                    children: [
-                      Text(
-                        'Phone number: ',
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                      Text(
-                        widget.phoneNumber,
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.w600,
-                          color: const Color.fromARGB(255, 18, 18, 18),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const Gap(40),
-              Text(
-                'Affiliated Shop',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Gap(20),
-              Row(
-                children: [
-                  Text(
-                    'Barbershop name: ',
-                    style: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.04,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[500],
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.05,
+                      vertical: screenHeight * 0.02,
                     ),
-                  ),
-                  Text(
-                    widget.shopName,
-                    style: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.04,
-                      fontWeight: FontWeight.w600,
-                      color: const Color.fromARGB(255, 18, 18, 18),
-                    ),
-                  ),
-                ],
-              ),
-              const Gap(10),
-              Row(
-                children: [
-                  Text(
-                    'Selected barber: ',
-                    style: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.04,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[500],
-                    ),
-                  ),
-                  Text(
-                    widget.selectedAffiliateBarber is Map<String, dynamic>
-                        ? widget.selectedAffiliateBarber[
-                                ' selectedAffiliateBarber'] ??
-                            'No barber selected'
-                        : widget.selectedAffiliateBarber is String
-                            ? widget.selectedAffiliateBarber
-                            : 'No barber selected',
-                    style: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.04,
-                      fontWeight: FontWeight.w600,
-                      color: const Color.fromARGB(255, 18, 18, 18),
-                    ),
-                  ),
-                ],
-              ),
-              const Gap(40),
-              Text(
-                'Appointment Details',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Gap(10),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Service: ',
-                      style: GoogleFonts.poppins(
-                        fontSize: screenWidth * 0.04,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                    const Gap(5),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: widget.selectedServices.map((service) {
-                          final title = service['title'] ?? 'Service';
-                          final description =
-                              service['description'] ?? 'No description';
-
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '$title',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.04,
-                                        fontWeight: FontWeight.w600,
-                                        color: const Color.fromARGB(
-                                            255, 18, 18, 18),
-                                      ),
-                                    ),
-                                    Text(
-                                      '$description ',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.035,
-                                        color: Colors.grey[500],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Appointment id: ',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.03,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey,
+                              ),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Price: ',
-                      style: GoogleFonts.poppins(
-                        fontSize: screenWidth * 0.04,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                    const Gap(5),
-                    Expanded(
-                      child: Text(
-                        'P ${widget.price}',
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.w600,
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                            const Spacer(),
+                            Text(
+                              widget.appointmentId,
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.035,
+                                fontWeight: FontWeight.w500,
+                                color: const Color.fromARGB(255, 48, 65, 69),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Time: ',
-                      style: GoogleFonts.poppins(
-                        fontSize: screenWidth * 0.04,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                    const Gap(5),
-                    Expanded(
-                      child: Text(
-                        widget.selectedTime,
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.w600,
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                        Gap(screenHeight * 0.015),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Appointment status:',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.03,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              widget.status,
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.035,
+                                fontWeight: FontWeight.w500,
+                                color: const Color.fromARGB(255, 48, 65, 69),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Date: ',
-                      style: GoogleFonts.poppins(
-                        fontSize: screenWidth * 0.04,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[500],
-                      ),
+                  ),
+                  Gap(screenHeight * 0.015),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      // Color.fromARGB(255, 248, 248, 248),
+                      borderRadius: BorderRadius.circular(20),
+                      // border: Border.all(
+                      //   width: 1.5,
+                      // ),
                     ),
-                    const Gap(5),
-                    Expanded(
-                      child: Text(
-                        formattedDate,
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.w600,
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.05,
+                      vertical: screenHeight * 0.02,
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Affiliated shop: ',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.03,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              widget.shopName,
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.035,
+                                fontWeight: FontWeight.w500,
+                                color: const Color.fromARGB(255, 48, 65, 69),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Client\'s Note: ',
-                      style: GoogleFonts.poppins(
-                        fontSize: screenWidth * 0.04,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                    const Gap(5),
-                    Expanded(
-                      child: Text(
-                        widget.note,
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.w600,
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                        Gap(screenHeight * 0.02),
+                        Row(
+                          children: [
+                            Text(
+                              'Selected barber: ',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.03,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const Spacer(),
+                            if (widget.barberImageUrl.isNotEmpty)
+                              ClipOval(
+                                child: Image.network(
+                                  widget.barberImageUrl,
+                                  width: screenWidth * 0.1,
+                                  height: screenWidth * 0.1,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            if (widget.barberImageUrl.isNotEmpty)
+                              Gap(screenWidth * 0.02),
+                            Expanded(
+                              child: Text(
+                                (widget.selectedAffiliateBarber
+                                            is Map<String, dynamic> &&
+                                        (widget.selectedAffiliateBarber[
+                                                    'selectedAffiliateBarber'] ??
+                                                '')
+                                            .isNotEmpty)
+                                    ? widget.selectedAffiliateBarber[
+                                        'selectedAffiliateBarber']
+                                    : (widget.selectedAffiliateBarber
+                                                is String &&
+                                            widget.selectedAffiliateBarber
+                                                .isNotEmpty)
+                                        ? widget.selectedAffiliateBarber
+                                        : 'N/A',
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color.fromARGB(255, 48, 65, 69),
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Booking Status: ',
-                      style: GoogleFonts.poppins(
-                        fontSize: screenWidth * 0.04,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[500],
-                      ),
+                  ),
+                  Gap(screenHeight * 0.015),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      // Color.fromARGB(255, 248, 248, 248),
+                      borderRadius: BorderRadius.circular(20),
+                      // border: Border.all(
+                      //   width: 1.5,
+                      // ),
                     ),
-                    const Gap(5),
-                    Expanded(
-                      child: Text(
-                        widget.status,
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.w600,
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.05,
+                      vertical: screenHeight * 0.02,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Client information',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.035,
+                            fontWeight: FontWeight.w600,
+                            color: const Color.fromARGB(255, 48, 65, 69),
+                          ),
                         ),
-                      ),
+                        Gap(screenHeight * 0.02),
+                        Row(
+                          children: [
+                            Text(
+                              'Client name: ',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.03,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              widget.clientName,
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.035,
+                                fontWeight: FontWeight.w500,
+                                color: const Color.fromARGB(255, 48, 65, 69),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Gap(screenHeight * 0.02),
+                        Row(
+                          children: [
+                            Text(
+                              'Phone number: ',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.03,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              widget.phoneNumber,
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.035,
+                                fontWeight: FontWeight.w500,
+                                color: const Color.fromARGB(255, 48, 65, 69),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Gap(screenHeight * 0.02),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Client\'s Note: ',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.03,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const Spacer(),
+                            Expanded(
+                              child: Text(
+                                widget.note,
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color.fromARGB(255, 48, 65, 69),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              Gap(screenHeight * 0.01),
-              if (widget.status == 'Declined')
-                SizedBox(
-                  width: screenWidth * 0.9,
-                  child: Card(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        left: screenWidth * 0.04,
-                        top: screenHeight * 0.02,
-                        right: screenWidth * 0.04,
-                        bottom: screenHeight * 0.02,
+                  ),
+                  Gap(screenHeight * 0.015),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      // Color.fromARGB(255, 248, 248, 248),
+                      borderRadius: BorderRadius.circular(20),
+                      // border: Border.all(
+                      //   width: 1.5,
+                      // ),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.05,
+                      vertical: screenHeight * 0.02,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Appointment Details',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.035,
+                            fontWeight: FontWeight.w600,
+                            color: const Color.fromARGB(255, 48, 65, 69),
+                          ),
+                        ),
+                        Gap(screenHeight * 0.01),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Service: ',
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.03,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const Spacer(),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children:
+                                      widget.selectedServices.map((service) {
+                                    final title = service['title'] ?? 'Service';
+                                    final description =
+                                        service['description'] ??
+                                            'No description';
+
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  '$title',
+                                                  style: GoogleFonts.poppins(
+                                                    fontSize:
+                                                        screenWidth * 0.035,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: const Color.fromARGB(
+                                                        255, 48, 65, 69),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  '$description ',
+                                                  style: GoogleFonts.poppins(
+                                                    fontSize:
+                                                        screenWidth * 0.035,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Price: ',
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.03,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const Spacer(
+                                flex: 4,
+                              ),
+                              Text(
+                                'P ${widget.price}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color.fromARGB(255, 48, 65, 69),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Appointment time:',
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.03,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                widget.selectedTime,
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color.fromARGB(255, 48, 65, 69),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Appointment date:',
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.03,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                formattedDate,
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color.fromARGB(255, 48, 65, 69),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Gap(screenHeight * 0.015),
+                  if (widget.status == 'Declined')
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        // Color.fromARGB(255, 248, 248, 248),
+                        borderRadius: BorderRadius.circular(20),
+                        // border: Border.all(
+                        //   width: 1.5,
+                        // ),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.05,
+                        vertical: screenHeight * 0.02,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Center(
-                            child: Text(
-                              'Declined Reason:',
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.04,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          Text(
+                            'Declined Reason:',
+                            style: GoogleFonts.poppins(
+                              fontSize: screenWidth * 0.035,
+                              fontWeight: FontWeight.w600,
+                              color: const Color.fromARGB(255, 48, 65, 69),
                             ),
                           ),
                           Gap(screenHeight * 0.01),
                           Center(
                             child: Text(
-                              declineReason,
+                              declinedReason,
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.035,
                                 fontWeight: FontWeight.w500,
@@ -454,9 +583,81 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                         ],
                       ),
                     ),
-                  ),
+                ],
+              ),
+              Gap(screenHeight * 0.02),
+              if (widget.status == 'Pending' &&
+                  widget.clientEmail == widget.userEmail)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    SizedBox(
+                      width: screenWidth * 0.43,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          appointmentsController.approveAppointment(
+                            context,
+                            widget.appointmentId,
+                            widget.userEmail,
+                          );
+
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 189, 49, 71),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.1,
+                            vertical: screenHeight * 0.02,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: Text(
+                          'Approve',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.035,
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromARGB(255, 248, 248, 248),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Gap(screenHeight * 0.01),
+                    SizedBox(
+                      width: screenWidth * 0.43,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          appointmentsController.declineAppointment(
+                            context,
+                            widget.appointmentId,
+                            widget.userEmail,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 48, 65, 69),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.1,
+                            vertical: screenHeight * 0.02,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: Text(
+                          'Decline',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.035,
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromARGB(255, 248, 248, 248),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
-              Gap(screenHeight * 0.04),
               if (widget.status == 'Completed' &&
                   widget.clientEmail != widget.userEmail)
                 SizedBox(
@@ -607,78 +808,6 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       ),
                     ),
                   ),
-                ),
-              if (widget.status == 'Pending' &&
-                  widget.clientEmail == widget.userEmail)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    SizedBox(
-                      width: screenWidth * 0.43,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          appointmentsController.approveAppointment(
-                            context,
-                            widget.appointmentId,
-                            widget.userEmail,
-                          );
-
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 189, 49, 71),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.1,
-                            vertical: screenHeight * 0.02,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        child: Text(
-                          'Approve',
-                          style: GoogleFonts.poppins(
-                            fontSize: screenWidth * 0.035,
-                            fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(255, 248, 248, 248),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Gap(screenHeight * 0.01),
-                    SizedBox(
-                      width: screenWidth * 0.43,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          appointmentsController.declineAppointment(
-                            context,
-                            widget.appointmentId,
-                            widget.userEmail,
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 48, 65, 69),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.1,
-                            vertical: screenHeight * 0.02,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        child: Text(
-                          'Decline',
-                          style: GoogleFonts.poppins(
-                            fontSize: screenWidth * 0.035,
-                            fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(255, 248, 248, 248),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
                 ),
             ],
           ),

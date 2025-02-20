@@ -100,19 +100,22 @@ class _BSTabBarPageState extends State<BSTabBarPage> {
                         child: Text(
                           listPages[index].title ?? "",
                           style: GoogleFonts.poppins(
-                              fontWeight: _controller.currentIndex == index
-                                  ? FontWeight.w700
-                                  : FontWeight.w500,
-                              color: _controller.currentIndex == index
-                                  ? const Color.fromARGB(255, 18, 18, 18)
-                                  : const Color.fromARGB(30, 18, 18, 18),
-                              fontSize: screenWidth * 0.033),
+                            fontWeight: _controller.currentIndex == index
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                            color: _controller.currentIndex == index
+                                ? const Color.fromARGB(255, 48, 65, 69)
+                                : const Color.fromARGB(30, 18, 18, 18),
+                            fontSize: _controller.currentIndex == index
+                                ? screenWidth * 0.035
+                                : screenWidth * 0.03,
+                          ),
                         ),
                       ),
                       Container(
                         // Tab Indicator
                         height: 4,
-                        width: screenWidth * 0.18,
+                        width: screenWidth * 0.15,
                         decoration: BoxDecoration(
                           borderRadius:
                               BorderRadius.circular(screenWidth * 0.10),

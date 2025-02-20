@@ -80,7 +80,7 @@ class _BSReceiverChatroomPageState extends State<BSReceiverChatroomPage> {
 
             var userData = snapshot.data!.docs.first.data();
             String accountImage = userData['senderImageUrl'] ?? '';
-            String accountName = userData['senderEmail'] ?? 'Unknown';
+            String accountName = userData['senderUsername'] ?? 'Unknown';
 
             return Row(
               children: [
@@ -208,7 +208,7 @@ class _BSReceiverChatroomPageState extends State<BSReceiverChatroomPage> {
                                             ? const Color.fromARGB(
                                                 255, 189, 49, 71)
                                             : const Color.fromARGB(
-                                                255, 48, 65, 69),
+                                                255, 186, 199, 206),
                                         borderRadius: BorderRadius.only(
                                           topLeft: isSender
                                               ? Radius.circular(
@@ -234,8 +234,11 @@ class _BSReceiverChatroomPageState extends State<BSReceiverChatroomPage> {
                                         style: GoogleFonts.poppins(
                                           fontSize: screenWidth * 0.028,
                                           fontWeight: FontWeight.w500,
-                                          color: const Color.fromARGB(
-                                              255, 248, 248, 248),
+                                          color: isSender
+                                              ? const Color.fromARGB(
+                                                  255, 248, 248, 248)
+                                              : const Color.fromARGB(
+                                                  255, 48, 65, 69),
                                         ),
                                       ),
                                     ),
@@ -274,7 +277,7 @@ class _BSReceiverChatroomPageState extends State<BSReceiverChatroomPage> {
                   color: const Color.fromARGB(255, 248, 248, 248),
                   borderRadius: BorderRadius.circular(screenWidth * 0.08),
                   border: Border.all(
-                    color: const Color.fromARGB(255, 69, 69, 69),
+                    color: const Color.fromARGB(255, 48, 65, 69),
                     width: 1.0,
                   ),
                 ),
@@ -298,7 +301,7 @@ class _BSReceiverChatroomPageState extends State<BSReceiverChatroomPage> {
                           ),
                         ),
                         style: GoogleFonts.poppins(
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                          color: const Color.fromARGB(255, 48, 65, 69),
                           fontSize: screenWidth * 0.035,
                         ),
                         maxLines: 11,

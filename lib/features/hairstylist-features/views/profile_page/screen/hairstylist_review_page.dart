@@ -49,7 +49,11 @@ class _ReviewPageState extends State<HairstylistReviewPage> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Padding(
-        padding: EdgeInsets.all(screenWidth * 0.05),
+        padding: EdgeInsets.only(
+          top: screenHeight * 0.03,
+          right: screenWidth * 0.05,
+          left: screenWidth * 0.05,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -124,7 +128,7 @@ class _ReviewPageState extends State<HairstylistReviewPage> {
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(
-                          color: Color.fromARGB(255, 18, 18, 18),
+                          color: Color.fromARGB(255, 48, 65, 69),
                           width: 1,
                         ),
                         shape: RoundedRectangleBorder(
@@ -146,7 +150,7 @@ class _ReviewPageState extends State<HairstylistReviewPage> {
                       child: Text(
                         'Leave a Review',
                         style: GoogleFonts.poppins(
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                          color: const Color.fromARGB(255, 48, 65, 69),
                           fontSize: screenWidth * 0.023,
                           fontWeight: FontWeight.w600,
                         ),
@@ -199,10 +203,8 @@ class _ReviewPageState extends State<HairstylistReviewPage> {
                           children: [
                             Padding(
                               padding: EdgeInsets.symmetric(
-                                horizontal:
-                                    MediaQuery.of(context).size.width * 0.035,
-                                vertical:
-                                    MediaQuery.of(context).size.height * 0.001,
+                                horizontal: screenWidth * 0.035,
+                                vertical: screenHeight * 0.001,
                               ),
                               child: ClipOval(
                                 child: (imageUrl.isNotEmpty)
@@ -230,7 +232,7 @@ class _ReviewPageState extends State<HairstylistReviewPage> {
                                         username,
                                         style: GoogleFonts.poppins(
                                           color: const Color.fromARGB(
-                                              255, 18, 18, 18),
+                                              255, 48, 65, 69),
                                           fontSize: MediaQuery.of(context)
                                                   .size
                                                   .width *
@@ -248,7 +250,7 @@ class _ReviewPageState extends State<HairstylistReviewPage> {
                                               0.014,
                                           fontWeight: FontWeight.w500,
                                           color: const Color.fromARGB(
-                                              255, 18, 18, 18),
+                                              255, 48, 65, 69),
                                         ),
                                       ),
                                       Padding(
@@ -295,7 +297,7 @@ class _ReviewPageState extends State<HairstylistReviewPage> {
                                       reviewText,
                                       style: GoogleFonts.poppins(
                                         color: const Color.fromARGB(
-                                            255, 18, 18, 18),
+                                            255, 48, 65, 69),
                                         fontSize:
                                             MediaQuery.of(context).size.width *
                                                 0.030,

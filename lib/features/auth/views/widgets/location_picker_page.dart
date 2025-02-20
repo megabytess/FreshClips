@@ -1,16 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/auth/models/autocomplete_predictions.dart';
-import 'package:freshclips_capstone/features/auth/models/place_auto_complete_response.dart';
-import 'package:freshclips_capstone/features/auth/views/widgets/nerwork_utility.dart';
-import 'package:freshclips_capstone/features/auth/views/widgets/search_place_prediction.dart';
 import 'package:gap/gap.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
-
-const String apikey = 'AIzaSyDdXaMN5htLGHo8BkCfefPpuTauwHGXItU';
+import 'package:location/location.dart' as loc;
 
 class LocationPicker extends StatefulWidget {
   final Function(LatLng) onLocationSelected;
@@ -23,91 +18,103 @@ class LocationPicker extends StatefulWidget {
 
 class LocationPickerState extends State<LocationPicker> {
   LatLng? _selectedLocation;
-  late GoogleMapController _mapController;
-  final Location _location = Location();
-  List<AutocompletePrediction> PlacePredictions = [];
+  late GoogleMapController mapController;
+  final loc.Location location = loc.Location();
+  List<AutocompletePrediction> placePredictions = [];
+  Position? currentPosition;
+  final TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _checkLocationService();
+    checkAndRequestLocationPermission();
   }
 
-  void _checkLocationService() async {
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
+  Future<void> checkAndRequestLocationPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
 
-    // Check if location services are enabled
-    serviceEnabled = await _location.serviceEnabled();
-    if (!serviceEnabled) {
-      // Request the user to enable location services
-      serviceEnabled = await _location.requestService();
-      if (!serviceEnabled) {
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location permission denied')),
+        );
         return;
       }
     }
 
-    // Check if location permissions are granted
-    permissionGranted = await _location.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await _location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    navigateToUserLocation();
-  }
-
-  void navigateToUserLocation() async {
-    final userLocation = await _location.getLocation();
-    _mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(userLocation.latitude!, userLocation.longitude!),
-          zoom: 15.0,
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Location permissions are permanently denied. Please enable them in settings.',
+          ),
         ),
-      ),
-    );
+      );
+      return;
+    }
+
+    getCurrentLocation();
   }
 
-  void placeAutoComplete(String query) async {
-    Uri uri = Uri.https(
-      'maps.googleapis.com',
-      '/maps/api/place/autocomplete/json',
-      {
-        'input': query,
-        'key': apikey,
-      },
-    );
-    String? response = await NetworkUtility.fetchUrl(uri);
-    if (response != null) {
-      PlaceAutocompleteResponse result =
-          PlaceAutocompleteResponse.parseAutocompleteResult(response);
-      if (result.predictions != null && result.predictions!.isNotEmpty) {
+  Future<void> getCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      setState(() {
+        _selectedLocation = LatLng(position.latitude, position.longitude);
+      });
+
+      // Ensure controller is initialized
+      mapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: _selectedLocation!,
+            zoom: 16.0,
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to get location: $e')),
+      );
+    }
+  }
+
+  void onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+
+  Future<void> searchLocation(String query) async {
+    if (query.isEmpty) return;
+
+    try {
+      print('Searching for: $query');
+      List<Location> locations = await locationFromAddress(query);
+      print('Found locations: $locations');
+
+      if (locations.isNotEmpty) {
+        Location location = locations.first;
+        LatLng searchedLocation = LatLng(location.latitude, location.longitude);
+
+        print(
+            'Moving camera to: ${searchedLocation.latitude}, ${searchedLocation.longitude}');
+
+        // Ensure mapController is initialized before using it
+        mapController.animateCamera(
+          CameraUpdate.newLatLng(searchedLocation),
+        );
+
         setState(() {
-          PlacePredictions = result.predictions!;
+          _selectedLocation = searchedLocation;
         });
+      } else {
+        print('No locations found for: $query');
       }
+    } catch (e) {
+      print('Error while searching: $e');
     }
-  }
-
-  Future<LatLng> fetchPlaceDetails(String placeId) async {
-    Uri uri = Uri.https(
-      'maps.googleapis.com',
-      '/maps/api/place/details/json',
-      {
-        'place_id': placeId,
-        'key': apikey,
-      },
-    );
-    String? response = await NetworkUtility.fetchUrl(uri);
-    if (response != null) {
-      final json = jsonDecode(response);
-      final location = json['result']['geometry']['location'];
-      return LatLng(location['lat'], location['lng']);
-    }
-    throw Exception('Failed to fetch place details');
   }
 
   @override
@@ -123,6 +130,7 @@ class LocationPickerState extends State<LocationPicker> {
           style: GoogleFonts.poppins(
             fontSize: screenWidth * 0.04,
             fontWeight: FontWeight.w600,
+            color: const Color.fromARGB(255, 45, 65, 69),
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -133,14 +141,14 @@ class LocationPickerState extends State<LocationPicker> {
           // Google Map
           GoogleMap(
             initialCameraPosition: const CameraPosition(
-              target: LatLng(37.7749, -122.4194),
+              target: LatLng(10.3157, 123.8854),
               zoom: 10,
             ),
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
             onMapCreated: (controller) {
-              _mapController = controller;
+              mapController = controller;
             },
             onTap: (LatLng location) {
               setState(() {
@@ -159,7 +167,7 @@ class LocationPickerState extends State<LocationPicker> {
 
           // Search Bar and Autocomplete List
           Positioned(
-            top: screenHeight * 0.03,
+            top: screenHeight * 0.02,
             left: screenWidth * 0.05,
             right: screenWidth * 0.05,
             child: Column(
@@ -168,34 +176,44 @@ class LocationPickerState extends State<LocationPicker> {
                 // Search Bar
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
+                    color: const Color.fromARGB(255, 248, 248, 248),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.05),
                     boxShadow: const [
                       BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
+                        color: Color.fromARGB(255, 45, 65, 69),
+                        blurRadius: 5,
                       ),
                     ],
                   ),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  SearchPlacePredictionPage()));
-                    },
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: screenHeight * 0.06,
                     child: TextField(
+                      controller: searchController,
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.035,
+                        color: const Color.fromARGB(255, 45, 65, 69),
+                      ),
                       decoration: InputDecoration(
                         hintText: 'Search location',
                         hintStyle: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.04,
+                          fontSize: screenWidth * 0.035,
                           color: Colors.grey,
                         ),
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.symmetric(
-                          horizontal: screenWidth * 0.04,
-                          vertical: screenHeight * 0.01,
+                          horizontal: screenWidth * 0.05,
+                          vertical: screenHeight * 0.015,
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            Icons.search_rounded,
+                            color: const Color.fromARGB(255, 45, 65, 69),
+                            size: screenWidth * 0.06,
+                          ),
+                          onPressed: () {
+                            searchLocation(searchController.text);
+                          },
                         ),
                       ),
                     ),
@@ -213,7 +231,7 @@ class LocationPickerState extends State<LocationPicker> {
               children: [
                 OutlinedButton(
                   onPressed: () {
-                    _mapController.animateCamera(
+                    mapController.animateCamera(
                       CameraUpdate.zoomIn(),
                     );
                   },
@@ -225,14 +243,14 @@ class LocationPickerState extends State<LocationPicker> {
                   ),
                   child: Icon(
                     Icons.add,
-                    color: const Color.fromARGB(255, 18, 18, 18),
+                    color: const Color.fromARGB(255, 45, 65, 69),
                     size: screenWidth * 0.06,
                   ),
                 ),
                 Gap(screenHeight * 0.01),
                 OutlinedButton(
                   onPressed: () {
-                    _mapController.animateCamera(
+                    mapController.animateCamera(
                       CameraUpdate.zoomOut(),
                     );
                   },
@@ -244,7 +262,7 @@ class LocationPickerState extends State<LocationPicker> {
                   ),
                   child: Icon(
                     Icons.remove,
-                    color: const Color.fromARGB(255, 18, 18, 18),
+                    color: const Color.fromARGB(255, 45, 65, 69),
                     size: screenWidth * 0.06,
                   ),
                 ),
@@ -257,11 +275,11 @@ class LocationPickerState extends State<LocationPicker> {
                     backgroundColor: Colors.transparent,
                   ),
                   onPressed: () {
-                    navigateToUserLocation();
+                    getCurrentLocation();
                   },
                   child: Icon(
                     Icons.my_location,
-                    color: const Color.fromARGB(255, 18, 18, 18),
+                    color: const Color.fromARGB(255, 45, 65, 69),
                     size: screenWidth * 0.06,
                   ),
                 ),
@@ -300,7 +318,7 @@ class LocationPickerState extends State<LocationPicker> {
                   style: GoogleFonts.poppins(
                     fontSize: screenWidth * 0.035,
                     fontWeight: FontWeight.w500,
-                    color: Colors.white,
+                    color: const Color.fromARGB(255, 248, 248, 248),
                   ),
                 ),
               ),

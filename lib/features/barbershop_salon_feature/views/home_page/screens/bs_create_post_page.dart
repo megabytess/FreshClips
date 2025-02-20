@@ -33,6 +33,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
           style: GoogleFonts.poppins(
             fontSize: screenWidth * 0.04,
             fontWeight: FontWeight.w600,
+            color: const Color.fromARGB(255, 48, 65, 69),
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -188,7 +189,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                                   fontSize: screenWidth * 0.025,
                                   color: selectedHairstyleTag == style
                                       ? const Color.fromARGB(255, 248, 248, 248)
-                                      : const Color.fromARGB(255, 18, 18, 18),
+                                      : const Color.fromARGB(255, 48, 65, 69),
                                 ),
                               ),
                             ),

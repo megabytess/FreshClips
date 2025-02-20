@@ -54,6 +54,72 @@ class _HairstylistHomePageState extends State<HairstylistHomePage> {
             physics: const BouncingScrollPhysics(),
             child: Column(
               children: [
+                Container(
+                  width: screenWidth * 0.96,
+                  height: screenHeight * 0.06,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 186, 199, 206),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: screenHeight * 0.019,
+                        left: screenWidth * 0.03,
+                        child: Text(
+                          '  Hairstyle ideas',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.035,
+                            fontWeight: FontWeight.w600,
+                            color: const Color.fromARGB(255, 48, 65, 69),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: screenHeight * 0.014,
+                        right: screenWidth * 0.035,
+                        child: SizedBox(
+                          width: screenWidth * 0.2,
+                          height: screenHeight * 0.03,
+                          child: OutlinedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      HaircutIdeasCategories(),
+                                ),
+                              );
+                            },
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(
+                                color: Color.fromARGB(255, 48, 65, 69),
+                                width: 1,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            child: Text(
+                              'Explore',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.022,
+                                fontWeight: FontWeight.w500,
+                                color: const Color.fromARGB(255, 48, 65, 69),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Gap(screenHeight * 0.01),
+                Divider(
+                  color: Colors.grey[300],
+                  thickness: 1,
+                ),
+                Gap(screenHeight * 0.01),
                 Row(
                   children: [
                     Padding(
@@ -111,85 +177,6 @@ class _HairstylistHomePageState extends State<HairstylistHomePage> {
                       ),
                     ),
                   ],
-                ),
-                Gap(screenHeight * 0.02),
-                Container(
-                  width: screenWidth * 0.96,
-                  height: screenHeight * 0.06,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 186, 199, 206),
-                    borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                  ),
-                  child: Stack(
-                    children: [
-                      // Background image
-                      // ClipRRect(
-                      //   borderRadius: BorderRadius.circular(screenWidth * 0.05),
-                      //   child: Image.asset(
-                      //     'assets/images/icons/inspiration_img.jpg',
-                      //     width: screenWidth * 0.95,
-                      //     height: screenHeight * 0.2,
-                      //     fit: BoxFit.cover,
-                      //   ),
-                      // ),
-                      // Container(
-                      //   decoration: BoxDecoration(
-                      //     color: Color.fromARGB(255, 186, 199, 206),
-                      //     // Colors.black.withOpacity(0.6),
-                      //     borderRadius:
-                      //         BorderRadius.circular(screenWidth * 0.05),
-                      //   ),
-                      // ),
-                      Positioned(
-                        top: screenHeight * 0.019,
-                        left: screenWidth * 0.03,
-                        child: Text(
-                          '  Hairstyle ideas',
-                          style: GoogleFonts.poppins(
-                            fontSize: screenWidth * 0.035,
-                            fontWeight: FontWeight.w600,
-                            color: const Color.fromARGB(255, 48, 65, 69),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: screenHeight * 0.014,
-                        right: screenWidth * 0.035,
-                        child: SizedBox(
-                          width: screenWidth * 0.2,
-                          height: screenHeight * 0.03,
-                          child: OutlinedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      HaircutIdeasCategories(),
-                                ),
-                              );
-                            },
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(
-                                color: Color.fromARGB(255, 48, 65, 69),
-                                width: 1,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                            child: Text(
-                              'Explore',
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.022,
-                                fontWeight: FontWeight.w500,
-                                color: const Color.fromARGB(255, 48, 65, 69),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
                 Gap(screenHeight * 0.01),
                 StreamBuilder<List<Post>>(
@@ -273,7 +260,7 @@ class _HairstylistHomePageState extends State<HairstylistHomePage> {
                                         fontSize: 14.0,
                                         fontWeight: FontWeight.w500,
                                         color: const Color.fromARGB(
-                                            255, 18, 18, 18),
+                                            255, 48, 65, 69),
                                       ),
                                     ),
                                   ],
@@ -291,7 +278,8 @@ class _HairstylistHomePageState extends State<HairstylistHomePage> {
                                         style: GoogleFonts.poppins(
                                           fontSize: screenWidth * 0.03,
                                           fontWeight: FontWeight.w400,
-                                          color: Colors.grey[900],
+                                          color: const Color.fromARGB(
+                                              255, 48, 65, 69),
                                         ),
                                       ),
                                       Gap(screenHeight * 0.01),

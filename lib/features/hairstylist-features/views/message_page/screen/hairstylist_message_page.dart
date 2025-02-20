@@ -130,7 +130,9 @@ class _HairstylistMessagePageState extends State<HairstylistMessagePage> {
                                       '@$senderName',
                                       style: GoogleFonts.poppins(
                                         fontSize: screenWidth * 0.04,
-                                        fontWeight: FontWeight.w600,
+                                        fontWeight: FontWeight.w500,
+                                        color: const Color.fromARGB(
+                                            255, 48, 65, 69),
                                       ),
                                     ),
                                     const Spacer(),
@@ -148,7 +150,7 @@ class _HairstylistMessagePageState extends State<HairstylistMessagePage> {
                                   latestMessage,
                                   style: GoogleFonts.poppins(
                                     fontSize: screenWidth * 0.032,
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.w400,
                                     color: Colors.grey[500],
                                   ),
                                 ),
