@@ -185,18 +185,34 @@ class AdminVerifyController extends ChangeNotifier {
 
       final querySnapshot = await query.get();
 
-      // Optional filtering by email
       if (email.isNotEmpty) {
         query = query.where('email', isEqualTo: email);
       }
 
-      // Map documents to a list of Maps
       return querySnapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
           .toList();
     } catch (e) {
       print('Error fetching barbershop/salon: $e');
       return [];
+    }
+  }
+
+  // Fetch all reported accounts
+  Future<List<Map<String, dynamic>>> fetchReportedAccounts() async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      final querySnapshot = await firestore.collection('reports').get();
+
+      final reportedAccounts = querySnapshot.docs.map((doc) {
+        return doc.data();
+      }).toList();
+
+      return reportedAccounts;
+    } catch (e) {
+      print('Failed to fetch reported accounts: $e');
+      throw Exception('Failed to fetch reported accounts: $e');
     }
   }
 }

@@ -101,6 +101,7 @@ class RatingsReviewPageState extends State<BSRatingsReviewPage> {
           style: GoogleFonts.poppins(
             fontSize: screenWidth * 0.04,
             fontWeight: FontWeight.w600,
+            color: const Color.fromARGB(255, 48, 65, 69),
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -118,6 +119,7 @@ class RatingsReviewPageState extends State<BSRatingsReviewPage> {
               style: GoogleFonts.poppins(
                 fontSize: screenWidth * 0.045,
                 fontWeight: FontWeight.w600,
+                color: const Color.fromARGB(255, 48, 65, 69),
               ),
             ),
             Gap(screenHeight * 0.02),
@@ -145,6 +147,7 @@ class RatingsReviewPageState extends State<BSRatingsReviewPage> {
                 labelText: 'Write a review',
                 labelStyle: GoogleFonts.poppins(
                   fontSize: screenWidth * 0.035,
+                  color: const Color.fromARGB(255, 48, 65, 69),
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(screenWidth * 0.03),

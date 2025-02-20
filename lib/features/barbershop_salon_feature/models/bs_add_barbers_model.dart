@@ -1,13 +1,15 @@
 class BSAddBarbers {
-  final String id; // Unique identifier for the barber (from Firestore)
+  final String id;
   final String barberName;
   final String role;
   final String status;
   final List<String> availability;
   final String userEmail;
+  final String affiliatedShop;
 
   // Constructor
   BSAddBarbers({
+    required this.affiliatedShop,
     required this.id,
     required this.barberName,
     required this.role,
@@ -21,6 +23,7 @@ class BSAddBarbers {
     print("Map data: $map"); // Add this line for debugging
     return BSAddBarbers(
       id: map['id'] as String? ?? 'no-id',
+      affiliatedShop: map['affiliatedShop'] as String? ?? 'Unknown',
       barberName: map['barberName'] as String? ?? 'barberName',
       role: map['role'] as String? ?? 'Unknown',
       status: map['status'] as String? ?? 'Unknown',
@@ -39,6 +42,7 @@ class BSAddBarbers {
     return {
       'id': id, // Include ID for updating or deleting records
       'barberName': barberName,
+      'affiliatedShop': affiliatedShop,
       'role': role,
       'status': status,
       'availability':

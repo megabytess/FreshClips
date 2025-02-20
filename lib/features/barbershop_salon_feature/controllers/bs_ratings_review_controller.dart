@@ -209,7 +209,7 @@ class RatingsReviewController {
       return 0.0;
     }
   }
-
+}
   // void sortbyRating(List<Map<String, dynamic>> reviews) {
   //   reviews.sort((a, b) {
   //     if (b['rating'] > a['rating']) {
@@ -221,7 +221,7 @@ class RatingsReviewController {
   //     }
   //   });
   // }
-}  // reviews.sort((a, b) {
+ // reviews.sort((a, b) {
         //   if (b['rating'] > a['rating']) {
         //     return 1;
         //   } else if (b['rating'] < a['rating']) {

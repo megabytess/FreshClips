@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/appointment_page/screens/hairstylist_appointment_page.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/settings_drawer/settings_page.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/settings_drawer/manage_availability/manage_availability_page.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/views/bottomnav_bar/settings_drawer/profile_details/profile_details_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/home_page/screens/hairstylist_home_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/message_page/screen/hairstylist_message_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/hairstylist_profile_page.dart';
@@ -34,13 +35,18 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
   void initState() {
     super.initState();
     _pages = [
-      HairstylistHomePage(),
+      HairstylistHomePage(
+        email: widget.email,
+      ),
       HairstylistAppointmentPage(
         userEmail: widget.email,
         clientEmail: widget.clientEmail,
         isClient: true,
       ),
-      HairstylistMessagePage(),
+      HairstylistMessagePage(
+        userEmail: widget.email,
+        clientEmail: widget.clientEmail,
+      ),
       HairstylistProfilePage(
         email: widget.email,
         isClient: false,
@@ -130,127 +136,15 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
                 ],
               ),
             ),
-            ListTile(
-              leading: SvgPicture.asset(
-                'assets/images/bottomnav_bar_page/home_fill.svg',
-                width: screenWidth * 0.06,
-                colorFilter: const ColorFilter.mode(
-                    Color.fromARGB(255, 48, 65, 69), BlendMode.srcIn),
-              ),
-              title: Text(
-                'Home',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 0;
-                });
-              },
-            ),
-            ListTile(
-              leading: SvgPicture.asset(
-                'assets/images/bottomnav_bar_page/calendar_fill.svg',
-                width: screenWidth * 0.06,
-                colorFilter: const ColorFilter.mode(
-                    Color.fromARGB(255, 48, 65, 69), BlendMode.srcIn),
-              ),
-              title: Text(
-                'Calendar',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 1;
-                });
-              },
-            ),
-            ListTile(
-              leading: SvgPicture.asset(
-                'assets/images/bottomnav_bar_page/message_fill.svg',
-                width: screenWidth * 0.06,
-                colorFilter: const ColorFilter.mode(
-                    Color.fromARGB(255, 48, 65, 69), BlendMode.srcIn),
-              ),
-              title: Text(
-                'Message',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 2;
-                });
-              },
-            ),
+            Gap(screenHeight * 0.01),
             ListTile(
               leading: Icon(
                 Icons.person_rounded,
-                size: screenWidth * 0.076,
-                color: const Color.fromARGB(255, 48, 65, 69),
-              ),
-              title: Text(
-                'Profile',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 3;
-                });
-              },
-            ),
-            const Divider(
-              color: Color.fromARGB(255, 189, 189, 189),
-              thickness: 1.0,
-              indent: 20.0,
-              endIndent: 20.0,
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.settings_rounded,
                 color: const Color.fromARGB(255, 48, 65, 69),
                 size: screenWidth * 0.07,
               ),
               title: Text(
-                'Settings',
+                'Profile details',
                 style: GoogleFonts.poppins(
                   fontSize: screenWidth * 0.035,
                   fontWeight: FontWeight.w500,
@@ -266,14 +160,44 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SettingsPage(
+                    builder: (context) => ProfileDetailsPage(
                       email: widget.email,
                     ),
                   ),
                 );
               },
             ),
-            Gap(screenHeight * 0.45),
+            Gap(screenHeight * 0.01),
+            ListTile(
+              leading: Icon(
+                Icons.calendar_month_rounded,
+                color: const Color.fromARGB(255, 48, 65, 69),
+                size: screenWidth * 0.07,
+              ),
+              title: Text(
+                'Manage availability',
+                style: GoogleFonts.poppins(
+                  fontSize: screenWidth * 0.035,
+                  fontWeight: FontWeight.w500,
+                  color: const Color.fromARGB(255, 18, 18, 18),
+                ),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: screenWidth * 0.04,
+                color: const Color.fromARGB(255, 18, 18, 18),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ManageAvailabilityPage(email: widget.email),
+                  ),
+                );
+              },
+            ),
+            Gap(screenHeight * 0.62),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
               child: ElevatedButton(

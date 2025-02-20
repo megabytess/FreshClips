@@ -7,6 +7,7 @@ import 'package:freshclips_capstone/core/booking_system/01_booking_template_page
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_ratings_review_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_working_hours_controller.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/message_page/screens/bs_chatroom_mesage_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_barbers_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_info_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_reviews_page.dart';
@@ -67,7 +68,9 @@ class _BSProfilePageState extends State<BSProfilePage> {
     listPages.add(
       PageTabItemModel(
         title: "Timeline",
-        page: const BSTimelinePage(),
+        page: BSTimelinePage(
+          email: widget.email,
+        ),
       ),
     );
     listPages.add(
@@ -86,6 +89,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
         page: BSBarbersPage(
           userEmail: widget.email,
           isClient: true,
+          clientEmail: widget.clientEmail,
         ),
       ),
     );
@@ -288,9 +292,15 @@ class _BSProfilePageState extends State<BSProfilePage> {
       }
     } catch (e) {
       print("Error fetching shop status: $e");
-      return "ERROR";
+      return "No available working hours";
     }
-    return "SHOP CLOSED"; // Default return statement
+    return "SHOP CLOSED"; // Default return
+  }
+
+  String generateChatRoomId(String senderEmail, String receiverEmail) {
+    List<String> emails = [senderEmail, receiverEmail];
+    emails.sort();
+    return emails.join('_');
   }
 
   @override
@@ -363,7 +373,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                       Text(
                         barbershopsalonController.barbershopsalon!.shopName,
                         style: GoogleFonts.poppins(
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                          color: const Color.fromARGB(255, 48, 65, 69),
                           fontSize: screenWidth * 0.045,
                           fontWeight: FontWeight.w600,
                         ),
@@ -376,9 +386,10 @@ class _BSProfilePageState extends State<BSProfilePage> {
                             height: screenWidth * 0.045,
                           ),
                           Gap(screenHeight * 0.004),
-                          FutureBuilder<double>(
-                            future: ratingsReviewController
-                                .computeAverageRating(widget.email),
+                          StreamBuilder<double>(
+                            stream: ratingsReviewController
+                                .computeAverageRating(widget.email)
+                                .asStream(),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
@@ -391,7 +402,8 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                 return Text(
                                   'Error loading rating',
                                   style: GoogleFonts.poppins(
-                                    color: Colors.black,
+                                    color:
+                                        const Color.fromARGB(255, 48, 65, 69),
                                     fontSize: screenWidth * 0.035,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -402,7 +414,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                   rating.toStringAsFixed(1),
                                   style: GoogleFonts.poppins(
                                     color:
-                                        const Color.fromARGB(255, 18, 18, 18),
+                                        const Color.fromARGB(255, 48, 65, 69),
                                     fontSize: screenWidth * 0.035,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -441,6 +453,8 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                       style: GoogleFonts.poppins(
                                         fontSize: screenWidth * 0.04,
                                         fontWeight: FontWeight.w600,
+                                        color: const Color.fromARGB(
+                                            255, 48, 65, 69),
                                       ),
                                     ),
                                     const Divider(),
@@ -462,7 +476,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                                 fontSize: screenWidth * 0.035,
                                                 fontWeight: FontWeight.w400,
                                                 color: const Color.fromARGB(
-                                                    255, 18, 18, 18),
+                                                    255, 48, 65, 69),
                                               ),
                                             ),
                                             subtitle: Text(
@@ -471,7 +485,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                                 fontSize: screenWidth * 0.035,
                                                 fontWeight: FontWeight.w600,
                                                 color: const Color.fromARGB(
-                                                    255, 18, 18, 18),
+                                                    255, 48, 65, 69),
                                               ),
                                             ),
                                             enabled: false,
@@ -493,7 +507,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.035,
                                 fontWeight: FontWeight.w400,
-                                color: const Color.fromARGB(255, 18, 18, 18),
+                                color: const Color.fromARGB(255, 48, 65, 69),
                               ),
                             ),
                             const Icon(Icons.arrow_drop_down),
@@ -508,7 +522,21 @@ class _BSProfilePageState extends State<BSProfilePage> {
                               height: screenHeight * 0.05,
                               child: OutlinedButton(
                                 onPressed: () {
-                                  // Add your button action here
+                                  String chatRoomId = generateChatRoomId(
+                                      widget.clientEmail, widget.email);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return BSChatroomMessagePage(
+                                          clientEmail: widget.clientEmail,
+                                          userEmail: widget.email,
+                                          chatRoomId: chatRoomId,
+                                          receiverEmail: widget.email,
+                                        );
+                                      },
+                                    ),
+                                  );
                                 },
                                 style: OutlinedButton.styleFrom(
                                   side: const BorderSide(
@@ -541,6 +569,8 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                     builder: (context) => BookingTemplatePage(
                                       clientEmail: widget.email,
                                       userEmail: widget.email,
+                                      shopName: barbershopsalonController
+                                          .barbershopsalon!.shopName,
                                     ),
                                   ),
                                 );
@@ -597,7 +627,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
                                           ? FontWeight.w700
                                           : FontWeight.w500,
                                   color: tabPageController.currentIndex == index
-                                      ? const Color.fromARGB(255, 18, 18, 18)
+                                      ? const Color.fromARGB(255, 48, 65, 69)
                                       : const Color.fromARGB(30, 18, 18, 18),
                                   fontSize: screenWidth * 0.035,
                                 ),

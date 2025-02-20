@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:freshclips_capstone/features/client-features/controllers/client_controller.dart';
 import 'package:gap/gap.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 
 class ClientNearbyPage extends StatefulWidget {
   const ClientNearbyPage({super.key});
@@ -12,51 +14,105 @@ class ClientNearbyPage extends StatefulWidget {
 }
 
 class _ClientNearbyPageState extends State<ClientNearbyPage> {
-  late GoogleMapController mapController;
-  final Location _location = Location();
   final TextEditingController _searchController = TextEditingController();
+  late GoogleMapController mapController;
+  ClientController clientController = ClientController();
+  Position? currentPosition;
+  LatLng? selectedLocation;
 
   @override
   void initState() {
     super.initState();
-    _initializeUserLocation();
+    checkAndRequestLocationPermission();
   }
 
-  void _onMapCreated(GoogleMapController controller) {
+  Future<void> checkAndRequestLocationPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location permission denied')),
+        );
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Location permissions are permanently denied. Please enable them in settings.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    getCurrentLocation();
+  }
+
+  Future<void> getCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      setState(() {
+        selectedLocation = LatLng(position.latitude, position.longitude);
+      });
+
+      mapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: selectedLocation!,
+            zoom: 16.0,
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to get location: $e')),
+      );
+    }
+  }
+
+  void onMapCreated(GoogleMapController controller) {
     mapController = controller;
-    _initializeUserLocation();
-  }
-
-  Future<void> _initializeUserLocation() async {
-    final userLocation = await _location.getLocation();
-    mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(userLocation.latitude!, userLocation.longitude!),
-          zoom: 15.0,
+    if (currentPosition != null) {
+      mapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target:
+                LatLng(currentPosition!.latitude, currentPosition!.longitude),
+            zoom: 16.0,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
-  void _navigateToUserLocation() async {
-    final userLocation = await _location.getLocation();
-    mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(userLocation.latitude!, userLocation.longitude!),
-          zoom: 15.0,
-        ),
-      ),
-    );
-  }
+  Future<void> searchLocation(String query) async {
+    try {
+      List<Location> locations = await locationFromAddress(query);
+      if (locations.isNotEmpty) {
+        Location location = locations.first;
+        LatLng searchedLocation = LatLng(location.latitude, location.longitude);
+        mapController.animateCamera(
+          CameraUpdate.newLatLng(searchedLocation),
+        );
 
-  void _zoomIn() {
-    mapController.animateCamera(CameraUpdate.zoomIn());
-  }
-
-  void _zoomOut() {
-    mapController.animateCamera(CameraUpdate.zoomOut());
+        double distance = Geolocator.distanceBetween(
+          currentPosition!.latitude,
+          currentPosition!.longitude,
+          searchedLocation.latitude,
+          searchedLocation.longitude,
+        );
+        print('Distance: $distance meters');
+      }
+    } catch (e) {
+      print('Error occurred while searching location: $e');
+    }
   }
 
   @override
@@ -69,14 +125,14 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
       body: Stack(
         children: [
           GoogleMap(
-            onMapCreated: _onMapCreated,
+            onMapCreated: onMapCreated,
             initialCameraPosition: const CameraPosition(
-              target: LatLng(45.521563, -122.677433), // Default center
+              target: LatLng(10.3157, 123.8854),
               zoom: 11.0,
             ),
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
-            zoomControlsEnabled: false, // Disable default zoom controls
+            zoomControlsEnabled: false,
           ),
           Positioned(
             bottom: 20,
@@ -124,8 +180,7 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                             ),
                           ),
                           onSubmitted: (value) {
-                            // Define the search action here
-                            print('Searching for: $value');
+                            searchLocation(value);
                           },
                         ),
                       ),
@@ -141,7 +196,11 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
             child: Column(
               children: [
                 OutlinedButton(
-                  onPressed: _zoomIn,
+                  onPressed: () {
+                    mapController.animateCamera(
+                      CameraUpdate.zoomIn(),
+                    );
+                  },
                   style: OutlinedButton.styleFrom(
                     shape: const CircleBorder(),
                     side: const BorderSide(color: Colors.grey, width: 1.5),
@@ -156,7 +215,11 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                 ),
                 Gap(screenHeight * 0.001),
                 OutlinedButton(
-                  onPressed: _zoomOut,
+                  onPressed: () {
+                    mapController.animateCamera(
+                      CameraUpdate.zoomOut(),
+                    );
+                  },
                   style: OutlinedButton.styleFrom(
                     shape: const CircleBorder(),
                     side: const BorderSide(color: Colors.grey, width: 1.5),
@@ -177,7 +240,9 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                     padding: EdgeInsets.all(screenWidth * 0.02),
                     backgroundColor: Colors.transparent,
                   ),
-                  onPressed: _navigateToUserLocation,
+                  onPressed: () {
+                    getCurrentLocation();
+                  },
                   child: Icon(
                     Icons.my_location,
                     color: const Color.fromARGB(255, 18, 18, 18),

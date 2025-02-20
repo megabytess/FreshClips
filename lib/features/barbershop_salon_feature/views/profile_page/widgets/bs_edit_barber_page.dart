@@ -24,7 +24,18 @@ class _BSEditBarberPageState extends State<BSEditBarberPage> {
   late String barberName;
   late String role;
   late String status;
-  List<String> availability = [];
+  List<String> selectedDays = []; // Tracks selected days
+  List<String> availability = []; // Tracks availability text
+
+  final List<String> allDays = [
+    'Monday',
+    'Tueday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
   final List<String> statusOptions = ['Working', 'Dayoff'];
   BSAddBarberController addBarberController = BSAddBarberController();
 
@@ -51,6 +62,8 @@ class _BSEditBarberPageState extends State<BSEditBarberPage> {
     availability = widget.bsAddBarbers.availability;
     barberName = widget.bsAddBarbers.barberName;
     fetchBarbers();
+
+    availability = selectedDays;
   }
 
   static bool isLoading = false;
@@ -58,6 +71,20 @@ class _BSEditBarberPageState extends State<BSEditBarberPage> {
   void setLoading(bool value) {
     isLoading = value;
     setState(() {});
+  }
+
+  void updateAvailabilityFromText(String value) {
+    setState(() {
+      // Parse and clean input text
+      availability = value
+          .split(',')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+      selectedDays = availability
+          .where((day) => allDays.contains(day))
+          .toList(); // Ensure only valid days are selected
+    });
   }
 
   @override
@@ -94,22 +121,6 @@ class _BSEditBarberPageState extends State<BSEditBarberPage> {
             child: ListView(
               padding: EdgeInsets.all(screenWidth * 0.05),
               children: [
-                TextFormField(
-                  initialValue: widget.bsAddBarbers.barberName,
-                  decoration: InputDecoration(
-                    labelText: 'Barber Name',
-                    labelStyle: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.035,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                  onChanged: (value) {
-                    barberName = value;
-                  },
-                ),
-                Gap(screenHeight * 0.02),
                 TextFormField(
                   initialValue: role,
                   decoration: InputDecoration(
@@ -156,23 +167,36 @@ class _BSEditBarberPageState extends State<BSEditBarberPage> {
                       value == null ? 'Please select a status' : null,
                 ),
                 Gap(screenHeight * 0.02),
-                TextFormField(
-                  initialValue: availability.join(', '),
-                  decoration: InputDecoration(
-                    labelText: 'Availability',
-                    hintText: 'Mon, Tues, Wed etc',
-                    labelStyle:
-                        GoogleFonts.poppins(fontSize: screenWidth * 0.035),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      availability =
-                          value.split(',').map((e) => e.trim()).toList();
-                    });
-                  },
+                Wrap(
+                  spacing: screenWidth * 0.02,
+                  children: allDays.map((day) {
+                    return ChoiceChip(
+                      label: Text(
+                        day,
+                        style: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.035,
+                          color: selectedDays.contains(day)
+                              ? const Color.fromARGB(255, 248, 248, 248)
+                              : const Color.fromARGB(255, 18, 18, 18),
+                        ),
+                      ),
+                      selected: selectedDays.contains(day),
+                      selectedColor: const Color.fromARGB(255, 45, 65, 69),
+                      onSelected: (bool selected) {
+                        setState(() {
+                          // Update selectedDays and availability list
+                          if (selected) {
+                            if (!selectedDays.contains(day)) {
+                              selectedDays.add(day);
+                            }
+                          } else {
+                            selectedDays.remove(day);
+                          }
+                          availability = selectedDays; // Sync availability
+                        });
+                      },
+                    );
+                  }).toList(),
                 ),
                 Gap(screenHeight * 0.04),
                 ElevatedButton(
@@ -180,6 +204,7 @@ class _BSEditBarberPageState extends State<BSEditBarberPage> {
                     if (_formKey.currentState!.validate()) {
                       final updatedBarber = BSAddBarbers(
                         id: widget.bsAddBarbers.id,
+                        affiliatedShop: widget.bsAddBarbers.affiliatedShop,
                         barberName: barberName,
                         role: role,
                         status: status,
@@ -188,11 +213,10 @@ class _BSEditBarberPageState extends State<BSEditBarberPage> {
                       );
 
                       addBarberController.editBarber(
-                        updatedBarber,
                         barberName: updatedBarber.barberName,
                         role: updatedBarber.role,
                         status: updatedBarber.status,
-                        availability: updatedBarber.availability,
+                        availability: updatedBarber.availability.join(', '),
                         userEmail: updatedBarber.userEmail,
                       );
                       Navigator.pop(context);

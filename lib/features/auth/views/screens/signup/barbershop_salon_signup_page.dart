@@ -100,6 +100,7 @@ class _BarbershopSalonPageState extends State<BarbershopSalonPage> {
 
         // Set the user data in Firestore
         await FirebaseFirestore.instance.collection('user').doc(userId).set({
+          'userId': userId,
           'shopName': shopNameController.text,
           'username': usernameController.text,
           'email': emailController.text,

@@ -4,7 +4,6 @@ import 'package:freshclips_capstone/features/admin-features/screens/admin_report
 import 'package:freshclips_capstone/features/admin-features/screens/admin_users_page.dart';
 import 'package:freshclips_capstone/features/admin-features/screens/admin_verify_page.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
-import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AdmingBottomNavbar extends StatefulWidget {
@@ -30,7 +29,9 @@ class _AdmingBottomNavbarState extends State<AdmingBottomNavbar> {
       AdminUsersPage(
         email: widget.email,
       ),
-      AdminReportsPage(),
+      AdminReportsPage(
+        email: widget.email,
+      ),
     ];
   }
 
@@ -57,9 +58,8 @@ class _AdmingBottomNavbarState extends State<AdmingBottomNavbar> {
         ),
       ),
       endDrawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
+        child: Column(
+          children: [
             SizedBox(
               height: screenHeight * 0.15,
               child: Stack(
@@ -84,117 +84,49 @@ class _AdmingBottomNavbarState extends State<AdmingBottomNavbar> {
                     ),
                   ),
                   Positioned(
-                    top: screenHeight * 0.06,
-                    left: screenWidth * 0.05,
-                    child: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'FRESH',
-                            style: TextStyle(
-                              fontFamily: 'Wetzilla-eZap6',
-                              fontSize: screenHeight * 0.052,
-                              fontWeight: FontWeight.w800,
-                              color: const Color.fromARGB(255, 248, 248, 248),
-                            ),
+                    top: screenHeight * 0.07,
+                    left: screenWidth * 0.07,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'FRESH',
+                                style: TextStyle(
+                                  fontFamily: 'Wetzilla-eZap6',
+                                  fontSize: screenHeight * 0.052,
+                                  fontWeight: FontWeight.w800,
+                                  color:
+                                      const Color.fromARGB(255, 248, 248, 248),
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' CLIPS',
+                                style: TextStyle(
+                                  fontFamily: 'Asterone DEMO',
+                                  fontSize: screenHeight * 0.040,
+                                  fontWeight: FontWeight.w700,
+                                  color:
+                                      const Color.fromARGB(255, 248, 248, 248),
+                                ),
+                              ),
+                            ],
                           ),
-                          TextSpan(
-                            text: ' CLIPS',
-                            style: TextStyle(
-                              fontFamily: 'Asterone DEMO',
-                              fontSize: screenHeight * 0.040,
-                              fontWeight: FontWeight.w700,
-                              color: const Color.fromARGB(255, 248, 248, 248),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-            ListTile(
-              leading: Icon(
-                Icons.verified_user_rounded,
-                size: screenWidth * 0.06,
-                color: const Color.fromARGB(255, 48, 65, 69),
-              ),
-              title: Text(
-                'Verify',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 0;
-                });
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.people_alt_rounded,
-                size: screenWidth * 0.06,
-                color: const Color.fromARGB(255, 48, 65, 69),
-              ),
-              title: Text(
-                'Users',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 1;
-                });
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.report,
-                size: screenWidth * 0.06,
-                color: const Color.fromARGB(255, 48, 65, 69),
-              ),
-              title: Text(
-                'Reports',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 2;
-                });
-              },
-            ),
-            Gap(screenHeight * 0.58),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+              padding: EdgeInsets.only(
+                left: screenWidth * 0.04,
+                right: screenWidth * 0.04,
+                top: screenHeight * 0.77,
+              ),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 48, 65, 69),
@@ -226,7 +158,7 @@ class _AdmingBottomNavbarState extends State<AdmingBottomNavbar> {
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

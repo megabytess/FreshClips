@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appointment_page/screens/bs_booking_details_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class BSCompletedAppointmentPage extends StatelessWidget {
   const BSCompletedAppointmentPage(
@@ -40,10 +41,11 @@ class BSCompletedAppointmentPage extends StatelessWidget {
             return Center(
               child: Center(
                 child: Text(
-                  'No Completed appointments for today.',
+                  'Completed appointments will appear here',
                   style: GoogleFonts.poppins(
                     fontSize: screenWidth * 0.035,
-                    color: const Color.fromARGB(255, 120, 120, 120),
+                    fontWeight: FontWeight.w400,
+                    color: Colors.grey[700],
                   ),
                 ),
               ),
@@ -56,17 +58,19 @@ class BSCompletedAppointmentPage extends StatelessWidget {
             itemCount: appointments.length,
             itemBuilder: (context, index) {
               final appointment = appointments[index];
-              final clientName = appointment['clientName'];
-              // final selectedDate = appointment['selectedDate'];
-              final selectedTime = appointment['selectedTime'];
+              final selectedServices = appointment['selectedServices']
+                  .map((service) => service['title'])
+                  .join(', ');
               final totalPrice = appointment['selectedServices']
-                  // ignore: avoid_types_as_parameter_names
                   .fold(0, (sum, service) => sum + (service['price'] ?? 0))
                   .toInt();
 
-              // final DateTime date = DateTime.parse(selectedDate);
-              // final String formattedDate =
-              //     DateFormat('MMMM dd, yyyy').format(date);
+              final selectedTime = appointment['selectedTime'];
+              DateTime selectedDate =
+                  DateFormat('MMMM d, yyyy').parse(appointment['selectedDate']);
+              String formattedMonth =
+                  DateFormat('MMM').format(selectedDate).toUpperCase();
+              String formattedDay = DateFormat('dd').format(selectedDate);
 
               return InkWell(
                 onTap: () {
@@ -85,66 +89,151 @@ class BSCompletedAppointmentPage extends StatelessWidget {
                         note: appointment['note'],
                         price: totalPrice,
                         clientEmail: clientEmail,
-                        isClient: isClient,
+                        isClient: isClient == true,
+                        selectedAffiliateBarber:
+                            appointment['selectedAffiliateBarber'] ?? 'N/A',
+                        shopName: appointment['shopName'] ?? 'N/A',
+                        barberImageUrl: appointment['barberImageUrl'] ?? 'N/A',
                       ),
                     ),
                   );
                 },
-                child: Card(
-                  color: const Color.fromARGB(255, 186, 199, 206),
+                child: Container(
                   margin: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.03,
                     vertical: screenHeight * 0.01,
-                    horizontal: screenWidth * 0.04,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 48, 65, 69),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(screenWidth * 0.03),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.06,
+                      vertical: screenHeight * 0.015,
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          clientName,
-                          style: GoogleFonts.poppins(
-                            fontSize: screenWidth * 0.04,
-                            fontWeight: FontWeight.w600,
-                            color: const Color.fromARGB(255, 18, 18, 18),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                        // Left Side - Date
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              ' ${appointment['selectedDate']} ',
+                              formattedDay,
                               style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.028,
-                                fontWeight: FontWeight.w500,
-                                color: const Color.fromARGB(255, 18, 18, 18),
+                                fontSize: screenWidth * 0.08,
+                                fontWeight: FontWeight.w600,
+                                color: const Color.fromARGB(255, 248, 248, 248),
+                                height: 1,
                               ),
                             ),
-                            Gap(screenWidth * 0.01),
-                            Icon(
-                              Icons.circle,
-                              size: screenWidth * 0.01,
-                              color: const Color.fromARGB(255, 18, 18, 18),
-                            ),
-                            Gap(screenWidth * 0.01),
                             Text(
-                              '$selectedTime',
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.028,
-                                fontWeight: FontWeight.w500,
-                                color: const Color.fromARGB(255, 18, 18, 18),
-                              ),
-                            ),
-                            Gap(screenWidth * 0.11),
-                            Text(
-                              'Completed',
+                              formattedMonth,
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.04,
-                                fontWeight: FontWeight.w700,
-                                color: const Color.fromARGB(255, 48, 65, 69),
+                                fontWeight: FontWeight.w300,
+                                color: const Color.fromARGB(255, 248, 248, 248),
+                                height: 1,
                               ),
                             ),
                           ],
+                        ),
+                        Gap(screenWidth * 0.08),
+                        Container(
+                          width: 1,
+                          height: screenHeight * 0.08,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 248, 248, 248),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        Gap(screenWidth * 0.15),
+
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: screenHeight * 0.025,
+                                width: screenWidth * 0.175,
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color.fromARGB(255, 186, 199, 206),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: screenWidth * 0.02,
+                                  vertical: screenHeight * 0.005,
+                                ),
+                                child: Text(
+                                  appointment['status'],
+                                  style: GoogleFonts.poppins(
+                                    fontSize: screenWidth * 0.02,
+                                    fontWeight: FontWeight.w700,
+                                    color:
+                                        const Color.fromARGB(255, 48, 65, 69),
+                                  ),
+                                ),
+                              ),
+                              Gap(screenHeight * 0.01),
+                              Row(
+                                children: [
+                                  // Circle
+                                  Container(
+                                    width: screenWidth * 0.015,
+                                    height: screenWidth * 0.015,
+                                    decoration: const BoxDecoration(
+                                      color: Color.fromARGB(255, 248, 248, 248),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  Gap(screenWidth * 0.02),
+                                  // Text
+                                  Text(
+                                    'Service: $selectedServices',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: screenWidth * 0.028,
+                                      fontWeight: FontWeight.w400,
+                                      color: const Color.fromARGB(
+                                          255, 248, 248, 248),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Gap(screenHeight * 0.01),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: screenWidth * 0.015,
+                                    height: screenWidth * 0.015,
+                                    decoration: const BoxDecoration(
+                                      color: Color.fromARGB(255, 248, 248, 248),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  Gap(screenWidth * 0.02),
+                                  Text(
+                                    'Time: $selectedTime',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: screenWidth * 0.028,
+                                      fontWeight: FontWeight.w400,
+                                      color: const Color.fromARGB(
+                                          255, 248, 248, 248),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

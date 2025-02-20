@@ -64,7 +64,7 @@ class _BSReviewPageState extends State<BSReviewPage> {
                     child: Text(
                       'Reviews',
                       style: GoogleFonts.poppins(
-                        color: const Color.fromARGB(255, 18, 18, 18),
+                        color: const Color.fromARGB(255, 45, 65, 69),
                         fontSize: screenWidth * 0.035,
                         fontWeight: FontWeight.w600,
                       ),
@@ -147,7 +147,7 @@ class _BSReviewPageState extends State<BSReviewPage> {
                     child: Text(
                       'Leave a Review',
                       style: GoogleFonts.poppins(
-                        color: const Color.fromARGB(255, 18, 18, 18),
+                        color: const Color.fromARGB(255, 48, 65, 69),
                         fontSize: screenWidth * 0.023,
                         fontWeight: FontWeight.w500,
                       ),
@@ -227,7 +227,7 @@ class _BSReviewPageState extends State<BSReviewPage> {
                                       username,
                                       style: GoogleFonts.poppins(
                                         color: const Color.fromARGB(
-                                            255, 18, 18, 18),
+                                            255, 48, 65, 69),
                                         fontSize:
                                             MediaQuery.of(context).size.width *
                                                 0.035,
@@ -243,7 +243,7 @@ class _BSReviewPageState extends State<BSReviewPage> {
                                                 0.014,
                                         fontWeight: FontWeight.w500,
                                         color: const Color.fromARGB(
-                                            255, 18, 18, 18),
+                                            255, 48, 65, 69),
                                       ),
                                     ),
                                     Padding(
@@ -267,8 +267,8 @@ class _BSReviewPageState extends State<BSReviewPage> {
                                 Text(
                                   'Client',
                                   style: GoogleFonts.poppins(
-                                    color: const Color.fromARGB(
-                                        255, 118, 118, 118),
+                                    color:
+                                        const Color.fromARGB(100, 48, 65, 69),
                                     fontSize:
                                         MediaQuery.of(context).size.width *
                                             0.03,
@@ -286,7 +286,7 @@ class _BSReviewPageState extends State<BSReviewPage> {
                                     reviewText,
                                     style: GoogleFonts.poppins(
                                       color:
-                                          const Color.fromARGB(255, 18, 18, 18),
+                                          const Color.fromARGB(255, 48, 65, 69),
                                       fontSize:
                                           MediaQuery.of(context).size.width *
                                               0.030,

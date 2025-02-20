@@ -18,12 +18,17 @@ class FreshClips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'FreshClips',
       debugShowCheckedModeBanner: false,
-      home:
-          // BookingTemplatePage(),
-          LandingPage(),
+      theme: ThemeData(
+        primaryColor: const Color(0xFFF8F8F8),
+        scaffoldBackgroundColor: const Color(0xFFF8F8F8),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFF8F8F8),
+        ),
+      ),
+      home: const LandingPage(),
     );
   }
 }

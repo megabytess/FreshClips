@@ -12,28 +12,29 @@ class RectanglePickerImage extends StatefulWidget {
   final Function(File pickedImage) onImagePick;
 
   @override
-  State<RectanglePickerImage> createState() => _PickerImageState();
+  State<RectanglePickerImage> createState() => _RectanglePickerImageState();
 }
 
-class _PickerImageState extends State<RectanglePickerImage> {
-  File? _image;
+class _RectanglePickerImageState extends State<RectanglePickerImage> {
+  File? rectangleImage;
 
   final _picker = ImagePicker();
 
-  Future getImagePickerRectangle() async {
+  Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 80,
+      imageQuality: 100,
+      maxWidth: 600,
     );
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-        widget.onImagePick(
-            _image!); // Notify the parent widget of the selected image
-      } else {
-        print('No image selected.');
-      }
-    });
+
+    if (pickedFile != null) {
+      setState(() {
+        rectangleImage = File(pickedFile.path);
+      });
+      widget.onImagePick(rectangleImage!);
+    } else {
+      print('No image selected.');
+    }
   }
 
   @override
@@ -41,9 +42,7 @@ class _PickerImageState extends State<RectanglePickerImage> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return InkWell(
-      onTap: () {
-        getImagePickerRectangle();
-      },
+      onTap: _pickImage,
       child: Container(
         width: double.infinity,
         height: screenWidth * 0.5,
@@ -51,14 +50,12 @@ class _PickerImageState extends State<RectanglePickerImage> {
           border: Border.all(color: Colors.grey),
           borderRadius: BorderRadius.circular(15),
         ),
-        child: _image != null
+        child: rectangleImage != null
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: Image.file(
-                  _image!.absolute,
-                  fit: BoxFit.fitWidth,
-                  width: screenWidth * 0.3,
-                  height: screenWidth * 0.3,
+                  rectangleImage!,
+                  fit: BoxFit.cover,
                 ),
               )
             : Icon(

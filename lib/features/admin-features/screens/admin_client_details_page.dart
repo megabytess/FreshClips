@@ -24,6 +24,7 @@ class _AdminClientDetailsPageState extends State<AdminClientDetailsPage> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -40,7 +41,6 @@ class _AdminClientDetailsPageState extends State<AdminClientDetailsPage> {
       body: AnimatedBuilder(
         animation: clientController,
         builder: (context, snapshot) {
-          // Check if the data is still loading
           if (clientController.isLoading) {
             return const Center(
               child: CircularProgressIndicator(

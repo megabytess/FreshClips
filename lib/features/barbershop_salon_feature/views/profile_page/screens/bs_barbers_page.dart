@@ -5,14 +5,19 @@ import 'package:freshclips_capstone/features/barbershop_salon_feature/controller
 import 'package:freshclips_capstone/features/barbershop_salon_feature/models/bs_add_barbers_model.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/widgets/bs_add_barbers.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/widgets/bs_edit_barber_page.dart';
+import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BSBarbersPage extends StatefulWidget {
-  const BSBarbersPage(
-      {super.key, required this.userEmail, required this.isClient});
+  const BSBarbersPage({
+    super.key,
+    required this.userEmail,
+    required this.isClient,
+    required this.clientEmail,
+  });
   final String userEmail;
   final bool isClient;
-
+  final String clientEmail;
   @override
   State<BSBarbersPage> createState() => _BSBarbersPageState();
 }
@@ -26,28 +31,7 @@ class _BSBarbersPageState extends State<BSBarbersPage> {
   @override
   void initState() {
     super.initState();
-    fetchBarbers();
     currentUserEmail = FirebaseAuth.instance.currentUser?.email;
-  }
-
-  Future<void> fetchBarbers() async {
-    final barbersSnapshot = await FirebaseFirestore.instance
-        .collection('availableBarbers')
-        .where('userEmail', isEqualTo: widget.userEmail)
-        .get();
-
-    setState(() {
-      barbers = barbersSnapshot.docs.map((doc) {
-        return {
-          'id': doc.id,
-          'userEmail': doc['userEmail'] ?? '',
-          'name': doc['barberName'] ?? 'Unknown',
-          'role': doc['role'] ?? 'Unknown',
-          'status': doc['status'] ?? 'Unknown',
-          'availability': doc['availability'] ?? 'Unknown',
-        };
-      }).toList();
-    });
   }
 
   @override
@@ -59,82 +43,130 @@ class _BSBarbersPageState extends State<BSBarbersPage> {
       backgroundColor: const Color.fromARGB(255, 248, 248, 248),
       body: Stack(
         children: [
-          // Main content - either "No available barbers" message or the list of barbers
-          barbers.isEmpty
-              ? Center(
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('availableBarbers')
+                .where('userEmail', isEqualTo: widget.userEmail)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                    child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Color.fromARGB(255, 189, 49, 71),
+                  ),
+                ));
+              }
+
+              if (snapshot.hasError) {
+                return Center(
                   child: Text(
-                    "No available barbers",
+                    "Error loading barbers.",
                     style: GoogleFonts.poppins(
                       fontSize: screenWidth * 0.045,
                       fontWeight: FontWeight.w600,
                       color: const Color.fromARGB(255, 18, 18, 18),
                     ),
                   ),
-                )
-              : Padding(
-                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
-                  child: ListView.builder(
-                    itemCount: barbers.length,
-                    itemBuilder: (context, index) {
-                      final barber = barbers[index];
+                );
+              }
 
-                      return ListTile(
-                        contentPadding: EdgeInsets.symmetric(
-                          vertical: screenHeight * 0.010,
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(
+                  child: Text(
+                    "No available barbers",
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.045,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                );
+              }
+
+              final barbers = snapshot.data!.docs.map((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                return {
+                  'id': doc.id,
+                  'userEmail': data['userEmail'] ?? '',
+                  'barberName': data['barberName'] ?? 'Unknown',
+                  'barberImageUrl': data['barberImageUrl'] ?? '',
+                  'role': data['role'] ?? 'Unknown',
+                  'status': data['status'] ?? 'Unknown',
+                  'availability': data['availability'] ?? 'Unknown',
+                };
+              }).toList();
+
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                child: ListView.builder(
+                  itemCount: barbers.length,
+                  itemBuilder: (context, index) {
+                    final barber = barbers[index];
+
+                    return ListTile(
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: screenHeight * 0.010,
+                      ),
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.transparent,
+                        radius: screenWidth * 0.075,
+                        backgroundImage: NetworkImage(
+                          barber['barberImageUrl'],
                         ),
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          radius: screenWidth * 0.075,
-                          backgroundImage: const AssetImage(
-                            'assets/images/icons/for_servicess.jpg',
+                      ),
+                      title: Text(
+                        barber['barberName'] ?? 'Unknown Name',
+                        style: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.035,
+                          fontWeight: FontWeight.w600,
+                          color: const Color.fromARGB(255, 45, 65, 69),
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            barber['role'] ?? 'Role not specified',
+                            style: GoogleFonts.poppins(
+                              fontSize: screenWidth * 0.029,
+                              fontWeight: FontWeight.w600,
+                              color: const Color.fromARGB(100, 45, 65, 69),
+                            ),
                           ),
-                        ),
-                        title: Text(
-                          barber['name'] ?? 'Unknown Name',
-                          style: GoogleFonts.poppins(
-                            fontSize: screenWidth * 0.035,
-                            fontWeight: FontWeight.w600,
-                            color: const Color.fromARGB(255, 23, 23, 23),
+                          Text(
+                            "${barber['status'] ?? 'Unknown'}",
+                            style: GoogleFonts.poppins(
+                              fontSize: screenWidth * 0.028,
+                              fontWeight: FontWeight.w600,
+                              color: barber['status'] == "Working"
+                                  ? Colors.green
+                                  : Colors.red,
+                            ),
                           ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              barber['role'] ?? 'Role not specified',
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.029,
-                                fontWeight: FontWeight.w600,
-                                color: const Color.fromARGB(255, 100, 100, 100),
-                              ),
+                          Text(
+                            "${barber['availability'] ?? 'Not available'}",
+                            style: GoogleFonts.poppins(
+                              fontSize: screenWidth * 0.025,
+                              fontWeight: FontWeight.w500,
+                              color: const Color.fromARGB(100, 45, 65, 69),
                             ),
-                            Text(
-                              "${barber['status'] ?? 'Unknown'}",
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.028,
-                                fontWeight: FontWeight.w600,
-                                color: barber['status'] == "Working"
-                                    ? Colors.green
-                                    : Colors.red,
-                              ),
-                            ),
-                            Text(
-                              "${barber['availability'] ?? 'Not available'}",
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.028,
-                                fontWeight: FontWeight.w600,
-                                color: const Color.fromARGB(255, 100, 100, 100),
-                              ),
-                            ),
-                          ],
-                        ),
-                        trailing: currentUserEmail == widget.userEmail
-                            ? Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: Icon(Icons.edit,
-                                        size: screenWidth * 0.06),
+                          ),
+                        ],
+                      ),
+                      trailing: currentUserEmail == widget.userEmail
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 186, 199, 206),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      size: 20,
+                                      color: Color.fromARGB(255, 49, 65, 69),
+                                    ),
                                     onPressed: () {
                                       Navigator.push(
                                         context,
@@ -146,33 +178,37 @@ class _BSBarbersPageState extends State<BSBarbersPage> {
                                                 BSAddBarbers.fromMap(barber),
                                           ),
                                         ),
-                                      ).then((value) {
-                                        if (value == true) {
-                                          fetchBarbers();
-                                        }
-                                      });
+                                      ).then((value) {});
                                     },
                                   ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete),
+                                ),
+                                Gap(screenWidth * 0.04),
+                                CircleAvatar(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 186, 199, 206),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.delete_rounded,
+                                      size: 20,
+                                      color: Color.fromARGB(255, 49, 65, 69),
+                                    ),
                                     onPressed: () {
                                       BSAddBarberController()
                                           .deleteBarbers(
                                               widget.userEmail, barber['id'])
-                                          .then((_) {
-                                        fetchBarbers();
-                                      });
+                                          .then((_) {});
                                     },
                                   ),
-                                ],
-                              )
-                            : null,
-                      );
-                    },
-                  ),
+                                ),
+                              ],
+                            )
+                          : null,
+                    );
+                  },
                 ),
-
-          // Conditional Positioned "Add Barber" button
+              );
+            },
+          ),
           if (currentUserEmail == widget.userEmail)
             Positioned(
               bottom: screenWidth * 0.04,
@@ -197,18 +233,18 @@ class _BSBarbersPageState extends State<BSBarbersPage> {
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            BSAddBarbersPage(email: widget.userEmail),
+                        builder: (context) => BSAddBarbersPage(
+                          email: widget.userEmail,
+                          clientEmail: widget.clientEmail,
+                        ),
                       ),
                     );
-                    if (result == true) {
-                      fetchBarbers(); // Refresh list on return
-                    }
+                    if (result == true) {}
                   },
                   borderRadius: BorderRadius.circular(screenWidth * 0.04),
                   child: Center(
                     child: Text(
-                      'Add Barber',
+                      'Add barber',
                       style: GoogleFonts.poppins(
                         fontSize: screenWidth * 0.033,
                         fontWeight: FontWeight.w400,

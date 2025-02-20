@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appointment_page/screens/bs_schedule_details.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart'; // For date formatting
 
@@ -80,14 +79,14 @@ class OnTheDaySchedulePage extends StatelessWidget {
                         ),
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ScheduleDetailsPage(
-                                    // appointmentDetails: appointment,
-                                    ),
-                              ),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => ScheduleDetailsPage(
+                            //         // appointmentDetails: appointment,
+                            //         ),
+                            //   ),
+                            // );
                           },
                           child: Container(
                             width: double.infinity,

@@ -112,6 +112,7 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
 
         // Save user data in Firestore
         await FirebaseFirestore.instance.collection('user').doc(userId).set({
+          'userId': userId,
           'lastName': lastNameController.text,
           'firstName': firstNameController.text,
           'username': usernameController.text,
@@ -208,7 +209,6 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 248, 248, 248),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
@@ -466,9 +466,11 @@ class _BarberSignupPageState extends State<BarberSignupPage> {
                                 });
                               }
                             } catch (e) {
-                              setState(() {
-                                selectedAddress = "Error fetching address";
-                              });
+                              setState(
+                                () {
+                                  selectedAddress = "Error fetching address";
+                                },
+                              );
                             }
                           },
                         ),

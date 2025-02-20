@@ -19,15 +19,14 @@ class BSUpcomingAppointmetnsPage extends StatelessWidget {
     // final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 248, 248, 248),
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 248, 248, 248),
+        backgroundColor: Colors.transparent,
         title: Text(
           'Upcoming Appointments',
           style: GoogleFonts.poppins(
             fontSize: screenWidth * 0.04,
             fontWeight: FontWeight.w600,
-            color: const Color.fromARGB(255, 18, 18, 18),
+            color: const Color.fromARGB(255, 48, 65, 69),
           ),
         ),
         centerTitle: true,

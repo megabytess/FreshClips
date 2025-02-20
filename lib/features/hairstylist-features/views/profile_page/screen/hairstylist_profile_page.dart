@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tabbar_page/flutter_tabbar_page.dart';
 import 'package:freshclips_capstone/core/booking_system/01_booking_template_page.dart';
+import 'package:freshclips_capstone/features/admin-features/screens/admin_bs_details_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_ratings_review_controller.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/message_page/screens/bs_chatroom_mesage_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/hairstylist_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/working_hours_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/models/working_hours_model.dart';
@@ -57,11 +59,14 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
       page: HairstylistInfoPage(
         email: widget.email,
         isClient: true,
+        userEmail: widget.email,
       ),
     ));
     listPages.add(PageTabItemModel(
       title: "Timeline",
-      page: const HairstylistTimelinePage(),
+      page: HairstylistTimelinePage(
+        email: widget.email,
+      ),
     ));
     listPages.add(PageTabItemModel(
       title: "Review",
@@ -216,6 +221,13 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
     });
   }
 
+// GenerateChatRoomId
+  String generateChatRoomId(String senderEmail, String receiverEmail) {
+    List<String> emails = [senderEmail, receiverEmail];
+    emails.sort();
+    return emails.join('_');
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -246,7 +258,6 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
         }
 
         return Scaffold(
-          backgroundColor: const Color.fromARGB(255, 248, 248, 248),
           appBar: widget.isClient && currentUserEmail != widget.email
               ? AppBar(
                   backgroundColor: Colors.transparent,
@@ -290,7 +301,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                       Text(
                         '${hairstylistController.hairstylist!.firstName} ${hairstylistController.hairstylist!.lastName}',
                         style: GoogleFonts.poppins(
-                          color: const Color.fromARGB(255, 18, 18, 18),
+                          color: const Color.fromARGB(255, 49, 65, 69),
                           fontSize: screenWidth * 0.045,
                           fontWeight: FontWeight.w600,
                         ),
@@ -318,7 +329,8 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                                 return Text(
                                   'Error loading rating',
                                   style: GoogleFonts.poppins(
-                                    color: Colors.black,
+                                    color:
+                                        const Color.fromARGB(255, 49, 65, 69),
                                     fontSize: screenWidth * 0.035,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -329,7 +341,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                                   rating.toStringAsFixed(1),
                                   style: GoogleFonts.poppins(
                                     color:
-                                        const Color.fromARGB(255, 18, 18, 18),
+                                        const Color.fromARGB(255, 49, 65, 69),
                                     fontSize: screenWidth * 0.035,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -370,6 +382,8 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                                       style: GoogleFonts.poppins(
                                         fontSize: screenWidth * 0.04,
                                         fontWeight: FontWeight.w600,
+                                        color: const Color.fromARGB(
+                                            255, 49, 65, 69),
                                       ),
                                     ),
                                     const Divider(),
@@ -395,7 +409,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                                                 fontSize: screenWidth * 0.035,
                                                 fontWeight: FontWeight.w400,
                                                 color: const Color.fromARGB(
-                                                    255, 18, 18, 18),
+                                                    255, 49, 65, 69),
                                               ),
                                             ),
                                             subtitle: Text(
@@ -405,7 +419,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                                                 fontSize: screenWidth * 0.035,
                                                 fontWeight: FontWeight.w600,
                                                 color: const Color.fromARGB(
-                                                    255, 18, 18, 18),
+                                                    255, 49, 65, 69),
                                               ),
                                             ),
                                             enabled: false, // Non-clickable
@@ -427,7 +441,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.035,
                                 fontWeight: FontWeight.w400,
-                                color: const Color.fromARGB(255, 18, 18, 18),
+                                color: const Color.fromARGB(255, 49, 65, 69),
                               ),
                             ),
                             const Icon(Icons.arrow_drop_down),
@@ -442,7 +456,21 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                               height: screenHeight * 0.05,
                               child: OutlinedButton(
                                 onPressed: () {
-                                  // Add your button action here
+                                  String chatRoomId = generateChatRoomId(
+                                      widget.clientEmail, widget.email);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return BSChatroomMessagePage(
+                                          clientEmail: widget.clientEmail,
+                                          userEmail: widget.email,
+                                          chatRoomId: chatRoomId,
+                                          receiverEmail: widget.email,
+                                        );
+                                      },
+                                    ),
+                                  );
                                 },
                                 style: OutlinedButton.styleFrom(
                                   side: const BorderSide(
@@ -474,11 +502,10 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                                   MaterialPageRoute(
                                     builder: (context) => BookingTemplatePage(
                                       clientEmail: widget.email,
-                                      // accountName: barbershopsalonController
-                                      //     .barbershopsalon!.shopName,
                                       userEmail: widget.email,
-                                      // userType:
-                                      //     widget.isClient ? 'Client' : 'Owner',
+                                      shopName: barbershopsalonController
+                                              .barbershopsalon?.shopName ??
+                                          '',
                                     ),
                                   ),
                                 );
@@ -501,7 +528,7 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                                   color: Colors.white,
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                     ],
@@ -509,64 +536,66 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
                 ],
               ),
               Gap(screenHeight * 0.02),
-              TabBarPage(
-                controller: _controller,
-                pages: listPages,
-                isSwipable: true,
-                tabBackgroundColor: Colors.transparent,
-                tabitemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () {
-                      _controller.onTabTap(index);
-                    },
-                    child: SizedBox(
-                      width:
-                          MediaQuery.of(context).size.width / listPages.length,
-                      child: Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          Center(
-                            child: Text(
-                              listPages[index].title ?? "",
-                              style: GoogleFonts.poppins(
-                                fontWeight: _controller.currentIndex == index
-                                    ? FontWeight.w700
-                                    : FontWeight.w500,
-                                color: _controller.currentIndex == index
-                                    ? const Color.fromARGB(255, 18, 18, 18)
-                                    : const Color.fromARGB(30, 18, 18, 18),
-                                fontSize: screenWidth * 0.035,
+              Expanded(
+                child: TabBarPage(
+                  controller: _controller,
+                  pages: listPages,
+                  isSwipable: true,
+                  tabBackgroundColor: Colors.transparent,
+                  tabitemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () {
+                        _controller.onTabTap(index);
+                      },
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width /
+                            listPages.length,
+                        child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            Center(
+                              child: Text(
+                                listPages[index].title ?? "",
+                                style: GoogleFonts.poppins(
+                                  fontWeight: _controller.currentIndex == index
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
+                                  color: _controller.currentIndex == index
+                                      ? const Color.fromARGB(255, 49, 65, 69)
+                                      : const Color.fromARGB(30, 18, 18, 18),
+                                  fontSize: screenWidth * 0.035,
+                                ),
                               ),
                             ),
-                          ),
-                          Container(
-                            height: 4,
-                            width: screenWidth * 0.18,
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(screenWidth * 0.10),
-                              gradient: _controller.currentIndex == index
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color.fromARGB(255, 189, 49, 71),
-                                        Color.fromARGB(255, 255, 106, 0),
-                                      ],
-                                      begin: Alignment.centerLeft,
-                                      end: Alignment.centerRight,
-                                    )
-                                  : const LinearGradient(
-                                      colors: [
-                                        Colors.transparent,
-                                        Colors.transparent
-                                      ],
-                                    ),
+                            Container(
+                              height: 4,
+                              width: screenWidth * 0.18,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(screenWidth * 0.10),
+                                gradient: _controller.currentIndex == index
+                                    ? const LinearGradient(
+                                        colors: [
+                                          Color.fromARGB(255, 189, 49, 71),
+                                          Color.fromARGB(255, 255, 106, 0),
+                                        ],
+                                        begin: Alignment.centerLeft,
+                                        end: Alignment.centerRight,
+                                      )
+                                    : const LinearGradient(
+                                        colors: [
+                                          Colors.transparent,
+                                          Colors.transparent
+                                        ],
+                                      ),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ],
           ),
@@ -575,106 +604,3 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
     );
   }
 }
-
-
-
-
-//  (widget.isClient && currentUserEmail != widget.email)
-//                           ? Row(
-//                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                               children: [
-//                                 Text(
-//                                   hairstylistController.selectedStatus,
-//                                   style: GoogleFonts.poppins(
-//                                     fontSize: screenWidth * 0.032,
-//                                     fontWeight: FontWeight.w700,
-//                                     color:
-//                                         hairstylistController.selectedStatus ==
-//                                                 'AVAILABLE'
-//                                             ? Colors.green
-//                                             : Colors.red,
-//                                   ),
-//                                 ),
-//                               ],
-//                             )
-//                           : GestureDetector(
-//                               onTap: () {
-//                                 showModalBottomSheet(
-//                                   context: context,
-//                                   builder: (BuildContext context) {
-//                                     return Container(
-//                                       padding: EdgeInsets.symmetric(
-//                                         vertical: screenHeight * 0.02,
-//                                         horizontal: screenWidth * 0.03,
-//                                       ),
-//                                       height: screenHeight * 0.3,
-//                                       child: Column(
-//                                         crossAxisAlignment:
-//                                             CrossAxisAlignment.start,
-//                                         children: [
-//                                           Text(
-//                                             'Select Status',
-//                                             style: GoogleFonts.poppins(
-//                                               fontSize: screenWidth * 0.04,
-//                                               fontWeight: FontWeight.w600,
-//                                             ),
-//                                           ),
-//                                           const Divider(),
-//                                           ListTile(
-//                                             title: Text(
-//                                               'AVAILABLE',
-//                                               style: GoogleFonts.poppins(
-//                                                 fontSize: screenWidth * 0.035,
-//                                                 fontWeight: FontWeight.w600,
-//                                                 color: const Color.fromARGB(
-//                                                     255, 18, 18, 18),
-//                                               ),
-//                                             ),
-//                                             onTap: () {
-//                                               hairstylistController
-//                                                   .updateStatus('AVAILABLE');
-//                                               Navigator.pop(context);
-//                                             },
-//                                           ),
-//                                           ListTile(
-//                                             title: Text(
-//                                               'NOT AVAILABLE',
-//                                               style: GoogleFonts.poppins(
-//                                                 fontSize: screenWidth * 0.035,
-//                                                 fontWeight: FontWeight.w600,
-//                                                 color: const Color.fromARGB(
-//                                                     255, 18, 18, 18),
-//                                               ),
-//                                             ),
-//                                             onTap: () {
-//                                               hairstylistController
-//                                                   .updateStatus(
-//                                                       'NOT AVAILABLE');
-//                                               Navigator.pop(context);
-//                                             },
-//                                           ),
-//                                         ],
-//                                       ),
-//                                     );
-//                                   },
-//                                 );
-//                               },
-//                               child: Row(
-//                                 mainAxisAlignment:
-//                                     MainAxisAlignment.spaceBetween,
-//                                 children: [
-//                                   Text(
-//                                     hairstylistController.selectedStatus,
-//                                     style: GoogleFonts.poppins(
-//                                       fontSize: screenWidth * 0.032,
-//                                       fontWeight: FontWeight.w700,
-//                                       color: hairstylistController
-//                                                   .selectedStatus ==
-//                                               'AVAIABLE'
-//                                           ? Colors.green
-//                                           : Colors.red,
-//                                     ),
-//                                   ),
-//                                 ],
-//                               ),
-//                             ),

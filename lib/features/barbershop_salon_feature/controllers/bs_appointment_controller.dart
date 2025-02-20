@@ -1,6 +1,7 @@
 // appointments_controller.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppointmentsController {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -28,15 +29,82 @@ class AppointmentsController {
 
   void declineAppointment(
       BuildContext context, String appointmentId, String userEmail) async {
-    try {
-      await firestore.collection('appointments').doc(appointmentId).update({
-        'status': 'Declined',
-      });
+    TextEditingController reasonController = TextEditingController();
 
-      print("Appointment declined successfully!");
-    } catch (e) {
-      print("Error declining appointment: $e");
-    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+          title: Text(
+            'Input a Valid Reason',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: TextFormField(
+            controller: reasonController,
+            decoration: InputDecoration(
+              labelText: 'Reason for declining',
+              labelStyle: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                String reason = reasonController.text.trim();
+                if (reason.isNotEmpty) {
+                  try {
+                    await firestore
+                        .collection('appointments')
+                        .doc(appointmentId)
+                        .update({
+                      'status': 'Declined',
+                      'declinedReason': reason,
+                    });
+                    print("Appointment declined successfully!");
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  } catch (e) {
+                    print("Error declining appointment: $e");
+                  }
+                } else {
+                  print("Reason cannot be empty");
+                }
+              },
+              child: Text(
+                'Submit',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: const Color.fromARGB(255, 18, 18, 18),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void completeAppointment(
