@@ -137,6 +137,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  custom_info_window:
+    dependency: "direct main"
+    description:
+      name: custom_info_window
+      sha256: b7fce9017cb4b8a4319fa7f8080e4fdabfc65996df61c65cd2079dbaf93f56f5
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   easy_date_timeline:
     dependency: "direct main"
     description:
@@ -537,7 +545,7 @@ packages:
     source: hosted
     version: "0.15.4"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: b9c29a161230ee03d3ccf545097fccd9b87a5264228c5d348202e0f0c28f9010

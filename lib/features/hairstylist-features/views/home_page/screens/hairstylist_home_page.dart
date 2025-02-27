@@ -6,7 +6,6 @@ import 'package:freshclips_capstone/features/barbershop_salon_feature/controller
 import 'package:freshclips_capstone/features/barbershop_salon_feature/models/bs_post_model.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/home_page/screens/bs_comments_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/home_page/screens/bs_create_post_page.dart';
-import 'package:freshclips_capstone/features/barbershop_salon_feature/views/home_page/widgets/bs_haircut_ideas_categories_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:like_button/like_button.dart';
@@ -54,72 +53,72 @@ class _HairstylistHomePageState extends State<HairstylistHomePage> {
             physics: const BouncingScrollPhysics(),
             child: Column(
               children: [
-                Container(
-                  width: screenWidth * 0.96,
-                  height: screenHeight * 0.06,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 186, 199, 206),
-                    borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        top: screenHeight * 0.019,
-                        left: screenWidth * 0.03,
-                        child: Text(
-                          '  Hairstyle ideas',
-                          style: GoogleFonts.poppins(
-                            fontSize: screenWidth * 0.035,
-                            fontWeight: FontWeight.w600,
-                            color: const Color.fromARGB(255, 48, 65, 69),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: screenHeight * 0.014,
-                        right: screenWidth * 0.035,
-                        child: SizedBox(
-                          width: screenWidth * 0.2,
-                          height: screenHeight * 0.03,
-                          child: OutlinedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      HaircutIdeasCategories(),
-                                ),
-                              );
-                            },
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(
-                                color: Color.fromARGB(255, 48, 65, 69),
-                                width: 1,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                            child: Text(
-                              'Explore',
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.022,
-                                fontWeight: FontWeight.w500,
-                                color: const Color.fromARGB(255, 48, 65, 69),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Gap(screenHeight * 0.01),
-                Divider(
-                  color: Colors.grey[300],
-                  thickness: 1,
-                ),
-                Gap(screenHeight * 0.01),
+                // Container(
+                //   width: screenWidth * 0.96,
+                //   height: screenHeight * 0.06,
+                //   decoration: BoxDecoration(
+                //     color: const Color.fromARGB(255, 186, 199, 206),
+                //     borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                //   ),
+                //   child: Stack(
+                //     children: [
+                //       Positioned(
+                //         top: screenHeight * 0.019,
+                //         left: screenWidth * 0.03,
+                //         child: Text(
+                //           '  Hairstyle ideas',
+                //           style: GoogleFonts.poppins(
+                //             fontSize: screenWidth * 0.035,
+                //             fontWeight: FontWeight.w600,
+                //             color: const Color.fromARGB(255, 48, 65, 69),
+                //           ),
+                //         ),
+                //       ),
+                //       Positioned(
+                //         bottom: screenHeight * 0.014,
+                //         right: screenWidth * 0.035,
+                //         child: SizedBox(
+                //           width: screenWidth * 0.2,
+                //           height: screenHeight * 0.03,
+                //           child: OutlinedButton(
+                //             onPressed: () {
+                //               Navigator.push(
+                //                 context,
+                //                 MaterialPageRoute(
+                //                   builder: (context) =>
+                //                       HaircutIdeasCategories(),
+                //                 ),
+                //               );
+                //             },
+                //             style: OutlinedButton.styleFrom(
+                //               side: const BorderSide(
+                //                 color: Color.fromARGB(255, 48, 65, 69),
+                //                 width: 1,
+                //               ),
+                //               shape: RoundedRectangleBorder(
+                //                 borderRadius: BorderRadius.circular(20),
+                //               ),
+                //             ),
+                //             child: Text(
+                //               'Explore',
+                //               style: GoogleFonts.poppins(
+                //                 fontSize: screenWidth * 0.022,
+                //                 fontWeight: FontWeight.w500,
+                //                 color: const Color.fromARGB(255, 48, 65, 69),
+                //               ),
+                //             ),
+                //           ),
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // Gap(screenHeight * 0.01),
+                // Divider(
+                //   color: Colors.grey[300],
+                //   thickness: 1,
+                // ),
+                // Gap(screenHeight * 0.01),
                 Row(
                   children: [
                     Padding(

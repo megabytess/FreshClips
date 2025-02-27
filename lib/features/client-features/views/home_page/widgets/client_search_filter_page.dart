@@ -62,7 +62,6 @@ class _ClientSearchFilterPageState extends State<ClientSearchFilterPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: EdgeInsets.only(
@@ -91,7 +90,7 @@ class _ClientSearchFilterPageState extends State<ClientSearchFilterPage> {
                     fillColor: Colors.grey[200],
                   ),
                   style: GoogleFonts.poppins(
-                    color: const Color.fromARGB(255, 18, 18, 18),
+                    color: const Color.fromARGB(255, 48, 65, 69),
                     fontSize: screenWidth * 0.035,
                   ),
                   onChanged: (value) async {
@@ -213,13 +212,25 @@ class _ClientSearchFilterPageState extends State<ClientSearchFilterPage> {
                             backgroundImage:
                                 NetworkImage(profile['imageUrl'] ?? ''),
                           ),
-                          title: Text(profile['username'] ?? 'Unknown',
-                              style: GoogleFonts.poppins()),
+                          title: Text(
+                            profile['username'] ?? 'Unknown',
+                            style: GoogleFonts.poppins(
+                              fontSize: screenWidth * 0.04,
+                              fontWeight: FontWeight.w500,
+                              color: const Color.fromARGB(255, 48, 65, 69),
+                            ),
+                          ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(profile['location']['address'] ?? '',
-                                  style: GoogleFonts.poppins(fontSize: 12)),
+                              Text(
+                                profile['location']['address'] ?? '',
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.03,
+                                  fontWeight: FontWeight.w400,
+                                  color: const Color.fromARGB(255, 48, 65, 69),
+                                ),
+                              ),
                               Row(
                                 children: [
                                   SvgPicture.asset(
