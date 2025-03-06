@@ -96,81 +96,86 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('availableBarbers')
-                          .where('barberEmail', isEqualTo: widget.userEmail)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Color.fromARGB(255, 189, 49, 71),
-                              ),
-                            ),
-                          );
-                        }
-
-                        if (snapshot.hasError) {
-                          return Center(
-                            child: Text(
-                              "Error loading barbers.",
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.045,
-                                fontWeight: FontWeight.w600,
-                                color: const Color.fromARGB(255, 18, 18, 18),
-                              ),
-                            ),
-                          );
-                        }
-
-                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                          return Center(
-                            child: Text(
-                              "No affiliated shop",
-                              style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.045,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                          );
-                        }
-
-                        final barber = snapshot.data!.docs.first;
-                        final data = barber.data() as Map<String, dynamic>;
-                        final shopName =
-                            data['affiliatedShop'] ?? 'Not available';
-
-                        return Container(
-                          margin: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.01,
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.03,
-                            vertical: screenHeight * 0.02,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.01,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.03,
+                        vertical: screenHeight * 0.02,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
                             children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    'Affiliated shop:     ',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.032,
-                                      fontWeight: FontWeight.w500,
-                                      color:
-                                          const Color.fromARGB(100, 48, 65, 69),
-                                    ),
-                                  ),
-                                  Text(
+                              Text(
+                                'Affiliated shop:     ',
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.032,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color.fromARGB(100, 48, 65, 69),
+                                ),
+                              ),
+                              StreamBuilder<QuerySnapshot>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('availableBarbers')
+                                    .where('barberEmail',
+                                        isEqualTo: widget.userEmail)
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          Color.fromARGB(255, 189, 49, 71),
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  if (!snapshot.hasData) {
+                                    return Center(
+                                      child: Text(
+                                        "No data available",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: screenWidth * 0.045,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  final docs = snapshot.data!.docs;
+                                  if (docs.isEmpty) {
+                                    return Center(
+                                      child: Text(
+                                        "N/A",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: screenWidth * 0.03,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  final barber = docs.first;
+                                  final data =
+                                      barber.data() as Map<String, dynamic>;
+
+                                  final shopName =
+                                      data.containsKey('affiliatedShop')
+                                          ? data['affiliatedShop']
+                                          : 'Not affiliated';
+                                  return Text(
                                     shopName,
                                     style: GoogleFonts.poppins(
                                       fontSize: screenWidth * 0.035,
@@ -178,189 +183,185 @@ class _InfoPageState extends State<HairstylistInfoPage> {
                                       color:
                                           const Color.fromARGB(255, 48, 65, 69),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    'Username:     ',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.032,
-                                      fontWeight: FontWeight.w500,
-                                      color:
-                                          const Color.fromARGB(100, 48, 65, 69),
-                                    ),
-                                  ),
-                                  Text(
-                                    '@${hairstylistController.hairstylist!.username}',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.035,
-                                      fontWeight: FontWeight.w500,
-                                      color:
-                                          const Color.fromARGB(255, 48, 65, 69),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Gap(screenHeight * 0.01),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      top: screenHeight * 0.001,
-                                    ),
-                                    child: Text(
-                                      'Email:     ',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.032,
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color.fromARGB(
-                                            100, 48, 65, 69),
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    hairstylistController.hairstylist!.email,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.035,
-                                      fontWeight: FontWeight.w500,
-                                      color:
-                                          const Color.fromARGB(255, 48, 65, 69),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Gap(screenHeight * 0.01),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      top: screenHeight * 0.001,
-                                    ),
-                                    child: Text(
-                                      'Location:     ',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.032,
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color.fromARGB(
-                                            100, 48, 65, 69),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      hairstylistController
-                                          .hairstylist!.location['address'],
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.035,
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color.fromARGB(
-                                            255, 48, 65, 69),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Gap(screenHeight * 0.01),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      top: screenHeight * 0.001,
-                                    ),
-                                    child: Text(
-                                      'Phone number:     ',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.032,
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color.fromARGB(
-                                            100, 48, 65, 69),
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    hairstylistController
-                                        .hairstylist!.phoneNumber,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.035,
-                                      fontWeight: FontWeight.w500,
-                                      color:
-                                          const Color.fromARGB(255, 48, 65, 69),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      top: screenHeight * 0.001,
-                                    ),
-                                    child: Text(
-                                      'Skills:     ',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.032,
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color.fromARGB(
-                                            100, 48, 65, 69),
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      left: screenWidth * 0.02,
-                                    ),
-                                    child: Text(
-                                      hairstylistController.hairstylist!.skills,
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.035,
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color.fromARGB(
-                                            255, 48, 65, 69),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Gap(screenHeight * 0.01),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      top: screenHeight * 0.001,
-                                    ),
-                                    child: Text(
-                                      'Years of experience:     ',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.032,
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color.fromARGB(
-                                            100, 48, 65, 69),
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      left: screenWidth * 0.02,
-                                    ),
-                                    child: Text(
-                                      '${hairstylistController.hairstylist!.yearsOfExperience} years',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.034,
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color.fromARGB(
-                                            255, 48, 65, 69),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                  );
+                                },
                               ),
                             ],
                           ),
-                        );
-                      },
+                          Gap(screenHeight * 0.01),
+                          Row(
+                            children: [
+                              Text(
+                                'Username:     ',
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.032,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color.fromARGB(100, 48, 65, 69),
+                                ),
+                              ),
+                              Text(
+                                '@${hairstylistController.hairstylist!.username}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color.fromARGB(255, 48, 65, 69),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Gap(screenHeight * 0.01),
+                          Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: screenHeight * 0.001,
+                                ),
+                                child: Text(
+                                  'Email:     ',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: screenWidth * 0.032,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        const Color.fromARGB(100, 48, 65, 69),
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                hairstylistController.hairstylist!.email,
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color.fromARGB(255, 48, 65, 69),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Gap(screenHeight * 0.01),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: screenHeight * 0.001,
+                                ),
+                                child: Text(
+                                  'Location:     ',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: screenWidth * 0.032,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        const Color.fromARGB(100, 48, 65, 69),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  hairstylistController
+                                      .hairstylist!.location['address'],
+                                  style: GoogleFonts.poppins(
+                                    fontSize: screenWidth * 0.035,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        const Color.fromARGB(255, 48, 65, 69),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Gap(screenHeight * 0.01),
+                          Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: screenHeight * 0.001,
+                                ),
+                                child: Text(
+                                  'Phone number:     ',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: screenWidth * 0.032,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        const Color.fromARGB(100, 48, 65, 69),
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                hairstylistController.hairstylist!.phoneNumber,
+                                style: GoogleFonts.poppins(
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color.fromARGB(255, 48, 65, 69),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: screenHeight * 0.001,
+                                ),
+                                child: Text(
+                                  'Skills:     ',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: screenWidth * 0.032,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        const Color.fromARGB(100, 48, 65, 69),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: screenWidth * 0.02,
+                                ),
+                                child: Text(
+                                  hairstylistController.hairstylist!.skills,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: screenWidth * 0.035,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        const Color.fromARGB(255, 48, 65, 69),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Gap(screenHeight * 0.01),
+                          Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: screenHeight * 0.001,
+                                ),
+                                child: Text(
+                                  'Years of experience:     ',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: screenWidth * 0.032,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        const Color.fromARGB(100, 48, 65, 69),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: screenWidth * 0.02,
+                                ),
+                                child: Text(
+                                  '${hairstylistController.hairstylist!.yearsOfExperience} years',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: screenWidth * 0.034,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        const Color.fromARGB(255, 48, 65, 69),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                     Gap(screenHeight * 0.012),
                     Container(

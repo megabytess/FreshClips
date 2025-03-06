@@ -7,7 +7,6 @@ import 'package:freshclips_capstone/features/hairstylist-features/controllers/ad
 import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/widget/add_image_hairstylist_page.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:insta_image_viewer/insta_image_viewer.dart';
 
 class HairstylistPortfolioPage extends StatefulWidget {
   const HairstylistPortfolioPage(
@@ -127,8 +126,8 @@ class _HairstylistPortfolioPageState extends State<HairstylistPortfolioPage> {
 
                       return MasonryGridView.count(
                         crossAxisCount: 3,
-                        mainAxisSpacing: 5,
-                        crossAxisSpacing: 5,
+                        mainAxisSpacing: 3,
+                        crossAxisSpacing: 3,
                         itemCount: images.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
@@ -137,26 +136,23 @@ class _HairstylistPortfolioPageState extends State<HairstylistPortfolioPage> {
                                 context: context,
                                 builder: (context) => Dialog(
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Stack(
                                     children: [
-                                      // Use InstaImageViewer for swipeable, zoomable image
-                                      InstaImageViewer(
-                                        child: Image.network(
-                                          images[index],
-                                          fit: BoxFit.fill,
-                                          errorBuilder:
-                                              (context, error, stackTrace) {
-                                            return const Center(
-                                              child: Icon(
-                                                Icons.broken_image,
-                                                color: Colors.grey,
-                                                size: 100,
-                                              ),
-                                            );
-                                          },
-                                        ),
+                                      Image.network(
+                                        images[index],
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return const Center(
+                                            child: Icon(
+                                              Icons.broken_image,
+                                              color: Colors.grey,
+                                              size: 100,
+                                            ),
+                                          );
+                                        },
                                       ),
                                       // Delete button only visible if the user is a client and matches the email
                                       if (widget.isClient &&
