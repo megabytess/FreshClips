@@ -33,8 +33,9 @@ class _EditProfilePageState extends State<BSProfileDetailsPage> {
         title: Text(
           'Profile details',
           style: GoogleFonts.poppins(
-            fontSize: screenWidth * 0.04,
+            fontSize: screenWidth * 0.035,
             fontWeight: FontWeight.w600,
+            color: const Color.fromARGB(255, 45, 65, 69),
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -85,9 +86,9 @@ class _EditProfilePageState extends State<BSProfileDetailsPage> {
                   Text(
                     barbershopsalonController.barbershopsalon!.shopName,
                     style: GoogleFonts.poppins(
-                      color: const Color.fromARGB(255, 18, 18, 18),
+                      color: const Color.fromARGB(255, 45, 65, 69),
                       fontSize: screenWidth * 0.05,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   Gap(screenHeight * 0.01),
@@ -103,7 +104,7 @@ class _EditProfilePageState extends State<BSProfileDetailsPage> {
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(100, 18, 18, 18),
+                            color: const Color.fromARGB(255, 45, 65, 69),
                           ),
                         ),
                       ),
@@ -116,8 +117,8 @@ class _EditProfilePageState extends State<BSProfileDetailsPage> {
                           '@${barbershopsalonController.barbershopsalon!.username}',
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
-                            fontWeight: FontWeight.w600,
-                            color: const Color.fromARGB(255, 18, 18, 18),
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromARGB(255, 45, 65, 69),
                           ),
                         ),
                       ),
@@ -136,7 +137,7 @@ class _EditProfilePageState extends State<BSProfileDetailsPage> {
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(100, 18, 18, 18),
+                            color: const Color.fromARGB(255, 45, 65, 69),
                           ),
                         ),
                       ),
@@ -148,8 +149,8 @@ class _EditProfilePageState extends State<BSProfileDetailsPage> {
                           barbershopsalonController.barbershopsalon!.email,
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
-                            fontWeight: FontWeight.w600,
-                            color: const Color.fromARGB(255, 18, 18, 18),
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromARGB(255, 45, 65, 69),
                           ),
                         ),
                       ),
@@ -168,7 +169,7 @@ class _EditProfilePageState extends State<BSProfileDetailsPage> {
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(100, 18, 18, 18),
+                            color: const Color.fromARGB(255, 45, 65, 69),
                           ),
                         ),
                       ),
@@ -182,8 +183,8 @@ class _EditProfilePageState extends State<BSProfileDetailsPage> {
                                 .barbershopsalon!.location['address'],
                             style: GoogleFonts.poppins(
                               fontSize: screenWidth * 0.035,
-                              fontWeight: FontWeight.w600,
-                              color: const Color.fromARGB(255, 18, 18, 18),
+                              fontWeight: FontWeight.w500,
+                              color: const Color.fromARGB(255, 45, 65, 69),
                             ),
                           ),
                         ),
@@ -203,7 +204,7 @@ class _EditProfilePageState extends State<BSProfileDetailsPage> {
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(100, 18, 18, 18),
+                            color: const Color.fromARGB(255, 45, 65, 69),
                           ),
                         ),
                       ),
@@ -216,8 +217,8 @@ class _EditProfilePageState extends State<BSProfileDetailsPage> {
                               .barbershopsalon!.phoneNumber,
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
-                            fontWeight: FontWeight.w600,
-                            color: const Color.fromARGB(255, 18, 18, 18),
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromARGB(255, 45, 65, 69),
                           ),
                         ),
                       ),

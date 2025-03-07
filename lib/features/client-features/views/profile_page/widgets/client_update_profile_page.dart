@@ -3,11 +3,14 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:freshclips_capstone/features/auth/views/widgets/location_picker_page.dart';
 import 'package:freshclips_capstone/features/client-features/controllers/client_controller.dart';
 import 'package:freshclips_capstone/features/client-features/models/client_model.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/edit_profile_controller.dart';
 import 'package:gap/gap.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ClientUpdateProfilePage extends StatefulWidget {
@@ -35,7 +38,8 @@ class _EditProfilePageState extends State<ClientUpdateProfilePage> {
 
   ClientController clientController = ClientController();
   ProfileController profileController = ProfileController();
-
+  LatLng? selectedLatLng;
+  String? selectedAddress;
   io.File? _imageFile;
 
   @override
@@ -243,18 +247,79 @@ class _EditProfilePageState extends State<ClientUpdateProfilePage> {
                     Gap(screenHeight * 0.02),
 
                     // Location
-                    TextFormField(
-                      controller: locationController,
-                      decoration: InputDecoration(
-                        labelText: 'Location',
-                        labelStyle: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.035,
+                    SizedBox(
+                      width: double.infinity,
+                      height: screenHeight * 0.05,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LocationPicker(
+                                onLocationSelected: (LatLng location) async {
+                                  setState(() {
+                                    selectedLatLng = location;
+                                  });
+                                  // Reverse geocoding
+                                  try {
+                                    List<Placemark> placemarks =
+                                        await placemarkFromCoordinates(
+                                      location.latitude,
+                                      location.longitude,
+                                    );
+                                    if (placemarks.isNotEmpty) {
+                                      Placemark place = placemarks.first;
+                                      setState(() {
+                                        selectedAddress =
+                                            "${place.street}, ${place.subLocality} ${place.locality}, ${place.administrativeArea}";
+                                      });
+                                    }
+                                  } catch (e) {
+                                    setState(() {
+                                      selectedAddress =
+                                          "Error fetching address";
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 45, 65, 69),
+                          foregroundColor:
+                              const Color.fromARGB(255, 248, 248, 248),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.1,
+                            vertical: screenHeight * 0.01,
+                          ),
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+                        child: Text(
+                          'Pick location',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.032,
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromARGB(255, 248, 248, 248),
+                          ),
                         ),
                       ),
                     ),
+                    if (selectedAddress != null)
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: screenWidth * 0.06,
+                          vertical: screenHeight * 0.02,
+                        ),
+                        child: Text(
+                          'Selected Location: $selectedAddress',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.04,
+                            fontWeight: FontWeight.w400,
+                            color: const Color.fromARGB(255, 45, 65, 69),
+                          ),
+                        ),
+                      ),
 
                     Gap(screenHeight * 0.04),
 
@@ -284,7 +349,13 @@ class _EditProfilePageState extends State<ClientUpdateProfilePage> {
                               firstName: firstNameController.text,
                               lastName: lastNameController.text,
                               username: usernameController.text,
-                              location: clientController.client!.location,
+                              location: selectedLatLng != null
+                                  ? {
+                                      'latitude': selectedLatLng!.latitude,
+                                      'longitude': selectedLatLng!.longitude,
+                                      'address': selectedAddress,
+                                    }
+                                  : widget.client.location,
                             );
 
                             // Convert to Map<String, dynamic>

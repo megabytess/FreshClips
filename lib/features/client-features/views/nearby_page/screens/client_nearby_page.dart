@@ -6,11 +6,13 @@ import 'package:freshclips_capstone/features/barbershop_salon_feature/controller
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_profile_page.dart';
 import 'package:freshclips_capstone/features/client-features/controllers/client_controller.dart';
 import 'package:freshclips_capstone/features/client-features/controllers/nearby_controller.dart';
+import 'package:freshclips_capstone/features/client-features/views/nearby_page/widgets/client_search_filter_nearby_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/hairstylist_profile_page.dart';
 import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ClientNearbyPage extends StatefulWidget {
   const ClientNearbyPage(
@@ -123,15 +125,28 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
 
   List<Map<String, dynamic>> nearbyUsers = [];
 
-  // Function to sort nearby users by distance (ascending) and rating (descending)
+  // Function to sort nearby users (formula)
+  // Handles unrated
   List<Map<String, dynamic>> sortNearby(
       List<Map<String, dynamic>> nearbyShops) {
     nearbyShops.sort((a, b) {
-      // Combine distance and rating for a score
-      double scoreA = (1 / (a['distance'] + 1)) * a['rating'];
-      double scoreB = (1 / (b['distance'] + 1)) * b['rating'];
+      double distanceA = a['distance'] ?? double.infinity;
+      double distanceB = b['distance'] ?? double.infinity;
+      double ratingA = a['rating'] ?? 0.0;
+      double ratingB = b['rating'] ?? 0.0;
 
-      // Sort by combined score (higher is better)
+      double scoreA;
+      double scoreB;
+
+      // Simple condition: ignore shops with a rating of 0
+      if (ratingA == 0 || ratingB == 0) {
+        scoreA = ratingA;
+        scoreB = ratingB;
+      } else {
+        scoreA = (1 / (distanceA + 1)) * ratingA;
+        scoreB = (1 / (distanceB + 1)) * ratingB;
+      }
+
       return scoreB.compareTo(scoreA);
     });
 
@@ -168,8 +183,8 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
             data['location'] is Map<String, dynamic> &&
             data['location'].containsKey('latitude') &&
             data['location'].containsKey('longitude')) {
-          double userLat = data['location']['latitude'];
-          double userLng = data['location']['longitude'];
+          double userLat = data['location']['latitude'] ?? 0.0;
+          double userLng = data['location']['longitude'] ?? 0.0;
 
           double distance = Geolocator.distanceBetween(
             currentPosition!.latitude,
@@ -190,9 +205,9 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
           }
 
           // Format distance text
-          String distanceText = distance < 1000
-              ? '${distance.toStringAsFixed(0)} meters'
-              : '${(distance / 1000).toStringAsFixed(2)} km';
+          // String distanceText = distance < 1000
+          //     ? '${distance.toStringAsFixed(0)} meters'
+          //     : '${(distance / 1000).toStringAsFixed(2)} km';
 
           debugPrint(
               "User: $accountName, Distance: ${(distance / 1000).toStringAsFixed(2)} km");
@@ -245,14 +260,6 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                               color: const Color.fromARGB(255, 48, 65, 69),
                             ),
                           ),
-                          Text(
-                            '$distanceText away',
-                            style: GoogleFonts.poppins(
-                              fontSize: screenWidth * 0.025,
-                              fontWeight: FontWeight.w300,
-                              color: Colors.grey[600],
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -261,7 +268,6 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                 },
               ),
             );
-
             newNearbyUsers.add({
               'accountName': accountName,
               'userType': data['userType'],
@@ -270,6 +276,9 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
               'email': data['email'],
               'username': data['username'],
               'location': data['location'],
+              'rating': await ratingsReviewController.computeAverageRating(
+                data['email'],
+              ),
             });
 
             debugPrint("Added marker for $accountName at [$userLat, $userLng]");
@@ -282,6 +291,7 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
               "User ${doc.id} missing latitude/longitude in location field, skipping.");
         }
       }
+      newNearbyUsers = sortNearby(newNearbyUsers);
 
       // Ensure markers and nearbyUsers update in state
       setState(() {
@@ -412,11 +422,12 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
 
           // Display nearby shops
           Positioned(
-            bottom: 10,
+            bottom: 20,
             left: 0,
             right: 0,
             child: SizedBox(
-              height: screenHeight * 0.35,
+              height: screenHeight * 0.34,
+              width: screenWidth * 1,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: nearbyUsers.length,
@@ -427,9 +438,9 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                     width: screenWidth * 0.8,
                     margin: EdgeInsets.fromLTRB(
                       screenWidth * 0.03,
-                      screenHeight * 0.072,
-                      screenWidth * 0.03,
-                      screenHeight * 0.02,
+                      0,
+                      screenWidth * 0.01,
+                      0,
                     ),
                     padding: EdgeInsets.only(
                       top: screenHeight * 0.02,
@@ -498,12 +509,61 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                             ],
                           ),
                         ),
-                        Gap(screenHeight * 0.006),
+                        Gap(screenHeight * 0.01),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              final destinationLatLng =
+                                  user['location']?['latitude'];
+                              final destinationLng =
+                                  user['location']?['longitude'];
+
+                              if (destinationLatLng != null &&
+                                  destinationLng != null) {
+                                final url = Uri.parse(
+                                  'https://www.google.com/maps/dir/?api=1&destination=$destinationLatLng,$destinationLng',
+                                );
+
+                                launchUrl(url,
+                                    mode: LaunchMode.externalApplication);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Location not available')),
+                                );
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.directions,
+                              size: 18,
+                            ),
+                            label: Text(
+                              'Get directions',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.028,
+                                fontWeight: FontWeight.w400,
+                                color: const Color.fromARGB(255, 248, 248, 248),
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 48, 65, 69),
+                              foregroundColor:
+                                  const Color.fromARGB(255, 248, 248, 248),
+                              elevation: 0,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.05,
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Gap(screenHeight * 0.01),
                         Divider(
                           color: Colors.grey[300],
                           thickness: 1,
                         ),
-                        Gap(screenHeight * 0.003),
+                        Gap(screenHeight * 0.01),
                         Row(
                           children: [
                             ClipOval(
@@ -626,10 +686,10 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                             ),
                           ],
                         ),
-                        Gap(screenHeight * 0.015),
+                        Gap(screenHeight * 0.02),
                         SizedBox(
                           width: double.infinity,
-                          height: screenHeight * 0.055,
+                          height: screenHeight * 0.06,
                           child: ElevatedButton(
                             onPressed: () {
                               if (user['userType'] == 'Barbershop_Salon') {
@@ -689,9 +749,55 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
             ),
           ),
 
-          // Zoom controls
           Positioned(
             top: 20,
+            left: 10,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.03,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  height: screenHeight * 0.05,
+                  width: screenWidth * 0.88,
+                  color: const Color.fromARGB(255, 248, 248, 248),
+                  child: TextButton(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ClientSearchFilterNearbyPage(
+                          email: widget.email,
+                          clientEmail: widget.clientEmail,
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.search_rounded,
+                          color: Colors.grey,
+                          size: 24,
+                        ),
+                        const Gap(10),
+                        Text(
+                          'Search',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.03,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Zoom controls
+          Positioned(
+            top: 80,
             right: 10,
             child: Column(
               children: [
@@ -702,14 +808,14 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                     );
                   },
                   style: OutlinedButton.styleFrom(
+                    side: const BorderSide(
+                        color: Color.fromARGB(255, 48, 65, 69)),
                     shape: const CircleBorder(),
-                    side: const BorderSide(color: Colors.grey, width: 1.5),
-                    padding: EdgeInsets.all(screenWidth * 0.02),
-                    backgroundColor: Colors.transparent,
+                    padding: EdgeInsets.all(screenWidth * 0.01),
                   ),
                   child: Icon(
                     Icons.add,
-                    color: const Color.fromARGB(255, 18, 18, 18),
+                    color: const Color.fromARGB(255, 48, 65, 69),
                     size: screenWidth * 0.06,
                   ),
                 ),
@@ -721,31 +827,31 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                     );
                   },
                   style: OutlinedButton.styleFrom(
+                    side: const BorderSide(
+                        color: Color.fromARGB(255, 48, 65, 69)),
                     shape: const CircleBorder(),
-                    side: const BorderSide(color: Colors.grey, width: 1.5),
                     padding: EdgeInsets.all(screenWidth * 0.02),
-                    backgroundColor: Colors.transparent,
                   ),
                   child: Icon(
                     Icons.remove,
-                    color: const Color.fromARGB(255, 18, 18, 18),
+                    color: const Color.fromARGB(255, 48, 65, 69),
                     size: screenWidth * 0.06,
                   ),
                 ),
                 Gap(screenHeight * 0.001),
                 OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: const CircleBorder(),
-                    side: const BorderSide(color: Colors.grey, width: 1.5),
-                    padding: EdgeInsets.all(screenWidth * 0.02),
-                    backgroundColor: Colors.transparent,
-                  ),
                   onPressed: () {
                     getCurrentLocation();
                   },
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(
+                        color: Color.fromARGB(255, 48, 65, 69)),
+                    shape: const CircleBorder(),
+                    padding: EdgeInsets.all(screenWidth * 0.02),
+                  ),
                   child: Icon(
                     Icons.my_location,
-                    color: const Color.fromARGB(255, 18, 18, 18),
+                    color: const Color.fromARGB(255, 48, 65, 69),
                     size: screenWidth * 0.06,
                   ),
                 ),

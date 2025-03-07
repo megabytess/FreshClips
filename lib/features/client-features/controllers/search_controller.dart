@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 class SearchController extends ChangeNotifier {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -84,5 +85,72 @@ class SearchController extends ChangeNotifier {
       print('Error fetching affiliated barbers: $e');
       return [];
     }
+  }
+
+  Future<List<Map<String, dynamic>>> filterByNearbyUsertype(
+      String query,
+      String selectedCategory,
+      Position currentPosition,
+      double radiusInMeters) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('user')
+        .where('userType', isEqualTo: selectedCategory)
+        .get();
+
+    List<Map<String, dynamic>> filteredUsers = [];
+    // final RatingsReviewController ratingsReviewController =
+    //     RatingsReviewController(
+    //   clientEmail: clientEmail,
+    //   reviewController: reviewController,
+    // );
+
+    for (var doc in querySnapshot.docs) {
+      var data = doc.data();
+
+      if (data.containsKey('location') &&
+          data['location'] is Map<String, dynamic> &&
+          data['location'].containsKey('latitude') &&
+          data['location'].containsKey('longitude')) {
+        double userLat = data['location']['latitude'] ?? 0.0;
+        double userLng = data['location']['longitude'] ?? 0.0;
+
+        double distance = Geolocator.distanceBetween(
+          currentPosition.latitude,
+          currentPosition.longitude,
+          userLat,
+          userLng,
+        );
+
+        if (distance <= radiusInMeters) {
+          String accountName;
+          if (data['userType'] == 'Barbershop_Salon') {
+            accountName = data['shopName'] ?? 'Unknown Shop';
+          } else if (data['userType'] == 'Hairstylist') {
+            accountName =
+                '${data['firstName'] ?? ''} ${data['lastName'] ?? ''}'.trim();
+          } else {
+            accountName = 'Unknown';
+          }
+
+          filteredUsers.add({
+            'accountName': accountName,
+            'userType': data['userType'],
+            'distance': double.parse((distance / 1000).toStringAsFixed(2)),
+            'imageUrl': data['imageUrl'],
+            'email': data['email'],
+            'username': data['username'],
+            'location': data['location'],
+            // 'rating': await ratingsReviewController.computeAverageRating(
+            //   data['email'],
+            // ),
+          });
+
+          debugPrint(
+              "User: $accountName, Distance: ${(distance / 1000).toStringAsFixed(2)} km");
+        }
+      }
+    }
+
+    return filteredUsers;
   }
 }

@@ -1,11 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_post_controller.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/models/bs_post_model.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/appointment_page/screens/bs_booking_details_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/views/home_page/screens/bs_comments_page.dart';
 import 'package:freshclips_capstone/features/client-features/controllers/client_controller.dart';
 import 'package:freshclips_capstone/features/client-features/views/profile_page/widgets/client_profile_details.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:like_button/like_button.dart';
 
 class ClientProfilePage extends StatefulWidget {
   const ClientProfilePage(
@@ -23,6 +29,7 @@ class ClientProfilePage extends StatefulWidget {
 }
 
 final ClientController clientController = ClientController();
+final BSPostController postController = BSPostController();
 
 class _ClientProfilePageState extends State<ClientProfilePage> {
   String? userEmail;
@@ -229,7 +236,7 @@ class _ClientProfilePageState extends State<ClientProfilePage> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  SizedBox(width: screenWidth * 0.03),
+                                  Gap(screenWidth * 0.03),
                                   Expanded(
                                     child: Padding(
                                       padding: EdgeInsets.only(
@@ -248,213 +255,690 @@ class _ClientProfilePageState extends State<ClientProfilePage> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: screenHeight * 0.01),
-                              const Divider(
-                                color: Colors.grey,
-                                thickness: 1,
-                              ),
-                              SizedBox(height: screenHeight * 0.01),
-                              Text(
-                                'Booking History',
-                                style: GoogleFonts.poppins(
-                                  fontSize: screenWidth * 0.04,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color.fromARGB(255, 18, 18, 18),
-                                ),
-                              ),
-                              SizedBox(
-                                height: screenHeight * 0.4,
-                                child: StreamBuilder<QuerySnapshot>(
-                                  stream: FirebaseFirestore.instance
-                                      .collection('appointments')
-                                      .where('clientEmail',
-                                          isEqualTo: widget.clientEmail)
-                                      .where('status', isEqualTo: 'Completed')
-                                      .snapshots(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return const Center(
-                                          child: CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                          Color.fromARGB(255, 189, 41, 71),
-                                        ),
-                                      ));
-                                    }
-
-                                    if (!snapshot.hasData ||
-                                        snapshot.data!.docs.isEmpty) {
-                                      return Center(
-                                        child: Center(
+                              SizedBox(height: screenHeight * 0.02),
+                              DefaultTabController(
+                                length: 2,
+                                child: Column(
+                                  children: [
+                                    TabBar(
+                                      labelColor:
+                                          const Color.fromARGB(255, 18, 18, 18),
+                                      indicatorColor: const Color.fromARGB(
+                                          255, 189, 49, 71),
+                                      tabs: [
+                                        Tab(
                                           child: Text(
-                                            'No Appointments for today.',
+                                            'Booking History',
                                             style: GoogleFonts.poppins(
                                               fontSize: screenWidth * 0.035,
+                                              fontWeight: FontWeight.w600,
                                               color: const Color.fromARGB(
-                                                  255, 120, 120, 120),
+                                                  255, 18, 18, 18),
                                             ),
                                           ),
                                         ),
-                                      );
-                                    }
-
-                                    final appointments = snapshot.data!.docs;
-                                    return ListView.builder(
-                                      itemCount: appointments.length,
-                                      itemBuilder: (context, index) {
-                                        final appointment = appointments[index];
-                                        final clientName =
-                                            appointment['clientName'];
-                                        // final selectedDate = appointment['selectedDate'];
-                                        final selectedTime =
-                                            appointment['selectedTime'];
-                                        final totalPrice = appointment[
-                                                'selectedServices']
-                                            // ignore: avoid_types_as_parameter_names
-                                            .fold(
-                                                0,
-                                                (sum, service) =>
-                                                    sum +
-                                                    (service['price'] ?? 0))
-                                            .toInt();
-
-                                        // final DateTime date = DateTime.parse(selectedDate);
-                                        // final String formattedDate =
-                                        //     DateFormat('MMMM dd, yyyy').format(date);
-
-                                        return InkWell(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    BookingDetailsPage(
-                                                  clientName:
-                                                      appointment['clientName'],
-                                                  phoneNumber: appointment[
-                                                      'phoneNumber'],
-                                                  selectedDate: appointment[
-                                                      'selectedDate'],
-                                                  selectedTime: appointment[
-                                                      'selectedTime'],
-                                                  status: appointment['status'],
-                                                  userEmail:
-                                                      appointment['bookedUser'],
-                                                  appointmentId: appointment.id,
-                                                  selectedServices: appointment[
-                                                      'selectedServices'],
-                                                  note: appointment['note'],
-                                                  price: totalPrice,
-                                                  clientEmail:
-                                                      widget.clientEmail,
-                                                  isClient: widget.isClient,
-                                                  selectedAffiliateBarber:
-                                                      appointment[
-                                                              'selectedAffiliateBarber'] ??
-                                                          'N/A',
-                                                  shopName:
-                                                      appointment['shopName'] ??
-                                                          'N/A',
-                                                  barberImageUrl: appointment[
-                                                          'barberImageUrl'] ??
-                                                      'N/A',
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          child: Card(
-                                            color: const Color.fromARGB(
-                                                255, 186, 199, 206),
-                                            margin: EdgeInsets.symmetric(
-                                              vertical: screenHeight * 0.01,
-                                            ),
-                                            child: Padding(
-                                              padding: EdgeInsets.all(
-                                                  screenWidth * 0.03),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    clientName,
-                                                    style: GoogleFonts.poppins(
-                                                      fontSize:
-                                                          screenWidth * 0.04,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color:
-                                                          const Color.fromARGB(
-                                                              255, 18, 18, 18),
-                                                    ),
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        '${appointment['selectedDate']} ',
-                                                        style:
-                                                            GoogleFonts.poppins(
-                                                          fontSize:
-                                                              screenWidth *
-                                                                  0.028,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: const Color
-                                                              .fromARGB(
-                                                              255, 18, 18, 18),
-                                                        ),
-                                                      ),
-                                                      Gap(screenWidth * 0.01),
-                                                      Icon(
-                                                        Icons.circle,
-                                                        size:
-                                                            screenWidth * 0.01,
-                                                        color: const Color
-                                                            .fromARGB(
-                                                            255, 18, 18, 18),
-                                                      ),
-                                                      Gap(screenWidth * 0.01),
-                                                      Text(
-                                                        '$selectedTime',
-                                                        style:
-                                                            GoogleFonts.poppins(
-                                                          fontSize:
-                                                              screenWidth *
-                                                                  0.028,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: const Color
-                                                              .fromARGB(
-                                                              255, 18, 18, 18),
-                                                        ),
-                                                      ),
-                                                      const Spacer(),
-                                                      Text(
-                                                        'Completed',
-                                                        style:
-                                                            GoogleFonts.poppins(
-                                                          fontSize:
-                                                              screenWidth *
-                                                                  0.04,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          color: const Color
-                                                              .fromARGB(
-                                                              255, 48, 65, 69),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
+                                        Tab(
+                                          child: Text(
+                                            'Timeline',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: screenWidth * 0.035,
+                                              fontWeight: FontWeight.w600,
+                                              color: const Color.fromARGB(
+                                                  255, 18, 18, 18),
                                             ),
                                           ),
-                                        );
-                                      },
-                                    );
-                                  },
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: screenHeight * 0.5,
+                                      child: TabBarView(
+                                        children: [
+                                          SizedBox(
+                                            height: screenHeight * 0.4,
+                                            child: StreamBuilder<QuerySnapshot>(
+                                              stream: FirebaseFirestore.instance
+                                                  .collection('appointments')
+                                                  .where('clientEmail',
+                                                      isEqualTo:
+                                                          widget.clientEmail)
+                                                  .where('status',
+                                                      isEqualTo: 'Completed')
+                                                  .snapshots(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.waiting) {
+                                                  return const Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<
+                                                            Color>(
+                                                      Color.fromARGB(
+                                                          255, 189, 41, 71),
+                                                    ),
+                                                  ));
+                                                }
+
+                                                if (!snapshot.hasData ||
+                                                    snapshot
+                                                        .data!.docs.isEmpty) {
+                                                  return Center(
+                                                    child: Center(
+                                                      child: Text(
+                                                        'No Appointments for today.',
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                          fontSize:
+                                                              screenWidth *
+                                                                  0.035,
+                                                          color: const Color
+                                                              .fromARGB(255,
+                                                              120, 120, 120),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+
+                                                final appointments =
+                                                    snapshot.data!.docs;
+                                                return ListView.builder(
+                                                  itemCount:
+                                                      appointments.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    final appointment =
+                                                        appointments[index];
+                                                    final clientName =
+                                                        appointment[
+                                                            'clientName'];
+                                                    // final selectedDate = appointment['selectedDate'];
+                                                    final selectedTime =
+                                                        appointment[
+                                                            'selectedTime'];
+                                                    final totalPrice = appointment[
+                                                            'selectedServices']
+                                                        // ignore: avoid_types_as_parameter_names
+                                                        .fold(
+                                                            0,
+                                                            (sum, service) =>
+                                                                sum +
+                                                                (service[
+                                                                        'price'] ??
+                                                                    0))
+                                                        .toInt();
+
+                                                    // final DateTime date = DateTime.parse(selectedDate);
+                                                    // final String formattedDate =
+                                                    //     DateFormat('MMMM dd, yyyy').format(date);
+
+                                                    return InkWell(
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                BookingDetailsPage(
+                                                              clientName:
+                                                                  appointment[
+                                                                      'clientName'],
+                                                              phoneNumber:
+                                                                  appointment[
+                                                                      'phoneNumber'],
+                                                              selectedDate:
+                                                                  appointment[
+                                                                      'selectedDate'],
+                                                              selectedTime:
+                                                                  appointment[
+                                                                      'selectedTime'],
+                                                              status:
+                                                                  appointment[
+                                                                      'status'],
+                                                              userEmail:
+                                                                  appointment[
+                                                                      'bookedUser'],
+                                                              appointmentId:
+                                                                  appointment
+                                                                      .id,
+                                                              selectedServices:
+                                                                  appointment[
+                                                                      'selectedServices'],
+                                                              note: appointment[
+                                                                  'note'],
+                                                              price: totalPrice,
+                                                              clientEmail: widget
+                                                                  .clientEmail,
+                                                              isClient: widget
+                                                                  .isClient,
+                                                              selectedAffiliateBarber:
+                                                                  appointment[
+                                                                          'selectedAffiliateBarber'] ??
+                                                                      'N/A',
+                                                              shopName: appointment[
+                                                                      'shopName'] ??
+                                                                  'N/A',
+                                                              barberImageUrl:
+                                                                  appointment[
+                                                                          'barberImageUrl'] ??
+                                                                      'N/A',
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                      child: Card(
+                                                        color: const Color
+                                                            .fromARGB(
+                                                            255, 186, 199, 206),
+                                                        margin: EdgeInsets
+                                                            .symmetric(
+                                                          vertical:
+                                                              screenHeight *
+                                                                  0.01,
+                                                        ),
+                                                        child: Padding(
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  screenWidth *
+                                                                      0.03),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                clientName,
+                                                                style:
+                                                                    GoogleFonts
+                                                                        .poppins(
+                                                                  fontSize:
+                                                                      screenWidth *
+                                                                          0.04,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: const Color
+                                                                      .fromARGB(
+                                                                      255,
+                                                                      18,
+                                                                      18,
+                                                                      18),
+                                                                ),
+                                                              ),
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    '${appointment['selectedDate']} ',
+                                                                    style: GoogleFonts
+                                                                        .poppins(
+                                                                      fontSize:
+                                                                          screenWidth *
+                                                                              0.028,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      color: const Color
+                                                                          .fromARGB(
+                                                                          255,
+                                                                          18,
+                                                                          18,
+                                                                          18),
+                                                                    ),
+                                                                  ),
+                                                                  Gap(screenWidth *
+                                                                      0.01),
+                                                                  Icon(
+                                                                    Icons
+                                                                        .circle,
+                                                                    size:
+                                                                        screenWidth *
+                                                                            0.01,
+                                                                    color: const Color
+                                                                        .fromARGB(
+                                                                        255,
+                                                                        18,
+                                                                        18,
+                                                                        18),
+                                                                  ),
+                                                                  Gap(screenWidth *
+                                                                      0.01),
+                                                                  Text(
+                                                                    '$selectedTime',
+                                                                    style: GoogleFonts
+                                                                        .poppins(
+                                                                      fontSize:
+                                                                          screenWidth *
+                                                                              0.028,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      color: const Color
+                                                                          .fromARGB(
+                                                                          255,
+                                                                          18,
+                                                                          18,
+                                                                          18),
+                                                                    ),
+                                                                  ),
+                                                                  const Spacer(),
+                                                                  Text(
+                                                                    'Completed',
+                                                                    style: GoogleFonts
+                                                                        .poppins(
+                                                                      fontSize:
+                                                                          screenWidth *
+                                                                              0.04,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w700,
+                                                                      color: const Color
+                                                                          .fromARGB(
+                                                                          255,
+                                                                          48,
+                                                                          65,
+                                                                          69),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          StreamBuilder<List<Post>>(
+                                            stream: postController
+                                                .getSpecificPosts(widget.email),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                return const Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<
+                                                            Color>(
+                                                      Color.fromARGB(
+                                                          255, 189, 49, 71),
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+
+                                              if (!snapshot.hasData ||
+                                                  snapshot.data!.isEmpty) {
+                                                return Center(
+                                                  child: Text(
+                                                    'All posts are displayed here.',
+                                                    style: GoogleFonts.poppins(
+                                                      fontSize: 16.0,
+                                                      color: Colors.grey[600],
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+
+                                              final posts = snapshot.data!;
+
+                                              return ListView.builder(
+                                                shrinkWrap: true,
+                                                physics:
+                                                    const NeverScrollableScrollPhysics(),
+                                                itemCount: posts.length,
+                                                itemBuilder: (context, index) {
+                                                  final post = posts[index];
+
+                                                  return InkWell(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              BSCommentPage(
+                                                            email: widget.email,
+                                                            postId: post.id,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Padding(
+                                                              padding: EdgeInsets
+                                                                  .symmetric(
+                                                                horizontal:
+                                                                    screenWidth *
+                                                                        0.03,
+                                                                vertical:
+                                                                    screenHeight *
+                                                                        0.02,
+                                                              ),
+                                                              child: ClipOval(
+                                                                child:
+                                                                    Container(
+                                                                  width: 35.0,
+                                                                  height: 35.0,
+                                                                  decoration:
+                                                                      const BoxDecoration(
+                                                                    color: Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            186,
+                                                                            199,
+                                                                            206),
+                                                                  ),
+                                                                  child: (post
+                                                                          .imageUrl
+                                                                          .isNotEmpty)
+                                                                      ? Image
+                                                                          .network(
+                                                                          post.imageUrl,
+                                                                          fit: BoxFit
+                                                                              .cover,
+                                                                        )
+                                                                      : const Icon(
+                                                                          Icons
+                                                                              .person,
+                                                                          size:
+                                                                              25),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Row(
+                                                                  children: [
+                                                                    Padding(
+                                                                      padding:
+                                                                          EdgeInsets
+                                                                              .only(
+                                                                        top: screenHeight *
+                                                                            0.02,
+                                                                      ),
+                                                                      child:
+                                                                          Text(
+                                                                        post.authorName ??
+                                                                            'Unknown',
+                                                                        style: GoogleFonts
+                                                                            .poppins(
+                                                                          color: const Color
+                                                                              .fromARGB(
+                                                                              255,
+                                                                              48,
+                                                                              65,
+                                                                              69),
+                                                                          fontSize:
+                                                                              screenWidth * 0.035,
+                                                                          fontWeight:
+                                                                              FontWeight.w600,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Gap(screenWidth *
+                                                                        0.02),
+                                                                    // Time Icon and Duration
+                                                                    Padding(
+                                                                      padding:
+                                                                          EdgeInsets
+                                                                              .only(
+                                                                        top: screenHeight *
+                                                                            0.02,
+                                                                      ),
+                                                                      child:
+                                                                          Container(
+                                                                        width: screenWidth *
+                                                                            0.01,
+                                                                        height: screenHeight *
+                                                                            0.01,
+                                                                        decoration:
+                                                                            const BoxDecoration(
+                                                                          color: Color.fromARGB(
+                                                                              100,
+                                                                              48,
+                                                                              65,
+                                                                              69),
+                                                                          shape:
+                                                                              BoxShape.circle,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Gap(screenWidth *
+                                                                        0.015),
+                                                                    Padding(
+                                                                      padding:
+                                                                          EdgeInsets
+                                                                              .only(
+                                                                        top: screenHeight *
+                                                                            0.02,
+                                                                      ),
+                                                                      child:
+                                                                          Text(
+                                                                        DateFormat('h:mm a')
+                                                                            .format(post.datePublished),
+                                                                        style: GoogleFonts
+                                                                            .poppins(
+                                                                          fontSize:
+                                                                              screenWidth * 0.025,
+                                                                          fontWeight:
+                                                                              FontWeight.w400,
+                                                                          color: const Color
+                                                                              .fromARGB(
+                                                                              100,
+                                                                              48,
+                                                                              65,
+                                                                              69),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                Padding(
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .only(
+                                                                    top: screenHeight *
+                                                                        0.005,
+                                                                    bottom:
+                                                                        screenHeight *
+                                                                            0.01,
+                                                                  ),
+                                                                  child: Text(
+                                                                    post.content,
+                                                                    style: GoogleFonts
+                                                                        .poppins(
+                                                                      color: const Color
+                                                                          .fromARGB(
+                                                                          255,
+                                                                          48,
+                                                                          65,
+                                                                          69),
+                                                                      fontSize:
+                                                                          screenWidth *
+                                                                              0.030,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w400,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                ClipRRect(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10.0),
+                                                                  child: post.postImageUrl !=
+                                                                              null &&
+                                                                          post.postImageUrl!
+                                                                              .isNotEmpty
+                                                                      ? Image
+                                                                          .network(
+                                                                          post.postImageUrl!,
+                                                                          width:
+                                                                              screenWidth * 0.82,
+                                                                          height:
+                                                                              screenHeight * 0.3,
+                                                                          fit: BoxFit
+                                                                              .cover,
+                                                                        )
+                                                                      : const SizedBox
+                                                                          .shrink(),
+                                                                ),
+                                                                Gap(screenHeight *
+                                                                    0.008),
+                                                                post.tags?.isNotEmpty ==
+                                                                        true
+                                                                    ? Container(
+                                                                        padding:
+                                                                            EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              screenWidth * 0.03,
+                                                                          vertical:
+                                                                              screenHeight * 0.005,
+                                                                        ),
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          color: const Color
+                                                                              .fromARGB(
+                                                                              255,
+                                                                              217,
+                                                                              217,
+                                                                              217),
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(20),
+                                                                        ),
+                                                                        child:
+                                                                            Text(
+                                                                          post.tags!,
+                                                                          style:
+                                                                              GoogleFonts.poppins(
+                                                                            fontSize:
+                                                                                screenWidth * 0.023,
+                                                                            fontWeight:
+                                                                                FontWeight.w500,
+                                                                            color: const Color.fromARGB(
+                                                                                255,
+                                                                                86,
+                                                                                99,
+                                                                                111),
+                                                                          ),
+                                                                        ),
+                                                                      )
+                                                                    : const SizedBox
+                                                                        .shrink(),
+                                                                Gap(screenHeight *
+                                                                    0.01),
+                                                                Column(
+                                                                  children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        LikeButton(
+                                                                          size:
+                                                                              20,
+                                                                          likeCount: post
+                                                                              .likedBy
+                                                                              .length,
+                                                                          isLiked: post
+                                                                              .likedBy
+                                                                              .contains(widget.email),
+                                                                          likeBuilder:
+                                                                              (bool isLiked) {
+                                                                            return SvgPicture.asset(
+                                                                              isLiked ? 'assets/images/profile_page/heart_true.svg' : 'assets/images/profile_page/heart.svg',
+                                                                              colorFilter: ColorFilter.mode(
+                                                                                isLiked ? Colors.red : const Color.fromARGB(255, 86, 99, 111),
+                                                                                BlendMode.srcIn,
+                                                                              ),
+                                                                            );
+                                                                          },
+                                                                          onTap:
+                                                                              (isLiked) async {
+                                                                            try {
+                                                                              final postId = post.id;
+                                                                              if (postId.isNotEmpty) {
+                                                                                await postController.likePost(postId, widget.email);
+                                                                                return !isLiked;
+                                                                              } else {
+                                                                                print("Invalid post ID");
+                                                                                return isLiked;
+                                                                              }
+                                                                            } catch (e) {
+                                                                              print("Error updating like status: $e");
+                                                                              return isLiked;
+                                                                            }
+                                                                          },
+                                                                        ),
+                                                                        Gap(screenHeight *
+                                                                            0.02),
+                                                                        SvgPicture
+                                                                            .asset(
+                                                                          'assets/images/profile_page/comment.svg',
+                                                                          width:
+                                                                              20.0,
+                                                                          height:
+                                                                              20.0,
+                                                                        ),
+                                                                        Gap(screenWidth *
+                                                                            0.005),
+                                                                        StreamBuilder<
+                                                                            QuerySnapshot>(
+                                                                          stream: FirebaseFirestore
+                                                                              .instance
+                                                                              .collection('posts')
+                                                                              .doc(post.id)
+                                                                              .collection('comments')
+                                                                              .snapshots(),
+                                                                          builder:
+                                                                              (context, snapshot) {
+                                                                            int commentCount = snapshot.hasData
+                                                                                ? snapshot.data!.docs.length
+                                                                                : 0;
+
+                                                                            return Text(
+                                                                              '$commentCount',
+                                                                              style: GoogleFonts.poppins(
+                                                                                fontSize: 12.0,
+                                                                                color: Colors.grey[500],
+                                                                              ),
+                                                                            );
+                                                                          },
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
