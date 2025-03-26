@@ -8,10 +8,8 @@ import 'package:intl/intl.dart';
 class BookingSummaryPage extends StatelessWidget {
   final String userEmail;
   // final String accountName;
-  final TimeOfDay selectedTime;
   // final String userType;
   final List<Service> selectedServices;
-  final DateTime selectedDate;
   final String clientName;
   final String clientEmail;
   // final String username;
@@ -23,15 +21,15 @@ class BookingSummaryPage extends StatelessWidget {
   final String profileEmail;
   final String shopName;
   final Map<String, dynamic>? selectedAffiliatedBarber;
+  final String selectedTimeSlot;
+  final String selectedDay;
 
   const BookingSummaryPage({
     super.key,
     required this.userEmail,
     // required this.accountName,
-    required this.selectedTime,
     // required this.userType,
     required this.selectedServices,
-    required this.selectedDate,
     required this.clientName,
     required this.phoneNumber,
     required this.note,
@@ -44,6 +42,8 @@ class BookingSummaryPage extends StatelessWidget {
     required this.clientEmail,
     required this.selectedAffiliatedBarber,
     required this.shopName,
+    required this.selectedTimeSlot,
+    required this.selectedDay,
   });
 
   @override
@@ -51,8 +51,10 @@ class BookingSummaryPage extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    String formattedDate = DateFormat('MMMM d, yyyy').format(selectedDate);
-    String time = selectedTime.format(context);
+    String formattedDate = DateFormat('MMMM d, yyyy').format(
+      DateFormat('EEEE, MMMM dd, yyyy').parse(selectedDay),
+    );
+    String time = selectedTimeSlot;
 
     final barberName = selectedAffiliatedBarber?['barberName'] ?? '';
     final barberRole = selectedAffiliatedBarber?['role'] ?? '';
@@ -65,6 +67,7 @@ class BookingSummaryPage extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: screenWidth * 0.035,
             fontWeight: FontWeight.w600,
+            color: const Color.fromARGB(255, 48, 65, 69),
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -99,7 +102,7 @@ class BookingSummaryPage extends StatelessWidget {
                 ),
                 Gap(screenWidth * 0.02),
                 Text(
-                  selectedAffiliatedBarber?['affiliatedShop'] ?? '',
+                  selectedAffiliatedBarber?['affiliatedShop'] ?? 'N/A',
                   style: GoogleFonts.poppins(
                     fontSize: screenWidth * 0.035,
                     fontWeight: FontWeight.w400,
@@ -345,7 +348,7 @@ class BookingSummaryPage extends StatelessWidget {
                 height: screenHeight * 0.07,
                 child: ElevatedButton(
                   onPressed: () async {
-                    final formattedTime = selectedTime.format(context);
+                    final formattedTime = selectedTimeSlot;
 
                     // Generate a new document reference with a unique ID
                     final docRef = FirebaseFirestore.instance

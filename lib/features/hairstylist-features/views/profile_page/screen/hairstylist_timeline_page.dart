@@ -143,6 +143,113 @@ class HairstylistTimelinePage extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                              Gap(screenWidth * 0.2),
+                              PopupMenuButton<String>(
+                                icon: SvgPicture.asset(
+                                  'assets/images/profile_page/menu_btn.svg',
+                                  width: 20.0,
+                                  height: 20.0,
+                                  colorFilter: const ColorFilter.mode(
+                                      Color.fromARGB(100, 48, 65, 69),
+                                      BlendMode.srcIn),
+                                ),
+                                onSelected: (String result) async {
+                                  if (result == 'Delete') {
+                                    bool confirmDelete = await showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text(
+                                            'Delete Post',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: screenWidth * 0.05,
+                                              fontWeight: FontWeight.w600,
+                                              color: const Color.fromARGB(
+                                                  255, 48, 65, 69),
+                                            ),
+                                          ),
+                                          content: Text(
+                                            'Are you sure you want to delete this post?',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: screenWidth * 0.035,
+                                              fontWeight: FontWeight.w400,
+                                              color: const Color.fromARGB(
+                                                  255, 48, 65, 69),
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context, false);
+                                              },
+                                              child: Text(
+                                                'Cancel',
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: screenWidth * 0.035,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.grey[800],
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context, true);
+                                              },
+                                              child: Text(
+                                                'Delete',
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: screenWidth * 0.035,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+
+                                    if (confirmDelete) {
+                                      try {
+                                        await postController
+                                            .deletePost(post.id);
+                                      } catch (e) {
+                                        print("Error deleting post: $e");
+                                      }
+                                    }
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry<String>>[
+                                  PopupMenuItem<String>(
+                                    value: 'Delete',
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.delete,
+                                          color:
+                                              Color.fromARGB(255, 48, 65, 69),
+                                          size: 20.0,
+                                        ),
+                                        Gap(screenWidth * 0.02),
+                                        Text(
+                                          'Delete',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 14.0,
+                                            fontWeight: FontWeight.w500,
+                                            color: const Color.fromARGB(
+                                                255, 48, 65, 69),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                                color: const Color.fromARGB(255, 248, 248, 248),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
                             ],
                           ),
                           Padding(

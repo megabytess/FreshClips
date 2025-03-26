@@ -81,7 +81,7 @@ class _BSAddBarbersState extends State<BSAddBarbersPage> {
                     });
                   } else {
                     final results = await searchController.filterByUsertype(
-                        value, widget.clientEmail);
+                        value, widget.clientEmail, ratingsReviewController);
 
                     setState(() {
                       searchResults = results;

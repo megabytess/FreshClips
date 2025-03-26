@@ -48,7 +48,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
   double averageRating = 0.0;
   late RatingsReviewController ratingsReviewController;
   String shopStatus = "Loading...";
-  late final BSAvailabilityController bsAvailabilityController;
+  late BSAvailabilityController availabilityController;
 
   @override
   void initState() {
@@ -58,6 +58,8 @@ class _BSProfilePageState extends State<BSProfilePage> {
       clientEmail: widget.clientEmail,
       reviewController: reviewController,
     );
+    availabilityController =
+        BSAvailabilityController(email: widget.email, context: context);
 
     listPages.add(
       PageTabItemModel(
@@ -93,8 +95,7 @@ class _BSProfilePageState extends State<BSProfilePage> {
         ),
       ),
     );
-    bsAvailabilityController =
-        BSAvailabilityController(email: widget.email, context: context);
+
     barbershopsalonController.getBarbershopSalon(widget.email);
     fetchWorkingHours();
     currentUserEmail = FirebaseAuth.instance.currentUser?.email;
@@ -112,37 +113,46 @@ class _BSProfilePageState extends State<BSProfilePage> {
 
   void fetchWorkingHours() async {
     try {
-      List<WorkingHours> workingHoursList =
-          await bsAvailabilityController.fetchWorkingHoursBS(widget.email);
+      setState(() {
+        isLoading = true;
+      });
 
-      if (workingHoursList.isNotEmpty) {
-        setState(() {
-          availabilityData = workingHoursList
-              .map((workingHour) => {
-                    'day': workingHour.day,
-                    'status': workingHour.status,
-                    'openingTime': workingHour.openingTime,
-                    'closingTime': workingHour.closingTime,
-                  })
-              .toList();
+      List<WorkingHours> fetchedData =
+          await availabilityController.fetchWorkingHoursBS(widget.email);
 
-          if (availabilityData.isNotEmpty) {
-            selectedStoreHours =
-                availabilityData[0]['status'] ? 'SHOP OPEN' : 'SHOP CLOSED';
+      setState(() {
+        availabilityData = fetchedData.map((workingHour) {
+          DateTime parsedDate;
+          try {
+            parsedDate =
+                DateFormat('EEEE, MMMM dd, yyyy').parse(workingHour.day);
+          } catch (e) {
+            print('Error parsing date: $e');
+            parsedDate = DateTime.now();
           }
 
-          isLoading = false;
+          return {
+            'day': workingHour.day,
+            'status': workingHour.status,
+            'date': parsedDate.toIso8601String(),
+            'openingTime': workingHour.openingTime,
+            'closingTime': workingHour.closingTime,
+          };
+        }).toList();
+
+        availabilityData.sort((a, b) {
+          DateTime dateA = DateTime.parse(a['date']);
+          DateTime dateB = DateTime.parse(b['date']);
+          return dateA.compareTo(dateB);
         });
-      } else {
-        setState(() {
-          isLoading = false; // No data available
-        });
-      }
+
+        isLoading = false;
+      });
     } catch (e) {
-      print('Error fetching working hours: $e');
       setState(() {
         isLoading = false;
       });
+      print('Error fetching working hours: $e');
     }
   }
 
@@ -157,7 +167,8 @@ class _BSProfilePageState extends State<BSProfilePage> {
   }
 
   void fetchShopStatus() async {
-    final status = await getShopStatus(widget.email); // Pass the user's email
+    final status = await getShopStatus(widget.email);
+
     setState(() {
       shopStatus = status;
     });
@@ -213,80 +224,10 @@ class _BSProfilePageState extends State<BSProfilePage> {
             } else {
               return 'SHOP CLOSED';
             }
-
-            // if (status != null) {
-            //   return status ? 'SHOP OPEN' : 'SHOP CLOSED';
-            // } else {
-            //   return 'Status not available for today';
-            // }
           }
         }
 
         return 'No working hours for today';
-
-        //   final workingHoursData = querySnapshot.docs
-        //       .map((doc) => WorkingHours.fromJson(doc.data()))
-        //       .toList();
-        //   print('working hours data: $workingHoursData');
-
-        //   for (final workingHours in workingHoursData) {
-        //     final formattedShopDate = DateFormat('EEEE, MMMM d, yyyy')
-        //         .format(workingHours.day as DateTime);
-
-        //     print(
-        //         "Comparing today's date: $formattedDate with shop's working day: $formattedShopDate");
-
-        //     if (formattedDate == formattedShopDate) {
-        //       // Compare if today matches the shop's working day
-        //       final currentTime = DateTime.now();
-        //       final openingTime = workingHours.openingTime;
-        //       final closingTime = workingHours.closingTime;
-
-        //       if (workingHours.status == true &&
-        //           currentTime.isAfter(openingTime!) &&
-        //           currentTime.isBefore(closingTime!)) {
-        //         return "SHOP OPEN";
-        //       } else {
-        //         return "SHOP CLOSED";
-        //       }
-        //     }
-        //   }
-        // } // Format the shop's working day
-
-        //   print('Working Hours Data: $workingHoursData');
-        //   print('current time: $currentTime');
-        //   print('Opening Time: ${workingHoursData['openingTime']}');
-        //   print('Closing Time: ${workingHoursData['closingTime']}');
-        //   print('Status: ${workingHoursData['status']}');
-
-        //   if (workingHoursData['day'] == null ||
-        //       workingHoursData['openingTime'] == null ||
-        //       workingHoursData['closingTime'] == null ||
-        //       workingHoursData['status'] == null) {
-        //     print('Error: Missing fields in Firestore document.');
-        //     return "SHOP CLOSED";
-        //   }
-
-        //   // Map the Firestore document data to the WorkingHours model
-        //   final workingHours = WorkingHours.fromMap(workingHoursData);
-        //   print('Working Hours: ${workingHours.toMap()}');
-
-        //   if (workingHours.openingTime != null &&
-        //       workingHours.closingTime != null) {
-        //     if (workingHours.status == true &&
-        //         currentTime.isAfter(workingHours.openingTime!) &&
-        //         currentTime.isBefore(workingHours.closingTime!)) {
-        //       return "SHOP OPEN";
-        //     } else {
-        //       return "SHOP CLOSED";
-        //     }
-        //   } else {
-        //     print('Opening or closing time is not set.');
-        //     return "SHOP CLOSED";
-        //   }
-        // } else {
-        //   print('No working hours found for the given email.');
-        //   return "SHOP CLOSED";
       } else {
         print('empty');
       }

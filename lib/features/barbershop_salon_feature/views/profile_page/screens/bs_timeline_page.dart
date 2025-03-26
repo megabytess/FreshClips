@@ -112,7 +112,6 @@ class BSTimelinePage extends StatelessWidget {
                                 ),
                               ),
                               Gap(screenWidth * 0.02),
-                              // Time Icon and Duration
                               Padding(
                                 padding: EdgeInsets.only(
                                   top: screenHeight * 0.02,
@@ -140,6 +139,113 @@ class BSTimelinePage extends StatelessWidget {
                                     color:
                                         const Color.fromARGB(100, 48, 65, 69),
                                   ),
+                                ),
+                              ),
+                              Gap(screenWidth * 0.2),
+                              PopupMenuButton<String>(
+                                icon: SvgPicture.asset(
+                                  'assets/images/profile_page/menu_btn.svg',
+                                  width: 20.0,
+                                  height: 20.0,
+                                  colorFilter: const ColorFilter.mode(
+                                      Color.fromARGB(100, 48, 65, 69),
+                                      BlendMode.srcIn),
+                                ),
+                                onSelected: (String result) async {
+                                  if (result == 'Delete') {
+                                    bool confirmDelete = await showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text(
+                                            'Delete Post',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: screenWidth * 0.05,
+                                              fontWeight: FontWeight.w600,
+                                              color: const Color.fromARGB(
+                                                  255, 48, 65, 69),
+                                            ),
+                                          ),
+                                          content: Text(
+                                            'Are you sure you want to delete this post?',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: screenWidth * 0.035,
+                                              fontWeight: FontWeight.w400,
+                                              color: const Color.fromARGB(
+                                                  255, 48, 65, 69),
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context, false);
+                                              },
+                                              child: Text(
+                                                'Cancel',
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: screenWidth * 0.035,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.grey[800],
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context, true);
+                                              },
+                                              child: Text(
+                                                'Delete',
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: screenWidth * 0.035,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+
+                                    if (confirmDelete) {
+                                      try {
+                                        await postController
+                                            .deletePost(post.id);
+                                      } catch (e) {
+                                        print("Error deleting post: $e");
+                                      }
+                                    }
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry<String>>[
+                                  PopupMenuItem<String>(
+                                    value: 'Delete',
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.delete,
+                                          color:
+                                              Color.fromARGB(255, 48, 65, 69),
+                                          size: 20.0,
+                                        ),
+                                        Gap(screenWidth * 0.02),
+                                        Text(
+                                          'Delete',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 14.0,
+                                            fontWeight: FontWeight.w500,
+                                            color: const Color.fromARGB(
+                                                255, 48, 65, 69),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                                color: const Color.fromARGB(255, 248, 248, 248),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
                                 ),
                               ),
                             ],
@@ -194,73 +300,69 @@ class BSTimelinePage extends StatelessWidget {
                                 )
                               : const SizedBox.shrink(),
                           Gap(screenHeight * 0.01),
-                          Column(
+                          Row(
                             children: [
-                              Row(
-                                children: [
-                                  LikeButton(
-                                    size: 20,
-                                    likeCount: post.likedBy.length,
-                                    isLiked: post.likedBy.contains(email),
-                                    likeBuilder: (bool isLiked) {
-                                      return SvgPicture.asset(
-                                        isLiked
-                                            ? 'assets/images/profile_page/heart_true.svg'
-                                            : 'assets/images/profile_page/heart.svg',
-                                        colorFilter: ColorFilter.mode(
-                                          isLiked
-                                              ? Colors.red
-                                              : const Color.fromARGB(
-                                                  255, 86, 99, 111),
-                                          BlendMode.srcIn,
-                                        ),
-                                      );
-                                    },
-                                    onTap: (isLiked) async {
-                                      try {
-                                        final postId = post.id;
-                                        if (postId.isNotEmpty) {
-                                          await postController.likePost(
-                                              postId, email);
-                                          return !isLiked;
-                                        } else {
-                                          print("Invalid post ID");
-                                          return isLiked;
-                                        }
-                                      } catch (e) {
-                                        print("Error updating like status: $e");
-                                        return isLiked;
-                                      }
-                                    },
-                                  ),
-                                  Gap(screenHeight * 0.02),
-                                  SvgPicture.asset(
-                                    'assets/images/profile_page/comment.svg',
-                                    width: 20.0,
-                                    height: 20.0,
-                                  ),
-                                  Gap(screenWidth * 0.005),
-                                  StreamBuilder<QuerySnapshot>(
-                                    stream: FirebaseFirestore.instance
-                                        .collection('posts')
-                                        .doc(post.id)
-                                        .collection('comments')
-                                        .snapshots(),
-                                    builder: (context, snapshot) {
-                                      int commentCount = snapshot.hasData
-                                          ? snapshot.data!.docs.length
-                                          : 0;
+                              LikeButton(
+                                size: 20,
+                                likeCount: post.likedBy.length,
+                                isLiked: post.likedBy.contains(email),
+                                likeBuilder: (bool isLiked) {
+                                  return SvgPicture.asset(
+                                    isLiked
+                                        ? 'assets/images/profile_page/heart_true.svg'
+                                        : 'assets/images/profile_page/heart.svg',
+                                    colorFilter: ColorFilter.mode(
+                                      isLiked
+                                          ? Colors.red
+                                          : const Color.fromARGB(
+                                              255, 86, 99, 111),
+                                      BlendMode.srcIn,
+                                    ),
+                                  );
+                                },
+                                onTap: (isLiked) async {
+                                  try {
+                                    final postId = post.id;
+                                    if (postId.isNotEmpty) {
+                                      await postController.likePost(
+                                          postId, email);
+                                      return !isLiked;
+                                    } else {
+                                      print("Invalid post ID");
+                                      return isLiked;
+                                    }
+                                  } catch (e) {
+                                    print("Error updating like status: $e");
+                                    return isLiked;
+                                  }
+                                },
+                              ),
+                              Gap(screenHeight * 0.02),
+                              SvgPicture.asset(
+                                'assets/images/profile_page/comment.svg',
+                                width: 20.0,
+                                height: 20.0,
+                              ),
+                              Gap(screenWidth * 0.005),
+                              StreamBuilder<QuerySnapshot>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('posts')
+                                    .doc(post.id)
+                                    .collection('comments')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  int commentCount = snapshot.hasData
+                                      ? snapshot.data!.docs.length
+                                      : 0;
 
-                                      return Text(
-                                        '$commentCount',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 12.0,
-                                          color: Colors.grey[500],
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
+                                  return Text(
+                                    '$commentCount',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12.0,
+                                      color: Colors.grey[500],
+                                    ),
+                                  );
+                                },
                               ),
                             ],
                           ),

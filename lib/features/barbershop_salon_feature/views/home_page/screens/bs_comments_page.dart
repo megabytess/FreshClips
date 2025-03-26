@@ -64,11 +64,6 @@ class _BSCommentPageState extends State<BSCommentPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        // title: SvgPicture.asset(
-        //   'assets/images/landing_page/freshclips_logo.svg',
-        //   height: screenHeight * 0.05,
-        //   width: screenWidth * 0.05,
-        // ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -211,6 +206,8 @@ class _BSCommentPageState extends State<BSCommentPage> {
           ),
         ],
       ),
+
+      // ...existing code...
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Column(

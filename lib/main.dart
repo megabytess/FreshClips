@@ -22,10 +22,10 @@ class FreshClips extends StatelessWidget {
       title: 'FreshClips',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: const Color(0xFFF8F8F8),
-        scaffoldBackgroundColor: const Color(0xFFF8F8F8),
+        primaryColor: const Color.fromARGB(255, 248, 248, 248),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 248, 248, 248),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFF8F8F8),
+          backgroundColor: Color.fromARGB(255, 248, 248, 248),
         ),
       ),
       home: const LandingPage(),

@@ -125,41 +125,22 @@ class AdminCheckPendingPageState extends State<AdminCheckPendingPage> {
                       ),
                     ),
                     Gap(screenHeight * 0.01),
-                    Container(
-                      width: double.infinity,
-                      height: screenWidth * 0.5,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(screenWidth * 0.02),
-                        image: DecorationImage(
-                          image: userData[0]['verifyImageUrl'] != null
-                              ? NetworkImage(userData[0]['verifyImageUrl'])
-                              : const AssetImage(
-                                      'assets/images/placeholder.png')
-                                  as ImageProvider<Object>,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      'Another Verification ID:',
-                      style: GoogleFonts.poppins(
-                        fontSize: screenWidth * 0.04,
-                        fontWeight: FontWeight.w600,
-                        color: const Color.fromARGB(255, 18, 18, 18),
-                      ),
-                    ),
-                    Gap(screenHeight * 0.01),
-                    Container(
-                      width: double.infinity,
-                      height: screenWidth * 0.5,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(screenWidth * 0.02),
-                        image: DecorationImage(
-                          image: userData[0]['newVerifyImageDocRef'] != null
-                              ? NetworkImage(
-                                  userData[0]['newVerifyImageDocRef'])
-                              : const AssetImage('') as ImageProvider<Object>,
-                          fit: BoxFit.cover,
+                    SizedBox(
+                      height: screenWidth * 1,
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(screenWidth * 0.02),
+                          image: DecorationImage(
+                            image: userData[0]['verifyImageUrl'] != null &&
+                                    userData[0]['verifyImageUrl'].isNotEmpty
+                                ? NetworkImage(userData[0]['verifyImageUrl'])
+                                : const AssetImage(
+                                        'assets/images/placeholder.png')
+                                    as ImageProvider,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),

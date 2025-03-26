@@ -355,7 +355,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                                 color: Colors.grey,
                               ),
                             ),
-                            const Spacer(),
+                            Gap(screenHeight * 0.15),
                             Expanded(
                               child: Text(
                                 widget.note,

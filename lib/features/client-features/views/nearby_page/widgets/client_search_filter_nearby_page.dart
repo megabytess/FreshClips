@@ -203,6 +203,16 @@ class _ClientSearchFilterNearbyPageState
     }
   }
 
+  Future<List<Map<String, dynamic>>> searchByUsername(String username) async {
+    List<Map<String, dynamic>> results = [];
+    for (var user in nearbyUsers) {
+      if (user['username'].toLowerCase().contains(username.toLowerCase())) {
+        results.add(user);
+      }
+    }
+    return results;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -246,8 +256,7 @@ class _ClientSearchFilterNearbyPageState
                       searchResults = [];
                     });
                   } else {
-                    final results =
-                        await searchController.searchByUsername(value);
+                    final results = await searchByUsername(value);
 
                     setState(() {
                       searchResults = nearbyUsers = results;

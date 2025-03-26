@@ -217,4 +217,15 @@ class BSPostController extends ChangeNotifier {
       },
     );
   }
+
+  // delete post
+  Future<void> deletePost(String postId) async {
+    try {
+      await firestore.collection('posts').doc(postId).delete();
+      print('Post deleted successfully');
+    } catch (e) {
+      print('Failed to delete post: $e');
+      throw Exception('Failed to delete post: $e');
+    }
+  }
 }

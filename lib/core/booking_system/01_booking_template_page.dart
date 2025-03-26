@@ -11,7 +11,6 @@ import 'package:google_fonts/google_fonts.dart';
 class BookingTemplatePage extends StatefulWidget {
   const BookingTemplatePage({
     super.key,
-    // required this.userType,
     // required this.accountName,
     required this.userEmail,
     required this.clientEmail,
@@ -19,7 +18,6 @@ class BookingTemplatePage extends StatefulWidget {
   });
 
   final String shopName;
-  // final String userType;
   // final String accountName;
   final String userEmail;
   final String clientEmail;
@@ -67,8 +65,9 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
         title: Text(
           'Select Services',
           style: GoogleFonts.poppins(
-            fontSize: screenWidth * 0.04,
+            fontSize: screenWidth * 0.035,
             fontWeight: FontWeight.w600,
+            color: const Color.fromARGB(255, 48, 65, 69),
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -84,6 +83,7 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
             style: GoogleFonts.poppins(
               fontSize: screenWidth * 0.04,
               fontWeight: FontWeight.w600,
+              color: const Color.fromARGB(255, 48, 65, 69),
             ),
           ),
           Gap(screenHeight * 0.02),
@@ -120,8 +120,7 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
                             onTap: () {
                               setState(() {
                                 service.selected = !service.selected;
-                                updateSelectionStatus(
-                                    services); // Update the button state
+                                updateSelectionStatus(services);
                               });
                             },
                             child: Column(
@@ -154,8 +153,10 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
                                             Text(
                                               service.serviceName,
                                               style: GoogleFonts.poppins(
-                                                fontWeight: FontWeight.w700,
+                                                fontWeight: FontWeight.w600,
                                                 fontSize: screenWidth * 0.04,
+                                                color: const Color.fromARGB(
+                                                    255, 48, 65, 69),
                                               ),
                                             ),
                                             Text(
@@ -163,6 +164,8 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
                                               style: GoogleFonts.poppins(
                                                 fontSize: screenWidth * 0.025,
                                                 fontWeight: FontWeight.w400,
+                                                color: const Color.fromARGB(
+                                                    255, 48, 65, 69),
                                               ),
                                             ),
                                             Row(
@@ -170,9 +173,11 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
                                                 Text(
                                                   'P ${service.price}',
                                                   style: GoogleFonts.poppins(
-                                                    fontWeight: FontWeight.w600,
+                                                    fontWeight: FontWeight.w500,
                                                     fontSize:
                                                         screenWidth * 0.035,
+                                                    color: const Color.fromARGB(
+                                                        255, 48, 65, 69),
                                                   ),
                                                 ),
                                                 Gap(screenWidth * 0.04),
@@ -180,7 +185,7 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
                                                   '${service.duration} mins',
                                                   style: GoogleFonts.poppins(
                                                     fontSize:
-                                                        screenWidth * 0.035,
+                                                        screenWidth * 0.03,
                                                     fontWeight: FontWeight.w500,
                                                     color: Colors.grey,
                                                   ),
@@ -244,7 +249,7 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
                                     builder: (context) => DateTimeSchedulePage(
                                       shopName: widget.shopName,
                                       userEmail: widget.userEmail,
-                                      clientEmail: currentUserEmail ?? '',
+                                      clientEmail: currentUserEmail!,
                                       selectedServices: selectedServices,
                                     ),
                                   ),
