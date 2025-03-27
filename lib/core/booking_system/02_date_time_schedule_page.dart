@@ -160,7 +160,16 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
                       ),
                     )
                   : availabilityData.isEmpty
-                      ? const Center(child: Text('No working hours available'))
+                      ? Center(
+                          child: Text(
+                            'No working hours available',
+                            style: GoogleFonts.poppins(
+                              fontSize: screenWidth * 0.035,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        )
                       : Builder(
                           builder: (context) {
                             final filteredData = availabilityData
@@ -303,6 +312,7 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
                       },
                     ),
             ),
+            Gap(screenHeight * 0.02),
             Align(
               alignment: Alignment.bottomCenter,
               child: SizedBox(

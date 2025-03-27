@@ -71,28 +71,28 @@ class BSAddBarberController extends ChangeNotifier {
   }
 
   // Edit Barber
-  Future<void> editBarber(
-      {required String userEmail,
-      required String barberName,
-      required String role,
-      required String status,
-      required String availability}) async {
+  Future<void> editBarber({
+    required String barberName,
+    required String role,
+    required String status,
+    required String availability,
+    required String userEmail,
+    required String docId,
+  }) async {
     try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('availableBarbers')
-          .where('userEmail', isEqualTo: userEmail)
-          .get();
+      final barberDoc =
+          FirebaseFirestore.instance.collection('availableBarbers').doc(docId);
 
-      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-        await doc.reference.update({
-          'barberName': barberName,
-          'role': role,
-          'status': status,
-          'availability': availability,
-        });
-      }
+      await barberDoc.update({
+        'barberName': barberName,
+        'role': role,
+        'status': status,
+        'availability': availability,
+      });
+
+      print("Barber updated successfully.");
     } catch (e) {
-      print('Error updating barber: $e');
+      print("Error updating barber: $e");
     }
   }
 
