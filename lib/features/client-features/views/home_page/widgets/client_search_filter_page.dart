@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_ratings_review_controller.dart';
@@ -28,7 +29,7 @@ class _ClientSearchFilterPageState extends State<ClientSearchFilterPage> {
   final TextEditingController searchInputController = TextEditingController();
   final custom.SearchController searchController = custom.SearchController();
   List<Map<String, dynamic>> searchResults = [];
-  String selectedCategory = 'Hairstylist';
+  String selectedCategory = 'All';
   final TextEditingController reviewController = TextEditingController();
   late final RatingsReviewController ratingsReviewController =
       RatingsReviewController(
@@ -43,13 +44,50 @@ class _ClientSearchFilterPageState extends State<ClientSearchFilterPage> {
   }
 
   Future<void> fetchInitialResults() async {
-    final results = await searchController.searchByUsername(
+    final results = await searchByUsername(
       '',
     );
 
     setState(() {
       searchResults = results;
     });
+  }
+
+  // Search for users by username
+  Future<List<Map<String, dynamic>>> searchByUsername(String username) async {
+    try {
+      final normalizedUsername = username.toLowerCase();
+
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('user')
+          .where('username', isGreaterThanOrEqualTo: normalizedUsername)
+          .where('username', isLessThanOrEqualTo: '$normalizedUsername\uf8ff')
+          .get();
+
+      List<Map<String, dynamic>> filteredResults = await Future.wait(
+        querySnapshot.docs
+            .where((doc) =>
+                ['Barbershop_Salon', 'Hairstylist'].contains(doc['userType']))
+            .map((doc) async {
+          Map<String, dynamic> userData = doc.data();
+          userData['rating'] = await ratingsReviewController
+              .computeAverageRating(userData['email']);
+          return userData;
+        }).toList(),
+      );
+
+      // 🔥 Sort by computed rating (Descending)
+      filteredResults.sort((a, b) {
+        double ratingA = (a['rating'] ?? 0).toDouble();
+        double ratingB = (b['rating'] ?? 0).toDouble();
+        return ratingB.compareTo(ratingA); // Highest Rating at the TOP
+      });
+
+      return filteredResults;
+    } catch (e) {
+      print("Error fetching search results: $e");
+      return [];
+    }
   }
 
   @override
@@ -99,8 +137,7 @@ class _ClientSearchFilterPageState extends State<ClientSearchFilterPage> {
                         searchResults = [];
                       });
                     } else {
-                      final results =
-                          await searchController.searchByUsername(value);
+                      final results = await searchByUsername(value);
 
                       setState(() {
                         searchResults = results;
@@ -116,13 +153,53 @@ class _ClientSearchFilterPageState extends State<ClientSearchFilterPage> {
                 OutlinedButton(
                   onPressed: () async {
                     setState(() {
+                      selectedCategory = 'All';
+                    });
+
+                    final results = await searchByUsername(
+                      searchInputController.text,
+                    );
+
+                    setState(() {
+                      searchResults = results;
+                    });
+                  },
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: selectedCategory == 'All'
+                        ? const Color.fromARGB(255, 45, 65, 69)
+                        : Colors.transparent,
+                    side: BorderSide(
+                      color: selectedCategory == 'All'
+                          ? const Color.fromARGB(255, 45, 65, 69)
+                          : Colors.grey,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: Text(
+                    'All',
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.03,
+                      color: selectedCategory == 'All'
+                          ? Colors.white
+                          : Colors.grey[600],
+                    ),
+                  ),
+                ),
+                const Gap(10),
+                OutlinedButton(
+                  onPressed: () async {
+                    setState(() {
                       selectedCategory = 'Hairstylist';
                     });
 
                     final results = await searchController.filterByUsertype(
-                      searchInputController.text,
-                      selectedCategory,
-                    );
+                        searchInputController.text,
+                        selectedCategory,
+                        RatingsReviewController(
+                            clientEmail: widget.clientEmail,
+                            reviewController: reviewController));
 
                     setState(() {
                       searchResults = results;
@@ -161,6 +238,10 @@ class _ClientSearchFilterPageState extends State<ClientSearchFilterPage> {
                     final results = await searchController.filterByUsertype(
                       searchInputController.text,
                       selectedCategory,
+                      RatingsReviewController(
+                        clientEmail: widget.clientEmail,
+                        reviewController: reviewController,
+                      ),
                     );
 
                     setState(() {

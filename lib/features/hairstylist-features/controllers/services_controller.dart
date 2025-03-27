@@ -65,22 +65,24 @@ class ServiceController with ChangeNotifier {
   // Update an existing service in Firestore
   Future<void> updateService(Service updatedService) async {
     try {
-      final querySnapshot = await FirebaseFirestore.instance
+      final docRef = FirebaseFirestore.instance
           .collection('services')
-          .where('userEmail', isEqualTo: updatedService.userEmail)
-          .get();
-      if (querySnapshot.docs.isEmpty) {
-        print('no services found');
+          .doc(updatedService.id);
+
+      final docSnapshot = await docRef.get();
+      if (!docSnapshot.exists) {
+        print('Service not found');
+        return;
       }
 
-      for (var doc in querySnapshot.docs) {
-        await doc.reference.update({
-          'serviceName': updatedService.serviceName,
-          'serviceDescription': updatedService.serviceDescription,
-          'price': updatedService.price,
-          'duration': updatedService.duration,
-        });
-      }
+      // Update only the matching service
+      await docRef.update({
+        'serviceName': updatedService.serviceName,
+        'serviceDescription': updatedService.serviceDescription,
+        'price': updatedService.price,
+        'duration': updatedService.duration,
+      });
+
       await fetchServicesForUsers(updatedService.userEmail);
     } catch (e) {
       print('Error updating service: $e');

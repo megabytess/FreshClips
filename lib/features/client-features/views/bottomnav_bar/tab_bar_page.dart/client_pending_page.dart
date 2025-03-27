@@ -195,13 +195,16 @@ class ClientPendingPage extends StatelessWidget {
                                   ),
                                   Gap(screenWidth * 0.02),
                                   // Text
-                                  Text(
-                                    'Service: $selectedServices',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.028,
-                                      fontWeight: FontWeight.w400,
-                                      color: const Color.fromARGB(
-                                          255, 248, 248, 248),
+                                  Flexible(
+                                    child: Text(
+                                      'Service: $selectedServices',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: screenWidth * 0.028,
+                                        fontWeight: FontWeight.w400,
+                                        color: const Color.fromARGB(
+                                            255, 248, 248, 248),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ],

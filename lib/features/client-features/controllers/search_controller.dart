@@ -1,43 +1,44 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_ratings_review_controller.dart';
 import 'package:geolocator/geolocator.dart';
 
 class SearchController extends ChangeNotifier {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  // Search for users by username
-  Future<List<Map<String, dynamic>>> searchByUsername(String username) async {
+// filter the accounts in search page
+  Future<List<Map<String, dynamic>>> filterByUsertype(
+      String query,
+      String selectedCategory,
+      RatingsReviewController ratingsReviewController) async {
     try {
-      final normalizedUsername = username.toLowerCase();
-
       final querySnapshot = await FirebaseFirestore.instance
           .collection('user')
-          .where('username', isGreaterThanOrEqualTo: normalizedUsername)
-          .where('username', isLessThanOrEqualTo: '$normalizedUsername\uf8ff')
+          .where('userType', isEqualTo: selectedCategory)
           .get();
 
-      final filteredResults = querySnapshot.docs
-          .where((doc) =>
-              ['Barbershop_Salon', 'Hairstylist'].contains(doc['userType']))
-          .map((doc) => doc.data())
-          .toList();
+      // 🔥 Compute ratings asynchronously for each user
+      List<Map<String, dynamic>> filteredResults = await Future.wait(
+        querySnapshot.docs.map((doc) async {
+          Map<String, dynamic> userData = doc.data();
+          userData['rating'] = await ratingsReviewController
+              .computeAverageRating(userData['email']);
+          return userData;
+        }).toList(),
+      );
+
+      // 🔥 Sort by rating (Highest first)
+      filteredResults.sort((a, b) {
+        double ratingA = (a['rating'] ?? 0).toDouble();
+        double ratingB = (b['rating'] ?? 0).toDouble();
+        return ratingB.compareTo(ratingA); // Descending order
+      });
 
       return filteredResults;
     } catch (e) {
-      print("Error fetching search results: $e");
+      print("Error fetching filtered results: $e");
       return [];
     }
-  }
-
-// filter the accounts in search page
-  Future<List<Map<String, dynamic>>> filterByUsertype(
-      String query, String selectedCategory) async {
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('user')
-        .where('userType', isEqualTo: selectedCategory)
-        .get();
-
-    return querySnapshot.docs.map((doc) => doc.data()).toList();
   }
 
 // Search for hairstylist users for ADD BARBERS
@@ -87,6 +88,7 @@ class SearchController extends ChangeNotifier {
     }
   }
 
+// fetched user by userType
   Future<List<Map<String, dynamic>>> filterByNearbyUsertype(
       String query,
       String selectedCategory,

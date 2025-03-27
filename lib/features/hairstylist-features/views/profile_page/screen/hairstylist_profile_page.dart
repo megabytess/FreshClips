@@ -175,38 +175,46 @@ class _ProfilePageState extends State<HairstylistProfilePage> {
 
   void fetchWorkingHours() async {
     try {
-      // Call the fetchWorkingHours method from your controller
-      List<WorkingHours> workingHoursList =
+      setState(() {
+        isLoading = true;
+      });
+
+      List<WorkingHours> fetchedData =
           await workingHoursController.fetchWorkingHours(widget.email);
 
-      if (workingHoursList.isNotEmpty) {
-        setState(() {
-          availabilityData = workingHoursList
-              .map((workingHour) => {
-                    'day': workingHour.day,
-                    'status': workingHour.status,
-                    'openingTime': workingHour.openingTime,
-                    'closingTime': workingHour.closingTime,
-                  })
-              .toList();
-
-          if (availabilityData.isNotEmpty) {
-            selectedStoreHours =
-                availabilityData[0]['status'] ? 'SHOP OPEN' : 'SHOP CLOSED';
+      setState(() {
+        availabilityData = fetchedData.map((workingHour) {
+          DateTime parsedDate;
+          try {
+            parsedDate =
+                DateFormat('EEEE, MMMM dd, yyyy').parse(workingHour.day);
+          } catch (e) {
+            print('Error parsing date: $e');
+            parsedDate = DateTime.now();
           }
 
-          isLoading = false;
+          return {
+            'day': workingHour.day,
+            'status': workingHour.status,
+            'date': parsedDate.toIso8601String(),
+            'openingTime': workingHour.openingTime,
+            'closingTime': workingHour.closingTime,
+          };
+        }).toList();
+
+        availabilityData.sort((a, b) {
+          DateTime dateA = DateTime.parse(a['date']);
+          DateTime dateB = DateTime.parse(b['date']);
+          return dateA.compareTo(dateB);
         });
-      } else {
-        setState(() {
-          isLoading = false; // No data available
-        });
-      }
+
+        isLoading = false;
+      });
     } catch (e) {
-      print('Error fetching working hours: $e');
       setState(() {
         isLoading = false;
       });
+      print('Error fetching working hours: $e');
     }
   }
 

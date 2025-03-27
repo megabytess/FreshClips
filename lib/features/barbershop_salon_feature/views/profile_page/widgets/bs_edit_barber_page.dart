@@ -213,6 +213,7 @@ class _BSEditBarberPageState extends State<BSEditBarberPage> {
                       );
 
                       addBarberController.editBarber(
+                        docId: updatedBarber.id,
                         barberName: updatedBarber.barberName,
                         role: updatedBarber.role,
                         status: updatedBarber.status,

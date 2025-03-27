@@ -6,7 +6,6 @@ import 'package:freshclips_capstone/features/barbershop_salon_feature/controller
 import 'package:freshclips_capstone/features/barbershop_salon_feature/views/profile_page/screens/bs_profile_page.dart';
 import 'package:freshclips_capstone/features/client-features/controllers/client_controller.dart';
 import 'package:freshclips_capstone/features/client-features/controllers/nearby_controller.dart';
-import 'package:freshclips_capstone/features/client-features/views/nearby_page/widgets/client_search_filter_nearby_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/hairstylist_profile_page.dart';
 import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart';
@@ -749,51 +748,51 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
             ),
           ),
 
-          Positioned(
-            top: 20,
-            left: 10,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: screenWidth * 0.03,
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  height: screenHeight * 0.05,
-                  width: screenWidth * 0.88,
-                  color: const Color.fromARGB(255, 248, 248, 248),
-                  child: TextButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ClientSearchFilterNearbyPage(
-                          email: widget.email,
-                          clientEmail: widget.clientEmail,
-                        ),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.search_rounded,
-                          color: Colors.grey,
-                          size: 24,
-                        ),
-                        const Gap(10),
-                        Text(
-                          'Search',
-                          style: GoogleFonts.poppins(
-                            fontSize: screenWidth * 0.03,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // Positioned(
+          //   top: 20,
+          //   left: 10,
+          //   child: Padding(
+          //     padding: EdgeInsets.symmetric(
+          //       horizontal: screenWidth * 0.03,
+          //     ),
+          //     child: ClipRRect(
+          //       borderRadius: BorderRadius.circular(20),
+          //       child: Container(
+          //         height: screenHeight * 0.05,
+          //         width: screenWidth * 0.88,
+          //         color: const Color.fromARGB(255, 248, 248, 248),
+          //         child: TextButton(
+          //           onPressed: () => Navigator.push(
+          //             context,
+          //             MaterialPageRoute(
+          //               builder: (context) => ClientSearchFilterNearbyPage(
+          //                 email: widget.email,
+          //                 clientEmail: widget.clientEmail,
+          //               ),
+          //             ),
+          //           ),
+          //           child: Row(
+          //             children: [
+          //               const Icon(
+          //                 Icons.search_rounded,
+          //                 color: Colors.grey,
+          //                 size: 24,
+          //               ),
+          //               const Gap(10),
+          //               Text(
+          //                 'Search',
+          //                 style: GoogleFonts.poppins(
+          //                   fontSize: screenWidth * 0.03,
+          //                   color: Colors.grey[600],
+          //                 ),
+          //               ),
+          //             ],
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
 
           // Zoom controls
           Positioned(

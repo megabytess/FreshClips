@@ -12,23 +12,23 @@ class InfoDetailsPage extends StatefulWidget {
     super.key,
     required this.userEmail,
     required this.shopName,
-    required this.selectedTime,
     required this.selectedServices,
-    required this.selectedDate,
     required Map<String, Object> bookingData,
     required this.clientEmail,
     required this.userType,
     required this.bookedUser,
+    required this.selectedDay,
+    required this.selectedTimeSlot,
   });
 
   final String clientEmail;
   final String userEmail;
   final String shopName;
-  final TimeOfDay selectedTime;
   final List<Service> selectedServices;
-  final DateTime selectedDate;
   final String userType;
   final String bookedUser;
+  final String selectedDay;
+  final String selectedTimeSlot;
 
   @override
   State<InfoDetailsPage> createState() => _InfoDetailsPageState();
@@ -110,7 +110,7 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                       style: GoogleFonts.poppins(
                         fontSize: screenWidth * 0.04,
                         fontWeight: FontWeight.w500,
-                        color: const Color.fromARGB(255, 18, 18, 18),
+                        color: const Color.fromARGB(255, 48, 65, 69),
                       ),
                     ),
                   ),
@@ -134,7 +134,7 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.w500,
-                            color: const Color.fromARGB(255, 18, 18, 18),
+                            color: const Color.fromARGB(255, 48, 65, 69),
                           ),
                         ),
                         subtitle: Text(
@@ -170,8 +170,9 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
         title: Text(
           'Booking Details',
           style: GoogleFonts.poppins(
-            fontSize: screenWidth * 0.04,
+            fontSize: screenWidth * 0.034,
             fontWeight: FontWeight.w600,
+            color: const Color.fromARGB(255, 48, 65, 69),
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -194,6 +195,7 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                         style: GoogleFonts.poppins(
                           fontSize: screenWidth * 0.04,
                           fontWeight: FontWeight.w600,
+                          color: const Color.fromARGB(255, 48, 65, 69),
                         ),
                       ),
                       Gap(screenHeight * 0.02),
@@ -203,6 +205,7 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                           labelText: 'Name',
                           labelStyle: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
+                            color: const Color.fromARGB(255, 48, 65, 69),
                           ),
                           border: OutlineInputBorder(
                             borderRadius:
@@ -226,6 +229,7 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                           labelText: 'Phone Number',
                           labelStyle: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.035,
+                            color: const Color.fromARGB(255, 48, 65, 69),
                           ),
                           border: OutlineInputBorder(
                             borderRadius:
@@ -234,6 +238,7 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                         ),
                         style: GoogleFonts.poppins(
                           fontSize: screenWidth * 0.035,
+                          color: const Color.fromARGB(255, 48, 65, 69),
                         ),
                         keyboardType: TextInputType.phone,
                         validator: (value) {
@@ -328,7 +333,7 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                             style: GoogleFonts.poppins(
                               fontSize: screenWidth * 0.035,
                               fontWeight: FontWeight.w500,
-                              color: const Color.fromARGB(255, 18, 18, 18),
+                              color: const Color.fromARGB(255, 48, 65, 69),
                             ),
                           ),
                           subtitle: Text(
@@ -356,9 +361,7 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                         MaterialPageRoute(
                           builder: (context) => BookingSummaryPage(
                             userEmail: widget.userEmail,
-                            selectedTime: widget.selectedTime,
                             selectedServices: widget.selectedServices,
-                            selectedDate: widget.selectedDate,
                             clientName: clientNameController.text,
                             phoneNumber: phoneNumberController.text,
                             note: noteController.text,
@@ -375,6 +378,8 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                             profileEmail: widget.clientEmail,
                             selectedAffiliatedBarber: selectedAffiliatedBarber,
                             shopName: widget.shopName,
+                            selectedTimeSlot: widget.selectedTimeSlot,
+                            selectedDay: widget.selectedDay,
                           ),
                         ),
                       );

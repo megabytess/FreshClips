@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_controller.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/controllers/services_controller.dart';
+import 'package:freshclips_capstone/features/hairstylist-features/models/services_model.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/hairstylist_services/add_services_page.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/views/profile_page/screen/hairstylist_services/edit_services_page.dart';
 import 'package:gap/gap.dart';
@@ -384,7 +385,20 @@ class _BSInfoPageState extends State<BSInfoPage> {
                                                               EditServicePage(
                                                             userEmail:
                                                                 widget.email,
-                                                            service: service,
+                                                            service: Service(
+                                                              id: service.id,
+                                                              serviceName: service
+                                                                  .serviceName,
+                                                              serviceDescription:
+                                                                  service
+                                                                      .serviceDescription,
+                                                              price:
+                                                                  service.price,
+                                                              duration: service
+                                                                  .duration,
+                                                              userEmail: service
+                                                                  .userEmail,
+                                                            ),
                                                           ),
                                                         ),
                                                       ).then((_) {
