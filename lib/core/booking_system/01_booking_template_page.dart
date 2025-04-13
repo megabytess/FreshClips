@@ -1,3 +1,6 @@
+import 'package:delightful_toast/delight_toast.dart';
+import 'package:delightful_toast/toast/components/toast_card.dart';
+import 'package:delightful_toast/toast/utils/enums.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/core/booking_system/02_date_time_schedule_page.dart';
@@ -31,7 +34,6 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
   late HairstylistController hairstylistController;
   late Future<List<Service>> servicesFuture;
   late final ServiceController serviceController = ServiceController();
-  bool isAnyServiceSelected = false;
   String? currentUserEmail;
 
   @override
@@ -45,13 +47,6 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
 
   Future<List<Service>> fetchServices() {
     return serviceController.fetchServicesForUsers(widget.userEmail);
-  }
-
-  // Function to check if any service is selected and update the state
-  void updateSelectionStatus(List<Service> services) {
-    setState(() {
-      isAnyServiceSelected = services.any((service) => service.selected);
-    });
   }
 
   @override
@@ -120,7 +115,6 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
                             onTap: () {
                               setState(() {
                                 service.selected = !service.selected;
-                                updateSelectionStatus(services);
                               });
                             },
                             child: Column(
@@ -203,9 +197,6 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
                                       onChanged: (value) {
                                         setState(() {
                                           service.selected = value ?? false;
-                                          updateSelectionStatus(
-                                            services,
-                                          );
                                         });
                                       },
                                     ),
@@ -221,43 +212,77 @@ class _BookingTemplatePageState extends State<BookingTemplatePage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: isAnyServiceSelected
-                            ? () {
-                                final selectedServices = services
-                                    .where((service) => service.selected)
-                                    .toList();
+                        onPressed: () {
+                          final selectedServices = services
+                              .where((service) => service.selected)
+                              .toList();
 
-                                // Print the selected services to the console
-                                print(
-                                    'Selected Services to pass to next screen:');
-                                for (var service in selectedServices) {
-                                  print(
-                                      'Service: ${service.serviceName}, Price: ${service.price}');
-                                }
-
-                                // Check for null values and print them
-                                if (currentUserEmail == null) {
-                                  print(
-                                      'Error: One or more required values are null');
-                                  return; // Exit early if any required value is null
-                                }
-
-                                // Proceed with navigation if all values are valid
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DateTimeSchedulePage(
-                                      shopName: widget.shopName,
-                                      userEmail: widget.userEmail,
-                                      clientEmail: currentUserEmail!,
-                                      selectedServices: selectedServices,
-                                    ),
+                          if (selectedServices.isEmpty) {
+                            DelightToastBar(
+                              snackbarDuration: const Duration(seconds: 2),
+                              autoDismiss: true,
+                              position: DelightSnackbarPosition.bottom,
+                              builder: (context) => ToastCard(
+                                leading: SizedBox(
+                                  width: 40,
+                                  height: 40,
+                                  child: Image.asset(
+                                    'assets/images/icons/logo_icon.png',
                                   ),
-                                );
-                              }
-                            : null,
+                                ),
+                                title: Text(
+                                  "Please select at least one service.",
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: screenWidth * 0.035,
+                                    color:
+                                        const Color.fromARGB(255, 48, 65, 69),
+                                  ),
+                                ),
+                              ),
+                            ).show(context);
 
-                        // Disable button if no service is selected
+                            return;
+                          }
+
+                          // if (currentUserEmail == null) {
+                          //   DelightToastBar(
+                          //     snackbarDuration: const Duration(seconds: 2),
+                          //     autoDismiss: true,
+                          //     builder: (context) => ToastCard(
+                          //       leading: const Icon(
+                          //         Icons.flutter_dash_rounded,
+                          //         size: 28,
+                          //         color: Color.fromARGB(255, 48, 65, 69),
+                          //       ),
+                          //       title: Text(
+                          //         "Please select at least one service.",
+                          //         style: GoogleFonts.poppins(
+                          //           fontWeight: FontWeight.w500,
+                          //           fontSize: screenWidth * 0.035,
+                          //           color:
+                          //               const Color.fromARGB(255, 48, 65, 69),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ).show(context);
+
+                          //   return;
+                          // }
+
+                          // Proceed with navigation if all values are valid
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DateTimeSchedulePage(
+                                shopName: widget.shopName,
+                                userEmail: widget.userEmail,
+                                clientEmail: currentUserEmail!,
+                                selectedServices: selectedServices,
+                              ),
+                            ),
+                          );
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
                               const Color.fromARGB(255, 48, 65, 69),

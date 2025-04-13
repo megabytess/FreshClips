@@ -1,41 +1,52 @@
-import 'package:delightful_toast/delight_toast.dart';
-import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:flutter/material.dart';
-import 'package:freshclips_capstone/core/booking_system/03_info_details_page.dart';
+import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_appointment_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_working_hours_controller.dart';
-import 'package:freshclips_capstone/features/hairstylist-features/models/services_model.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-class DateTimeSchedulePage extends StatefulWidget {
-  const DateTimeSchedulePage({
+class RescheduledPage extends StatefulWidget {
+  const RescheduledPage({
     super.key,
+    required this.clientName,
+    required this.phoneNumber,
     required this.selectedServices,
+    required this.price,
+    required this.note,
+    required this.status,
+    required this.selectedDate,
+    required this.selectedTime,
     required this.userEmail,
+    required this.appointmentId,
     required this.clientEmail,
-    required this.shopName,
   });
 
-  final List<Service> selectedServices;
+  final String clientName;
+  final String phoneNumber;
+  final List<dynamic> selectedServices;
+  final int price;
+  final String note;
+  final String status;
+  final String selectedDate;
+  final String selectedTime;
   final String userEmail;
+  final String appointmentId;
   final String clientEmail;
-  final String shopName;
-  final String userType = 'Barbershop/Salon';
 
   @override
-  State<DateTimeSchedulePage> createState() => _DateTimeSchedulePageState();
+  State<RescheduledPage> createState() => _RescheduledPageState();
 }
 
-class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
-  late BSAvailabilityController availabilityController;
-  List<Map<String, dynamic>> availabilityData = [];
+AppointmentsController appointmentsController = AppointmentsController();
+late BSAvailabilityController availabilityController;
 
+class _RescheduledPageState extends State<RescheduledPage> {
   Map<String, dynamic> workingHours = {};
   bool isLoading = false;
   String? selectedDay;
   String? selectedTimeSlot;
   List<String> timeSlots = [];
+  List<Map<String, dynamic>> availabilityData = [];
 
   @override
   void initState() {
@@ -47,19 +58,16 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
     fetchAvailabilityData();
   }
 
-  // fetch availability data method
+// Fetch availability data from the server
   void fetchAvailabilityData() async {
     try {
       setState(() => isLoading = true);
 
-      // Step 1: Get data and process it
       final fetchedData =
           await availabilityController.fetchWorkingHoursBS(widget.userEmail);
       final today = DateTime.now();
 
-      // Step 2: Convert, filter and sort in one operation
       availabilityData = fetchedData.map((hour) {
-        // Convert working hour to map with parsed date
         DateTime parsedDate;
         try {
           parsedDate = DateFormat('EEEE, MMMM dd, yyyy').parse(hour.day);
@@ -126,6 +134,44 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
     }
   }
 
+  // Add this method to the _RescheduledPageState class
+  Future<void> rescheduleAppointment(
+    BuildContext context,
+    String appointmentId,
+    String barberEmail,
+    String clientEmail,
+    String? selectedDay,
+    String? selectedTimeSlot,
+  ) async {
+    if (selectedDay == null || selectedTimeSlot == null) return;
+
+    try {
+      setState(() => isLoading = true);
+
+      final selectedDayData = availabilityData.firstWhere(
+        (data) => data['day'] == selectedDay,
+        orElse: () => throw Exception('Day not found'),
+      );
+
+      final isoDate = selectedDayData['date'] as String;
+      final parsedDate = DateTime.parse(isoDate);
+      final formattedDate = DateFormat('MMMM dd, yyyy').format(parsedDate);
+
+      await appointmentsController.rescheduleAppointment(
+        context,
+        appointmentId,
+        barberEmail,
+        clientEmail,
+        formattedDate,
+        selectedTimeSlot,
+      );
+    } catch (e) {
+      print('Reschedule failed: $e');
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -135,7 +181,7 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Select time & date',
+          'Reschedule appointment',
           style: GoogleFonts.poppins(
             fontSize: screenWidth * 0.035,
             fontWeight: FontWeight.w600,
@@ -145,12 +191,15 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
         backgroundColor: Colors.transparent,
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.05,
+          vertical: screenHeight * 0.01,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Dates',
+              'Date',
               style: GoogleFonts.poppins(
                 fontSize: screenWidth * 0.035,
                 fontWeight: FontWeight.w500,
@@ -326,52 +375,19 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (selectedDay != null && selectedTimeSlot != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => InfoDetailsPage(
-                            userEmail: widget.userEmail,
-                            shopName: widget.shopName,
-                            selectedServices: widget.selectedServices,
-                            bookingData: {
-                              'day': selectedDay!,
-                              'timeSlot': selectedTimeSlot!,
-                            },
-                            clientEmail: widget.clientEmail,
-                            userType: widget.userType,
-                            bookedUser: widget.userEmail,
-                            selectedDay: selectedDay!,
-                            selectedTimeSlot: selectedTimeSlot!,
-                          ),
-                        ),
-                      );
-                    } else {
-                      DelightToastBar(
-                        snackbarDuration: const Duration(seconds: 2),
-                        autoDismiss: true,
-                        builder: (context) => ToastCard(
-                          leading: SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: Image.asset(
-                              'assets/images/icons/logo_icon.png',
-                            ),
-                          ),
-                          title: Text(
-                            "Opss! Please select a date and time slot.",
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w500,
-                              fontSize: screenWidth * 0.035,
-                              color: const Color.fromARGB(255, 48, 65, 69),
-                            ),
-                          ),
-                        ),
-                      ).show(context);
+                  onPressed: () async {
+                    // Call the reschedule function
+                    await rescheduleAppointment(
+                      context,
+                      widget.appointmentId,
+                      widget.userEmail,
+                      widget.clientEmail,
+                      selectedDay,
+                      selectedTimeSlot,
+                    );
 
-                      return;
-                    }
+                    Navigator.pop(context);
+                    Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 48, 65, 69),
@@ -382,7 +398,7 @@ class _DateTimeSchedulePageState extends State<DateTimeSchedulePage> {
                         EdgeInsets.symmetric(vertical: screenHeight * 0.02),
                   ),
                   child: Text(
-                    'Continue',
+                    'Confirm reschedule',
                     style: GoogleFonts.poppins(
                       fontSize: screenWidth * 0.035,
                       fontWeight: FontWeight.w500,

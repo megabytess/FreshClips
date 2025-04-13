@@ -1,3 +1,5 @@
+import 'package:delightful_toast/delight_toast.dart';
+import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/core/booking_system/04_booking_summary_page.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_ratings_review_controller.dart';
@@ -191,7 +193,7 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Please provide the necessary information for the booking.',
+                        'Provide the necessary information for the booking.',
                         style: GoogleFonts.poppins(
                           fontSize: screenWidth * 0.04,
                           fontWeight: FontWeight.w600,
@@ -383,6 +385,30 @@ class _InfoDetailsPageState extends State<InfoDetailsPage> {
                           ),
                         ),
                       );
+                    } else {
+                      DelightToastBar(
+                        snackbarDuration: const Duration(seconds: 2),
+                        autoDismiss: true,
+                        builder: (context) => ToastCard(
+                          leading: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Image.asset(
+                              'assets/images/icons/logo_icon.png',
+                            ),
+                          ),
+                          title: Text(
+                            "Oops! Kindly complete the necessary details to proceed.",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w500,
+                              fontSize: screenWidth * 0.035,
+                              color: const Color.fromARGB(255, 48, 65, 69),
+                            ),
+                          ),
+                        ),
+                      ).show(context);
+
+                      return;
                     }
                   },
                   style: ElevatedButton.styleFrom(

@@ -38,6 +38,7 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
       CustomInfoWindowController();
   final TextEditingController reviewController = TextEditingController();
   late final RatingsReviewController ratingsReviewController;
+  double radiusInKm = 5.0;
 
   @override
   void initState() {
@@ -203,15 +204,10 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
             accountName = 'Unknown';
           }
 
-          // Format distance text
-          // String distanceText = distance < 1000
-          //     ? '${distance.toStringAsFixed(0)} meters'
-          //     : '${(distance / 1000).toStringAsFixed(2)} km';
-
           debugPrint(
               "User: $accountName, Distance: ${(distance / 1000).toStringAsFixed(2)} km");
 
-          if (distance <= 5000) {
+          if ((distance / 1000) <= radiusInKm) {
             BitmapDescriptor icon = await nearbyController.createCircularMarker(
               data['imageUrl'] ?? '',
             );
@@ -425,7 +421,7 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
             left: 0,
             right: 0,
             child: SizedBox(
-              height: screenHeight * 0.34,
+              height: screenHeight * 0.31,
               width: screenWidth * 1,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
@@ -480,7 +476,7 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                             ),
                           ],
                         ),
-                        Gap(screenHeight * 0.01),
+                        Gap(screenHeight * 0.007),
                         Flexible(
                           child: Row(
                             children: [
@@ -511,7 +507,7 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                         Gap(screenHeight * 0.01),
                         SizedBox(
                           width: double.infinity,
-                          child: ElevatedButton.icon(
+                          child: OutlinedButton.icon(
                             onPressed: () {
                               final destinationLatLng =
                                   user['location']?['latitude'];
@@ -536,28 +532,33 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                             icon: const Icon(
                               Icons.directions,
                               size: 18,
+                              color: Color.fromARGB(255, 48, 65, 69),
                             ),
                             label: Text(
                               'Get directions',
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.028,
                                 fontWeight: FontWeight.w400,
-                                color: const Color.fromARGB(255, 248, 248, 248),
+                                color: const Color.fromARGB(255, 48, 65, 69),
                               ),
                             ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 48, 65, 69),
+                            style: OutlinedButton.styleFrom(
                               foregroundColor:
-                                  const Color.fromARGB(255, 248, 248, 248),
-                              elevation: 0,
+                                  const Color.fromARGB(255, 48, 65, 69),
+                              side: const BorderSide(
+                                color: Color.fromARGB(255, 48, 65, 69),
+                                width: 1.5,
+                              ),
                               padding: EdgeInsets.symmetric(
                                 horizontal: screenWidth * 0.05,
+                                vertical: 8,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
                               ),
                             ),
                           ),
                         ),
-                        // Gap(screenHeight * 0.01),
                         Divider(
                           color: Colors.grey[300],
                           thickness: 1,
@@ -688,7 +689,7 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
                         Gap(screenHeight * 0.02),
                         SizedBox(
                           width: double.infinity,
-                          height: screenHeight * 0.06,
+                          height: screenHeight * 0.05,
                           child: ElevatedButton(
                             onPressed: () {
                               if (user['userType'] == 'Barbershop_Salon') {
@@ -793,6 +794,88 @@ class _ClientNearbyPageState extends State<ClientNearbyPage> {
           //     ),
           //   ),
           // ),
+
+          Positioned(
+            top: 10,
+            left: 10,
+            right: 10, // stretch it a bit for balance
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color:
+                    const Color.fromARGB(255, 248, 248, 248).withOpacity(0.9),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        '    Radius: ',
+                        style: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.035,
+                          fontWeight: FontWeight.w500,
+                          color: const Color.fromARGB(255, 48, 65, 69),
+                        ),
+                      ),
+                      Text(
+                        '${radiusInKm.toStringAsFixed(1)} km',
+                        style: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.035,
+                          fontWeight: FontWeight.w600,
+                          color: const Color.fromARGB(255, 48, 65, 69),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      trackHeight: 3,
+                      activeTrackColor: const Color.fromARGB(255, 48, 65, 69),
+                      inactiveTrackColor:
+                          const Color.fromARGB(255, 186, 199, 206),
+                      thumbColor: const Color.fromARGB(255, 189, 49, 71),
+                      overlayColor: const Color.fromARGB(80, 189, 49, 71),
+                      thumbShape:
+                          const RoundSliderThumbShape(enabledThumbRadius: 8),
+                      overlayShape:
+                          const RoundSliderOverlayShape(overlayRadius: 15),
+                      valueIndicatorShape:
+                          const PaddleSliderValueIndicatorShape(),
+                      valueIndicatorTextStyle: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.03,
+                        fontWeight: FontWeight.w400,
+                        color: const Color.fromARGB(255, 248, 248, 248),
+                      ),
+                    ),
+                    child: Slider(
+                      value: radiusInKm,
+                      min: 5,
+                      max: 30,
+                      divisions: 10,
+                      // label: '${radiusInKm.toStringAsFixed(1)} km',
+                      onChanged: (value) {
+                        setState(() {
+                          radiusInKm = value;
+                        });
+                      },
+                      onChangeEnd: (value) {
+                        fetchNearbyUsers();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
 
           // Zoom controls
           Positioned(
