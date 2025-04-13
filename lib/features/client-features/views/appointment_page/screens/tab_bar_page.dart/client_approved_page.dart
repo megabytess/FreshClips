@@ -6,41 +6,70 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-class ClientDeclinedPage extends StatelessWidget {
-  ClientDeclinedPage({super.key, required this.clientEmail});
-
+class ClientApprovedPage extends StatefulWidget {
+  const ClientApprovedPage({
+    super.key,
+    required this.clientEmail,
+  });
   final String clientEmail;
   final bool isClient = true;
 
-  final AppointmentsController appointmentsController =
-      AppointmentsController();
+  @override
+  State<ClientApprovedPage> createState() => _ClientApprovedPageState();
+}
+
+AppointmentsController appointmentsController = AppointmentsController();
+
+class _ClientApprovedPageState extends State<ClientApprovedPage> {
+  final List<Map<String, dynamic>> appointmentDates = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchApprovedAppointments();
+  }
+
+  void fetchApprovedAppointments() async {
+    final approvedAppointments =
+        await appointmentsController.fetchApprovedAppointments();
+
+    setState(() {
+      appointmentDates.addAll(approvedAppointments);
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: Colors.transparent,
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('appointments')
-            .where('clientEmail', isEqualTo: clientEmail)
-            .where('status', isEqualTo: 'Declined')
+            .where('clientEmail', isEqualTo: widget.clientEmail)
+            .where('status', isEqualTo: 'Approved')
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-                child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(
-                Color.fromARGB(255, 189, 41, 71),
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Color.fromARGB(255, 189, 41, 71),
+                ),
               ),
-            ));
+            );
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.02,
+              ),
               child: Center(
                 child: Text(
-                  'No Declined appointments for today.',
+                  'No approved appointments for today.',
                   style: GoogleFonts.poppins(
                     fontSize: screenWidth * 0.035,
                     color: const Color.fromARGB(255, 120, 120, 120),
@@ -86,8 +115,8 @@ class ClientDeclinedPage extends StatelessWidget {
                         selectedServices: appointment['selectedServices'],
                         note: appointment['note'],
                         price: totalPrice,
-                        clientEmail: clientEmail,
-                        isClient: isClient == true,
+                        clientEmail: widget.clientEmail,
+                        isClient: widget.isClient == true,
                         selectedAffiliateBarber:
                             appointment['selectedAffiliateBarber'] ?? 'N/A',
                         shopName: appointment['shopName'] ?? 'N/A',

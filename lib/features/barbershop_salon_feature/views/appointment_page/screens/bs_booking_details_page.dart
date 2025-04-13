@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_appointment_controller.dart';
 import 'package:freshclips_capstone/features/barbershop_salon_feature/controllers/bs_controller.dart';
-import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/tab_bar_page.dart/rescheduled_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/appointment_page/screens/tab_bar_page.dart/rescheduled_page.dart';
 import 'package:freshclips_capstone/features/client-features/views/profile_page/widgets/client_add_review_booking_details.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -67,30 +67,34 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
 
   Future<void> fetchDeclineReason() async {
     try {
-      var snapshot = await FirebaseFirestore.instance
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('appointments')
-          .where('bookedUser', isEqualTo: widget.userEmail)
-          .limit(1)
+          .doc(widget.appointmentId)
           .get();
 
-      if (snapshot.docs.isNotEmpty) {
-        var data = snapshot.docs.first.data();
-
-        setState(() {
-          declinedReason = data.containsKey('declinedReason')
-              ? data['declinedReason'] ?? 'No reason provided'
-              : 'No reason provided';
-        });
-      } else {
-        setState(() {
-          declinedReason = 'No reason provided';
-        });
+      if (!snapshot.exists) {
+        print('Document does not exist');
+        setState(() => declinedReason = 'No reason provided (doc not found)');
+        return;
       }
-    } catch (e) {
-      print('Error: $e');
+
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+
+      if (data.containsKey('declinedReason')) {}
+
       setState(() {
-        declinedReason = 'No reason provided';
+        if (data.containsKey('declinedReason') &&
+            data['declinedReason'] != null) {
+          declinedReason = data['declinedReason'];
+        } else {
+          declinedReason = 'No reason provided';
+        }
       });
+
+      print('Final declined reason: $declinedReason');
+    } catch (e) {
+      print('Error fetching decline reason: $e');
+      setState(() => declinedReason = 'Error fetching reason');
     }
   }
 

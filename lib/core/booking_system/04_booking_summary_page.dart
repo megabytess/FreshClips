@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:delightful_toast/delight_toast.dart';
+import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:flutter/material.dart';
+import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/client_bottomnav_bar.dart';
 import 'package:freshclips_capstone/features/hairstylist-features/models/services_model.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-class BookingSummaryPage extends StatelessWidget {
+class BookingSummaryPage extends StatefulWidget {
   final String userEmail;
   // final String accountName;
   // final String userType;
@@ -47,17 +50,22 @@ class BookingSummaryPage extends StatelessWidget {
   });
 
   @override
+  State<BookingSummaryPage> createState() => _BookingSummaryPageState();
+}
+
+class _BookingSummaryPageState extends State<BookingSummaryPage> {
+  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     String formattedDate = DateFormat('MMMM d, yyyy').format(
-      DateFormat('EEEE, MMMM dd, yyyy').parse(selectedDay),
+      DateFormat('EEEE, MMMM dd, yyyy').parse(widget.selectedDay),
     );
-    String time = selectedTimeSlot;
+    String time = widget.selectedTimeSlot;
 
-    final barberName = selectedAffiliatedBarber?['barberName'] ?? '';
-    final barberRole = selectedAffiliatedBarber?['role'] ?? '';
+    final barberName = widget.selectedAffiliatedBarber?['barberName'] ?? '';
+    final barberRole = widget.selectedAffiliatedBarber?['role'] ?? '';
 
     return Scaffold(
       appBar: AppBar(
@@ -102,7 +110,7 @@ class BookingSummaryPage extends StatelessWidget {
                 ),
                 Gap(screenWidth * 0.02),
                 Text(
-                  selectedAffiliatedBarber?['affiliatedShop'] ?? 'N/A',
+                  widget.selectedAffiliatedBarber?['affiliatedShop'] ?? 'N/A',
                   style: GoogleFonts.poppins(
                     fontSize: screenWidth * 0.035,
                     fontWeight: FontWeight.w400,
@@ -114,17 +122,19 @@ class BookingSummaryPage extends StatelessWidget {
             Gap(screenHeight * 0.01),
             Row(
               children: [
-                selectedAffiliatedBarber != null
+                widget.selectedAffiliatedBarber != null
                     ? ClipOval(
-                        child:
-                            selectedAffiliatedBarber?['barberImageUrl'] != null
-                                ? Image.network(
-                                    selectedAffiliatedBarber?['barberImageUrl'],
-                                    width: screenWidth * 0.15,
-                                    height: screenWidth * 0.15,
-                                    fit: BoxFit.cover,
-                                  )
-                                : const Text(''),
+                        child: widget.selectedAffiliatedBarber?[
+                                    'barberImageUrl'] !=
+                                null
+                            ? Image.network(
+                                widget.selectedAffiliatedBarber?[
+                                    'barberImageUrl'],
+                                width: screenWidth * 0.15,
+                                height: screenWidth * 0.15,
+                                fit: BoxFit.cover,
+                              )
+                            : const Text(''),
                       )
                     : const Text(''),
                 Gap(screenWidth * 0.02),
@@ -173,7 +183,7 @@ class BookingSummaryPage extends StatelessWidget {
                   Gap(screenWidth * 0.02),
                   Flexible(
                     child: Text(
-                      clientName,
+                      widget.clientName,
                       style: GoogleFonts.poppins(
                         fontSize: screenWidth * 0.035,
                         fontWeight: FontWeight.w400,
@@ -254,7 +264,7 @@ class BookingSummaryPage extends StatelessWidget {
                   Gap(screenWidth * 0.02),
                   Flexible(
                     child: Text(
-                      phoneNumber,
+                      widget.phoneNumber,
                       style: GoogleFonts.poppins(
                         fontSize: screenWidth * 0.035,
                         fontWeight: FontWeight.w400,
@@ -281,7 +291,7 @@ class BookingSummaryPage extends StatelessWidget {
                   Gap(screenWidth * 0.02),
                   Flexible(
                     child: Text(
-                      note,
+                      widget.note,
                       style: GoogleFonts.poppins(
                         fontSize: screenWidth * 0.035,
                         fontWeight: FontWeight.w400,
@@ -308,9 +318,9 @@ class BookingSummaryPage extends StatelessWidget {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: selectedServices.length,
+                itemCount: widget.selectedServices.length,
                 itemBuilder: (context, index) {
-                  final service = selectedServices[index];
+                  final service = widget.selectedServices[index];
                   return ListTile(
                     title: Text(
                       service.serviceName,
@@ -348,7 +358,7 @@ class BookingSummaryPage extends StatelessWidget {
                 height: screenHeight * 0.07,
                 child: ElevatedButton(
                   onPressed: () async {
-                    final formattedTime = selectedTimeSlot;
+                    final formattedTime = widget.selectedTimeSlot;
 
                     // Generate a new document reference with a unique ID
                     final docRef = FirebaseFirestore.instance
@@ -358,39 +368,91 @@ class BookingSummaryPage extends StatelessWidget {
 
                     final appointmentData = {
                       'id': id,
-                      'bookedUser': userEmail,
-                      'clientName': clientName,
-                      'phoneNumber': phoneNumber,
+                      'bookedUser': widget.userEmail,
+                      'clientName': widget.clientName,
+                      'phoneNumber': widget.phoneNumber,
                       'selectedTime': formattedTime,
                       'selectedDate': formattedDate,
-                      'selectedServices': selectedServices
+                      'selectedServices': widget.selectedServices
                           .map((service) => {
                                 'title': service.serviceName,
                                 'description': service.serviceDescription,
                                 'price': service.price,
                               })
                           .toList(),
-                      'note': note,
+                      'note': widget.note,
                       'status': 'Pending',
-                      'clientEmail': clientEmail,
+                      'clientEmail': widget.clientEmail,
                       'selectedAffiliateBarber':
-                          selectedAffiliatedBarber?['barberName'] ?? '',
-                      'shopName': shopName,
+                          widget.selectedAffiliatedBarber?['barberName'] ?? '',
+                      'shopName': widget.shopName,
                       'barberImageUrl':
-                          selectedAffiliatedBarber?['barberImageUrl'] ?? '',
+                          widget.selectedAffiliatedBarber?['barberImageUrl'] ??
+                              '',
                       'timeStamp': FieldValue.serverTimestamp(),
                     };
 
                     try {
-                      // Add the appointment data to Firestore using the generated document reference
                       await docRef.set(appointmentData);
 
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      Navigator.pop(context);
+                      // ✅ DelightToastBar success
+                      DelightToastBar(
+                        snackbarDuration: const Duration(seconds: 3),
+                        autoDismiss: true,
+                        builder: (context) => ToastCard(
+                          leading: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Image.asset(
+                              'assets/images/icons/logo_icon.png',
+                            ),
+                          ),
+                          title: Text(
+                            "Appointment booked successfully!",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w500,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.035,
+                              color: const Color.fromARGB(255, 48, 65, 69),
+                            ),
+                          ),
+                        ),
+                      ).show(context);
+
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ClientBottomNavBarPage(
+                            clientEmail: widget.clientEmail,
+                            email: widget.clientEmail,
+                            initialIndex: 3,
+                          ),
+                        ),
+                        (route) => false,
+                      );
                     } catch (e) {
-                      print('Error booking appointment: $e');
+                      DelightToastBar(
+                        snackbarDuration: const Duration(seconds: 3),
+                        autoDismiss: true,
+                        builder: (context) => ToastCard(
+                          leading: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Image.asset(
+                              'assets/images/icons/logo_icon.png',
+                            ),
+                          ),
+                          title: Text(
+                            "Error booking appointment: $e",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w500,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.035,
+                              color: const Color.fromARGB(255, 48, 65, 69),
+                            ),
+                          ),
+                        ),
+                      ).show(context);
                     }
                   },
                   style: ElevatedButton.styleFrom(

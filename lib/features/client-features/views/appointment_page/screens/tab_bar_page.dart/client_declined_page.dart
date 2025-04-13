@@ -6,70 +6,41 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-class ClientApprovedPage extends StatefulWidget {
-  const ClientApprovedPage({
-    super.key,
-    required this.clientEmail,
-  });
+class ClientDeclinedPage extends StatelessWidget {
+  ClientDeclinedPage({super.key, required this.clientEmail});
+
   final String clientEmail;
   final bool isClient = true;
 
-  @override
-  State<ClientApprovedPage> createState() => _ClientApprovedPageState();
-}
-
-AppointmentsController appointmentsController = AppointmentsController();
-
-class _ClientApprovedPageState extends State<ClientApprovedPage> {
-  final List<Map<String, dynamic>> appointmentDates = [];
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchApprovedAppointments();
-  }
-
-  void fetchApprovedAppointments() async {
-    final approvedAppointments =
-        await appointmentsController.fetchApprovedAppointments();
-
-    setState(() {
-      appointmentDates.addAll(approvedAppointments);
-      isLoading = false;
-    });
-  }
-
+  final AppointmentsController appointmentsController =
+      AppointmentsController();
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('appointments')
-            .where('clientEmail', isEqualTo: widget.clientEmail)
-            .where('status', isEqualTo: 'Approved')
+            .where('clientEmail', isEqualTo: clientEmail)
+            .where('status', isEqualTo: 'Declined')
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Color.fromARGB(255, 189, 41, 71),
-                ),
+                child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Color.fromARGB(255, 189, 41, 71),
               ),
-            );
+            ));
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: screenWidth * 0.02,
-              ),
+            return Center(
               child: Center(
                 child: Text(
-                  'No approved appointments for today.',
+                  'No Declined appointments for today.',
                   style: GoogleFonts.poppins(
                     fontSize: screenWidth * 0.035,
                     color: const Color.fromARGB(255, 120, 120, 120),
@@ -115,8 +86,8 @@ class _ClientApprovedPageState extends State<ClientApprovedPage> {
                         selectedServices: appointment['selectedServices'],
                         note: appointment['note'],
                         price: totalPrice,
-                        clientEmail: widget.clientEmail,
-                        isClient: widget.isClient == true,
+                        clientEmail: clientEmail,
+                        isClient: isClient == true,
                         selectedAffiliateBarber:
                             appointment['selectedAffiliateBarber'] ?? 'N/A',
                         shopName: appointment['shopName'] ?? 'N/A',
@@ -191,7 +162,7 @@ class _ClientApprovedPageState extends State<ClientApprovedPage> {
                             children: [
                               Container(
                                 height: screenHeight * 0.025,
-                                width: screenWidth * 0.16,
+                                width: screenWidth * 0.14,
                                 decoration: BoxDecoration(
                                   color:
                                       const Color.fromARGB(255, 186, 199, 206),

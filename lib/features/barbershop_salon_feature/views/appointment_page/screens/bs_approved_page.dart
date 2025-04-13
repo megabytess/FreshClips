@@ -171,7 +171,7 @@ class BSApprovedPage extends StatelessWidget {
                             children: [
                               Container(
                                 height: screenHeight * 0.025,
-                                width: screenWidth * 0.16,
+                                width: screenWidth * 0.15,
                                 decoration: BoxDecoration(
                                   color:
                                       const Color.fromARGB(255, 186, 199, 206),

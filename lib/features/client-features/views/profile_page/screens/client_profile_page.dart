@@ -566,7 +566,7 @@ class _ClientProfilePageState extends State<ClientProfilePage> {
                                                                       height: screenHeight *
                                                                           0.025,
                                                                       width: screenWidth *
-                                                                          0.16,
+                                                                          0.15,
                                                                       decoration:
                                                                           BoxDecoration(
                                                                         color: const Color

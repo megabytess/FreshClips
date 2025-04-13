@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabbar_page/flutter_tabbar_page.dart';
-import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/tab_bar_page.dart/client_approved_page.dart';
-import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/tab_bar_page.dart/client_declined_page.dart';
-import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/tab_bar_page.dart/client_pending_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/appointment_page/screens/tab_bar_page.dart/client_approved_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/appointment_page/screens/tab_bar_page.dart/client_declined_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/appointment_page/screens/tab_bar_page.dart/client_pending_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ClientTabBarPage extends StatefulWidget {

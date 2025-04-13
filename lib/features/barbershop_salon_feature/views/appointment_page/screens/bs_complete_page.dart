@@ -164,7 +164,7 @@ class BSCompletedAppointmentPage extends StatelessWidget {
                             children: [
                               Container(
                                 height: screenHeight * 0.025,
-                                width: screenWidth * 0.175,
+                                width: screenWidth * 0.165,
                                 decoration: BoxDecoration(
                                   color:
                                       const Color.fromARGB(255, 186, 199, 206),

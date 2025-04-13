@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:freshclips_capstone/features/auth/views/screens/login/landing_page.dart';
-import 'package:freshclips_capstone/features/client-features/views/bottomnav_bar/client_notification_page.dart';
+import 'package:freshclips_capstone/features/client-features/views/appointment_page/screens/client_appointment_page.dart';
 import 'package:freshclips_capstone/features/client-features/views/home_page/screens/client_home_page.dart';
 import 'package:freshclips_capstone/features/client-features/views/message_page/screens/client_message_page.dart';
 import 'package:freshclips_capstone/features/client-features/views/nearby_page/screens/client_nearby_page.dart';
@@ -14,9 +14,11 @@ class ClientBottomNavBarPage extends StatefulWidget {
     super.key,
     required this.email,
     required this.clientEmail,
+    this.initialIndex = 0,
   });
   final String email;
   final String clientEmail;
+  final int initialIndex;
 
   @override
   State<ClientBottomNavBarPage> createState() => _BottomNavBarPageState();
@@ -31,6 +33,7 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.initialIndex;
 
     _pages = [
       ClientHomePage(
@@ -40,6 +43,10 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
         clientEmail: widget.clientEmail,
       ),
       ClientMessagePage(
+        userEmail: widget.email,
+        clientEmail: widget.clientEmail,
+      ),
+      ClientAppointmentPage(
         userEmail: widget.email,
         clientEmail: widget.clientEmail,
       ),
@@ -132,38 +139,7 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
                 ],
               ),
             ),
-            Gap(screenHeight * 0.01),
-            ListTile(
-              leading: Icon(
-                Icons.notifications_active_rounded,
-                size: screenWidth * 0.065,
-                color: const Color.fromARGB(255, 48, 65, 69),
-              ),
-              title: Text(
-                'Notifications',
-                style: GoogleFonts.poppins(
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w500,
-                  color: const Color.fromARGB(255, 18, 18, 18),
-                ),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: screenWidth * 0.04,
-                color: const Color.fromARGB(255, 18, 18, 18),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ClientNotificationPage(
-                      clientEmail: widget.clientEmail,
-                    ),
-                  ),
-                );
-              },
-            ),
-            Gap(screenHeight * 0.7),
+            Gap(screenHeight * 0.76),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
               child: ElevatedButton(
@@ -250,11 +226,25 @@ class _BottomNavBarPageState extends State<ClientBottomNavBarPage> {
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
-              'assets/images/bottomnav_bar_page/user_fill.svg',
+              'assets/images/bottomnav_bar_page/calendar_fill.svg',
               height: screenHeight * 0.03,
               width: screenWidth * 0.03,
               colorFilter: ColorFilter.mode(
                 _selectedIndex == 3
+                    ? const Color.fromARGB(255, 189, 49, 71)
+                    : const Color.fromARGB(50, 23, 23, 23),
+                BlendMode.srcIn,
+              ),
+            ),
+            label: 'Appointments',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'assets/images/bottomnav_bar_page/user_fill.svg',
+              height: screenHeight * 0.03,
+              width: screenWidth * 0.03,
+              colorFilter: ColorFilter.mode(
+                _selectedIndex == 4
                     ? const Color.fromARGB(255, 189, 49, 71)
                     : const Color.fromARGB(50, 23, 23, 23),
                 BlendMode.srcIn,

@@ -161,7 +161,7 @@ class ClientPendingPage extends StatelessWidget {
                             children: [
                               Container(
                                 height: screenHeight * 0.025,
-                                width: screenWidth * 0.14,
+                                width: screenWidth * 0.13,
                                 decoration: BoxDecoration(
                                   color:
                                       const Color.fromARGB(255, 186, 199, 206),
